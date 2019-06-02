@@ -70,7 +70,6 @@ StatPcp <- ggproto("StatPcp", Stat,
                      # for num to num, set up
                      # set up ystart, yend.(sometimes we plus one to adjust for ID column)
                      # for ystart of lines
-
                      data_final_ystart_num2num <- unlist(as.list(data_spread[, classification$num2num + 1]))
                      # for yend of lines
                      data_final_yend_num2num <- unlist(as.list(data_spread[, classification$num2num + 2]))
@@ -95,8 +94,14 @@ StatPcp <- ggproto("StatPcp", Stat,
                                             FUN = function(x) list(nlevels = nlevels(x),
                                                                    table = table(x)))
                      # uniformly assign space for each level and observations within each level
-                     # I would insert some space between every two levels later
+                     # inserted some space between every two levels here, called freespace for the space in total
+                     # obs_position is the postion assigned for factors
                      obs_position <- assign_fac(nlevels_list, nobs, freespace = 0.1)
+
+                     # for yend of lines, continued
+                     # write another function to arrange the positions of the end
+                     # points according to the ystart, and the order of data
+                     data_final_yend_num2fac <- unlist(arrange_fac_by_ystart(data_spread, classification$num2fac + 1, obs_position))
 
 
                    }
@@ -144,4 +149,28 @@ assign_fac <- function(nlevels_list, nobs, freespace = 0.1) {
     level_range, nlevels_list)
 
   return(obs_position)
+}
+
+
+# used to arrange the factor positions properly to match the ystart, the same observation.
+# num_position = classification$num2fac + 1, here. Just to make it a little more general.
+# make sure the levels of factors are used correctly here(match the data, match the order). How was it decided before?
+arrange_fac_by_ystart <- function(data_spread, start_position, obs_position) {
+  # Map is usd here to deal with three lists in parallel
+  arranged_postion <- Map(f = function(x, y, z) {
+    # lappy uses like x[[i]] to extract sublist, assume Map is the same
+    # is it safe to use name here? it should work in my example, and it does work in my example
+    for (i in 1:length(z)) {
+      x <- replace(x,
+                   list = which(y == names(z)[i]),
+                   z[[i]][rank(x[y == names(z)[i]])])
+    }
+    x
+  },
+  data_spread[ ,start_position],
+  data_spread[ ,start_position + 1],
+  obs_position)
+
+  # be aware that the name of the sublist are the names of the corresponding of nums(not names of factors)
+  arranged_postion
 }
