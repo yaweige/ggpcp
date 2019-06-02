@@ -96,7 +96,7 @@ StatPcp <- ggproto("StatPcp", Stat,
                                                                    table = table(x)))
                      # uniformly assign space for each level and observations within each level
                      # I would insert some space between every two levels later
-                     data_final_yend_num2fac <- lapply(nlevels_list, FUN = function(x) 1/nobs*)
+                     obs_position <- assign_fac(nlevels_list, nobs, freespace = 0.1)
 
 
                    }
@@ -132,14 +132,16 @@ assign_fac <- function(nlevels_list, nobs, freespace = 0.1) {
                         FUN = function(x) c(0, rep(cumsum(eachobs*x$table)[-x$nlevels], each = 2) +
                                               freespace/(x$nlevels-1)/2*rep(c(-1, 1), times = x$nlevels-1), 1))
   # assign each obs
-  # maybe use something like map/Map/tapply?  Yes! The following code is not completed
-  obs_position <- lapply(level_range, FUN = function(x) {
-    for (i in 1:length(x)/2) obs_position_each <- seq(from = x[2*i-1] + 0.5*eachobs, to = x[2*i+1] - 0.5*eachobs, length.out = nobs)})
+  obs_position <- Map(f = function(x, y){
+    obs_position_each <- vector("list", length = length(x)/2)
+    for (i in 1:(length(x)/2)) {
+      obs_position_each[[i]] <- seq(from = x[2*i-1] + 0.5*eachobs,
+                                    to = x[2*i] - 0.5*eachobs,
+                                    length.out = y$table[i])
+    }
+    names(obs_position_each) <- names(y$table)
+    obs_position_each},
+    level_range, nlevels_list)
 
-  assign_obs_withinlevel <- function(x) {
-    nlevels_2 <- length(x)/2
-    for (i in 1:nlevels_2)
-      obs_position_each <- seq(from = x[2*i-1] + 0.5*eachobs, to = x[2*i+1] - 0.5*eachobs, length.out = nobs)
-  }
-
+  return(obs_position)
 }
