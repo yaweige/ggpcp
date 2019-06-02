@@ -71,9 +71,9 @@ StatPcp <- ggproto("StatPcp", Stat,
                      # set up ystart, yend.(sometimes we plus one to adjust for ID column)
                      # for ystart of lines
 
-                     data_final_ystart_num2num <- unlist(as.list(spread_simpledata[, classification$num2num + 1]))
+                     data_final_ystart_num2num <- unlist(as.list(data_spread[, classification$num2num + 1]))
                      # for yend of lines
-                     data_final_yend_num2num <- unlist(as.list(spread_simpledata[, classification$num2num + 2]))
+                     data_final_yend_num2num <- unlist(as.list(data_spread[, classification$num2num + 2]))
                      # for xstart of lines
                      data_final_xstart_num2num <- rep(classification$num2num, each = nobs)
                      # for xend of lines
@@ -85,11 +85,18 @@ StatPcp <- ggproto("StatPcp", Stat,
                      # so I'm not going to treat it as several points. the end points uniformly distributed within each band
                      # I also want to order those end points landing on the bands somehow
                      # I will add bands to indicate the different levels of a categorical variables later(like a big error bar?)
-                     # for ystart of lines(same as num2num)
-                     data_final_ystart_num2fac <- unlist(as.list(spread_simpledata[, classification$num2fac + 1]))
-                     # for yend of lines
-                     # first calculete the number of levels and number of observations landing in each levels
 
+                     # for ystart of lines(same as num2num)
+                     data_final_ystart_num2fac <- unlist(as.list(data_spread[, classification$num2fac + 1]))
+
+                     # for yend of lines
+                     # first calculete the number of levels and number of observations landing in each level
+                     nlevels_list <- lapply(data_spread[, classification$num2fac + 2],
+                                            FUN = function(x) list(nlevels = nlevels(x),
+                                                                   table = table(x)))
+                     # uniformly assign space for each level and observations within each level
+                     # I would insert some space between every two levels later
+                     data_final_yend_num2fac <- lapply(nlevels_list, FUN = function(x) 1/nobs*)
 
 
                    }
@@ -113,4 +120,26 @@ classify <- function(classpcp) {
                           num2fac = num2fac,
                           fac2num = fac2num,
                           fac2fac = fac2fac)
+}
+
+# used to assign postion for the factors
+# here is a long calculation formula
+# defined another function inside this function, make sure they are correctly nested
+assign_fac <- function(nlevels_list, nobs, freespace = 0.1) {
+  eachobs <- (1 - freespace)/nobs
+  # assign each level
+  level_range <- lapply(nlevels_list,
+                        FUN = function(x) c(0, rep(cumsum(eachobs*x$table)[-x$nlevels], each = 2) +
+                                              freespace/(x$nlevels-1)/2*rep(c(-1, 1), times = x$nlevels-1), 1))
+  # assign each obs
+  # maybe use something like map/Map/tapply?  Yes! The following code is not completed
+  obs_position <- lapply(level_range, FUN = function(x) {
+    for (i in 1:length(x)/2) obs_position_each <- seq(from = x[2*i-1] + 0.5*eachobs, to = x[2*i+1] - 0.5*eachobs, length.out = nobs)})
+
+  assign_obs_withinlevel <- function(x) {
+    nlevels_2 <- length(x)/2
+    for (i in 1:nlevels_2)
+      obs_position_each <- seq(from = x[2*i-1] + 0.5*eachobs, to = x[2*i+1] - 0.5*eachobs, length.out = nobs)
+  }
+
 }
