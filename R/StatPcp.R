@@ -59,6 +59,7 @@ StatPcp <- ggproto("StatPcp", Stat,
                                                              FUN = function(x) as.numeric(as.character(x)))
                      # need to check weather the factor orders are kept correctly
                      # this need to work together with the preparation together to guarantee
+                     # the following calculations in this function reply on the correct order of the columns
                      data_spread[, c(FALSE, fac)] <-  lapply(data_spread[, c(FALSE, fac)],
                                                              FUN = droplevels)
                      # at this time, data_spread is like the original data set, with columns properly defined
@@ -69,10 +70,10 @@ StatPcp <- ggproto("StatPcp", Stat,
 
                      # for num to num, set up
                      # set up ystart, yend.(sometimes we plus one to adjust for ID column)
-                     # for ystart of lines
-                     data_final_ystart_num2num <- unlist(as.list(data_spread[, classification$num2num + 1]))
+                     # for ystart of lines (seems we can use unlist to data.frame directly)
+                     data_final_ystart_num2num <- unlist(data_spread[, classification$num2num + 1])
                      # for yend of lines
-                     data_final_yend_num2num <- unlist(as.list(data_spread[, classification$num2num + 2]))
+                     data_final_yend_num2num <- unlist(data_spread[, classification$num2num + 2])
                      # for xstart of lines
                      data_final_xstart_num2num <- rep(classification$num2num, each = nobs)
                      # for xend of lines
@@ -85,8 +86,8 @@ StatPcp <- ggproto("StatPcp", Stat,
                      # I also want to order those end points landing on the bands somehow
                      # I will add bands to indicate the different levels of a categorical variables later(like a big error bar?)
 
-                     # for ystart of lines(same as num2num)
-                     data_final_ystart_num2fac <- unlist(as.list(data_spread[, classification$num2fac + 1]))
+                     # for ystart of lines(same as num2num, use unlist withour as.list first)
+                     data_final_ystart_num2fac <- unlist(data_spread[, classification$num2fac + 1])
 
                      # for yend of lines
                      # first calculete the number of levels and number of observations landing in each level
@@ -101,7 +102,41 @@ StatPcp <- ggproto("StatPcp", Stat,
                      # for yend of lines, continued
                      # write another function to arrange the positions of the end
                      # points according to the ystart, and the order of data
-                     data_final_yend_num2fac <- unlist(arrange_fac_by_ystart(data_spread, classification$num2fac + 1, obs_position))
+                     # is it right to directly unlist? Yes it seems
+                     data_final_yend_num2fac <- unlist(arrange_fac_by_ystart(data_spread,
+                                                                             start_position = classification$num2fac + 1,
+                                                                             end_position = classification$num2fac + 2,
+                                                                             obs_position = obs_position))
+
+                     # for xstart of lines
+                     data_final_xstart_num2fac <- rep(classification$num2fac, each = nobs)
+                     # for xend of lines
+                     data_final_xend_num2fac <- rep(classification$num2fac + 1, each = nobs)
+
+
+                     # for factor to num, set up (this should be similar to num2fac)
+                     # need to do some adjustments to make the functions above more general and can be used here
+
+                     # for xstart of lines
+                     data_final_xstart_fac2num <- rep(classification$fac2num, each = nobs)
+                     # for xend of lines
+                     data_final_xend_fac2num <- rep(classification$fac2num + 1, each = nobs)
+                     # for yend of lines
+                     data_final_yend_fac2num <- unlist(data_spread[, classification$fac2num + 2])
+                     # for ystart of lines (mimic the calculation to num2fac, be careful about the difference)
+                     nlevels_list_2 <- lapply(data_spread[, classification$fac2num + 1],
+                                              FUN = function(x) list(nlevels = nlevels(x),
+                                                                     table = table(x)))
+                     obs_position_2 <- assign_fac(nlevels_list_2, nobs, freespace = 0.1)
+                     # here arrange_fac_by_ystart, actually arranges fac (ystart) by yend
+                     data_final_ystart_fac2num <- unlist(arrange_fac_by_ystart(data_spread,
+                                                                               start_position = classification$fac2num + 2,
+                                                                               end_position = classification$fac2num + 1,
+                                                                               obs_position = obs_position_2))
+
+
+                     # for factor to factor, set up
+
 
 
                    }
@@ -153,12 +188,15 @@ assign_fac <- function(nlevels_list, nobs, freespace = 0.1) {
 
 
 # used to arrange the factor positions properly to match the ystart, the same observation.
-# num_position = classification$num2fac + 1, here. Just to make it a little more general.
+# start_position = classification$num2fac + 1, for num2fac. Just to make it a little more general.
+# end_position = start_position + 1, for num2fac. For fac2num, it's different, be careful.
+# start_position = classification$num2fac + 2, end_position = start_position - 1, for fac2num.
+# start_position is the one we need to refer to, end_position is the one we actually adjust.
 # make sure the levels of factors are used correctly here(match the data, match the order). How was it decided before?
-arrange_fac_by_ystart <- function(data_spread, start_position, obs_position) {
+arrange_fac_by_ystart <- function(data_spread, start_position, end_position, obs_position) {
   # Map is usd here to deal with three lists in parallel
   arranged_postion <- Map(f = function(x, y, z) {
-    # lappy uses like x[[i]] to extract sublist, assume Map is the same
+    # lapply uses like x[[i]] to extract sublist, assume Map is the same. And it works
     # is it safe to use name here? it should work in my example, and it does work in my example
     for (i in 1:length(z)) {
       x <- replace(x,
@@ -168,7 +206,7 @@ arrange_fac_by_ystart <- function(data_spread, start_position, obs_position) {
     x
   },
   data_spread[ ,start_position],
-  data_spread[ ,start_position + 1],
+  data_spread[ ,end_position],
   obs_position)
 
   # be aware that the name of the sublist are the names of the corresponding of nums(not names of factors)
