@@ -7,7 +7,7 @@
 
 # Expected output:
 
-# for geom_segment, we need x, y, xend, yend
+# for geom_segment, we need x(xstart), y(ystart), xend, yend
 # for geom_ribbon, we need x, ymin, ymax
 
 # question list:
@@ -43,7 +43,7 @@ StatPcp <- ggproto("StatPcp", Stat,
                    # and how to arrange them properly in the same time
 
                    # or we can put the attribute in the function prarameters?
-                   compute_panel = function(data, scales, num, fac, nnum, nfac, nobs, classpcp) {
+                   compute_panel = function(data, scales, num, fac, nnum, nfac, nobs, classpcp, freespace = 0.1) {
 
                      # several possible combinations: num to num, num to factor, factor to num, factor to factor
                      # need an algrothm to do this classification, write this function in a different place
@@ -134,9 +134,60 @@ StatPcp <- ggproto("StatPcp", Stat,
                                                                                end_position = classification$fac2num + 1,
                                                                                obs_position = obs_position_2))
 
+                     # we have to make sure those postions are consistent, which are on the same vertical axis, but shared by different pairs
+                     # even if it is consistent(same), which I think is very likely ensured by our consitent method of dealing with variables
+                     # we can still make some improvement above, to save some calculation to avoid twice calculation of same objecets
+                     # the only variables, we need to care are factor variables.
 
                      # for factor to factor, set up
+                     # this repeated the efforts of ggparallel in a sense
 
+                     # make use of the function to calculate level_range inside assign_fac(),
+                     # and nlevel_lists as before when dealing with factors
+
+                     # here is not completed*************
+                     # write a function for this part to assign and match the factors,
+                     # we may first calculate a table of the possible combinations between every two factors, and then assign position
+                     # with a constant freespace = 0.1, we make sure the lenghts of area taken are the same among factors
+
+
+
+                     # for factor to factor block, segment(not line!)
+                     # here is a little different from previous ones, we draw arrange same group together, not by variables
+
+                     ### This may work for only one factor block, need more preparation for more than one block
+
+                     # some values needed
+                     # to find the factor block(more than one factor together)
+                     continuous_fac <- unique(as.vector(rbind(classification$fac2fac, classification$fac2fac + 1)))
+                     # nlevels_list for those "continued" factors, for further use
+                     nlevels_list_con_fac <- lapply(data_spread[, continuous_fac+1],
+                                                    FUN = function(x) list(nlevels = nlevels(x),
+                                                                           table = table(x)))
+
+                     # to calculate the exsiting combinations of levels, for further use
+                     fac_table <- as.data.frame(table(data_spread[, continuous_fac + 1]))
+                     fac_table <- fac_table[fac_table$Freq != 0, ]
+                     fac_table$bandid <- as.numeric(rownames(fac_table))
+
+                     # names of the factor variables, for convenience
+                     names_to_group <- names(spread_simpledata2[, continuous_fac + 1])
+                     # the calculation is used to calculate the position for levels within factors, used inside assign_fac()
+                     # freespace is 0.1
+                     level_range_2 <-  lapply(nlevels_list_con_fac,
+                                              FUN = function(x) c(0, rep(cumsum(0.1*x$table)[-x$nlevels], each = 2) +
+                                                                    freespace/(x$nlevels-1)/2*rep(c(-1, 1), times = x$nlevels-1), 1))
+
+                     # calculate the positions for boxes(within each level within each factor)
+                     box_position <- assign_box(fac_table, level_range_2, nlevels_list_con_fac, names_to_group)
+
+                     # bandid for the original data_spread
+                     data_spread$bandid <- bandid(data_spread, continuous_fac, nobs)
+
+                     # next to find the xstart, xend, ystart, yend, for the factor block
+
+                     # for xstart of lines
+                     data_final_xstart_fac2fac <-
 
 
                    }
@@ -166,7 +217,7 @@ classify <- function(classpcp) {
 # here is a long calculation formula
 # defined another function inside this function, make sure they are correctly nested
 assign_fac <- function(nlevels_list, nobs, freespace = 0.1) {
-  eachobs <- (1 - freespace)/nobs
+  eachobs <- 1/nobs
   # assign each level
   level_range <- lapply(nlevels_list,
                         FUN = function(x) c(0, rep(cumsum(eachobs*x$table)[-x$nlevels], each = 2) +
@@ -211,4 +262,54 @@ arrange_fac_by_ystart <- function(data_spread, start_position, end_position, obs
 
   # be aware that the name of the sublist are the names of the corresponding of nums(not names of factors)
   arranged_postion
+}
+
+
+# a function to assign box in each level in each factor
+# fac_table is a summary of the exsiting combination of factors
+# level_range_2 is calculated as level_range inside assign_fac to get postions of levels
+# names_to_group is the names of those factors, for convenience
+assign_box <- function(fac_table, level_range_2, nlevels_list_con_fac, names_to_group) {
+
+  box_position <- Map(f = function(x, y, z){
+    box_proportion <- fac_table %>%
+      group_by_(z) %>%
+      mutate(proportion = Freq/sum(Freq)) %>%
+      ungroup()
+    box_position <- list()
+    for(i in 1:(y$nlevels)){
+      box_proportion_each <- box_proportion[box_proportion[z] == names(y$table)[i],]
+      eachlevel <- x[c(2*i-1, 2*i)]
+      eachbox <- eachlevel[1] + (eachlevel[2] - eachlevel[1])*cumsum(box_proportion_each$proportion)
+      names(eachlevel) <- NULL
+      box_position[[i]] <- c(eachlevel[1], eachbox)
+      names(box_position)[i] <- names(y$table)[i]
+    }
+    box_position
+  },
+  level_range_2, nlevels_list_con_fac, names_to_group)
+
+  box_position
+}
+
+# calculate the bandid (all possible combinations of factors) for the data
+# assign observations to different band
+# continuous_fac is the position of factor block
+bandid <- function(data_spread, continuous_fac, nobs) {
+  aa <- as.data.frame(lapply(spread_simpledata2[,continuous_fac + 1],
+                             FUN =  function(x) as.numeric(x) - 1))
+  dd <- vector()
+  for (i in 1:length(continuous_fac)) {
+    dd[i] <- nlevels_list_con_fac[[i]][[1]]
+  }
+  dd
+
+  cc <- vector()
+  for (i in 1:nobs) {
+    bb <- aa[i,]
+    cc[i] <- bb[1] + (bb[2] - 1)*3 + (bb[3] - 1) *9
+  }
+  cc <- unlist(cc)
+
+  as.matrix(aa)%*%c(1, cumprod(dd)[-length(continuous_fac)]) + 1
 }
