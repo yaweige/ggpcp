@@ -292,34 +292,6 @@ assign_box <- function(fac_table, level_range_2, nlevels_list_con_fac, names_to_
   box_position
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # calculate the bandid (all possible combinations of factors) for the data
 # assign observations to different band
 # continuous_fac is the position of factor block
@@ -348,18 +320,6 @@ bandid <- function(data_spread, continuous_fac, nobs) {
 # to properly adjust the lines to avoid overlap, to match the positions in a factor to the numeric value
 
 # within each level, arrange the positions according to bandid from small to big, which is consistent with box_position
-# also we need the number of observations for each bandid
-
-# idea
-aa <- fac_table[fac_table$char2 == "a", ]
-aa$position_in_level <- cumsum(aa$Freq)
-bb <- aa$position_in_level
-
-position_in_box <- obs_position_2$char2$a[(bb[3]-aa$Freq[3] + 1):bb[3]]
-
-cc <- position_in_box[rank(spread_simpledata2[spread_simpledata2$bandid == 16, "num1"])]
-#spread_simpledata2[spread_simpledata2$bandid == 16, "num1"] <- cc
-
 
 # start_position indicates the numeric variable in data_spread, to be adjusted by
 # end_position indicates the first factor variable in a factor block, or the last one when adjust backward
@@ -395,6 +355,3 @@ arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_positi
   # be aware that the name of the sublist are the names of the corresponding of nums(not names of factors)
   arranged_position
 }
-
-arranged_position_inband <- arrange_fac_by_ystart_bandid(spread_simpledata2, continuous_fac[1] - 1, continuous_fac[1],
-                                                         obs_position_2[1], fac_table, names_to_group = "char2")
