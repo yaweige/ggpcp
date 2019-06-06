@@ -65,8 +65,6 @@ StatPcp <- ggproto("StatPcp", Stat,
                      # at this time, data_spread is like the original data set, with columns properly defined
                      # assume numeric variables are properly scaled into 0-1
 
-                     # for all variables, we need only calculate one x-axies
-                     data_final_x <- 1:length(classpcp)
 
                      # for num to num, set up
                      # set up ystart, yend.(sometimes we plus one to adjust for ID column)
@@ -219,7 +217,54 @@ StatPcp <- ggproto("StatPcp", Stat,
                      # 3. make fac2fac part work when there is no numeric prior to the factor block, but there is numeric after it
                      # 4. adjust num2fac, fac2num, since we changed method for fac2fac
                      # 5. small modification, move data_spread$bandid to the beginning part, after all done
+                     # 6. I want a bar to show each level, like a big error bar
 
+
+                     # some modification for num2fac_blcok (num2fac, fac is a factor block, more than one factor)
+
+                     # detect those variables
+                     ### we need to make change here, when we have more than one factor block
+                     ### when we have more than one block, there is more than one variables need to be modified
+                     num2fac_block <- classification$num2fac[classification$num2fac == (continuous_fac[1] - 1)]
+                     num2fac_block_relative <- which(classification$num2fac == num2fac_block)
+                     # for yend of lines, modify the previous one; this is the only thing that changed
+                     data_final_yend_num2fac[((num2fac_block_relative - 1)*nobs + 1):(num2fac_block_relative*nobs)] <- unlist(arranged_position_inband[1])
+
+                     # some modification for fac2num_blcok (fac2num, fac is a factor block, more than one factor)
+
+                     # detect those variables
+                     ### we need to make change here, when we have more than one factor block
+                     ### when we have more than one block, there is more than one variables need to be modified
+                     fac2num_block <- classification$fac2num[classification$fac2num == continuous_fac[length(continuous_fac)]]
+                     fac2num_block_relative <- which(classification$fac2num == fac2num_block)
+
+                     # for ystart of lines, modify the previous one; this is the only thing that changed
+                     data_final_ystart_fac2num[((fac2num_block_relative - 1)*nobs + 1):(fac2num_block_relative*nobs)] <-
+                       unlist(arranged_position_inband[length(continuous_fac)])
+
+
+                     # put everything together
+
+                     data_final_xstart <- c(data_final_xstart_num2num,
+                                            data_final_xstart_num2fac,
+                                            data_final_xstart_fac2num,
+                                            data_final_xstart_fac2fac)
+                     data_final_xend <- c(data_final_xend_num2num,
+                                          data_final_xend_num2fac,
+                                          data_final_xend_fac2num,
+                                          data_final_xend_fac2fac)
+                     data_final_ystart <- c(data_final_ystart_num2num,
+                                            data_final_ystart_num2fac,
+                                            data_final_ystart_fac2num,
+                                            data_final_ystart_fac2fac)
+                     data_final_yend <- c(data_final_yend_num2num,
+                                          data_final_yend_num2fac,
+                                          data_final_yend_fac2num,
+                                          data_final_yend_fac2fac)
+                     data_final <- data.frame(data_final_xstart = data_final_xstart,
+                                              data_final_xend = data_final_xend,
+                                              data_final_ystart = data_final_ystart,
+                                              data_final_yend = data_final_yend)
 
                    }
 )
@@ -384,3 +429,5 @@ arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_positi
 
   arranged_position
 }
+
+
