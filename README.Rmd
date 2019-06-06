@@ -421,7 +421,7 @@ compute_panel <-  function(data, scales, num, fac, nnum, nfac, nobs, classpcp, f
 
 ```
 
-```{r}
+```{r warning = FALSE, message = FALSE}
 num <- classpcp3 == "numeric"
 fac <- classpcp3 == "factor"
 nnum <- sum(classpcp3 == "numeric")

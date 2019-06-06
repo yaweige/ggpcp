@@ -28,7 +28,7 @@ str(simpledata3)
 
     ## 'data.frame':    700 obs. of  2 variables:
     ##  $ x: Factor w/ 7 levels "char2","char3",..: 5 5 5 5 5 5 5 5 5 5 ...
-    ##  $ y: Factor w/ 270 levels "0.008","0.017",..: 134 39 120 214 142 107 49 211 26 170 ...
+    ##  $ y: Factor w/ 272 levels "0.006","0.011",..: 52 226 42 4 144 220 256 257 184 168 ...
 
 ``` r
 num <- classpcp3 == "numeric"
@@ -39,16 +39,7 @@ nobs <- nrow(simpledata3)/length(classpcp3)
 
 #compute_panel(data, scales, num, fac, nnum, nfac, nobs, classpcp, freespace = 0.1)
 final_data <- compute_panel(simpledata3, scales = NULL, num, fac, nnum, nfac, nobs = 100, classpcp = classpcp3)
-```
 
-    ## Warning: group_by_() is deprecated. 
-    ## Please use group_by() instead
-    ## 
-    ## The 'programming' vignette or the tidyeval book can help you
-    ## to program with group_by() : https://tidyeval.tidyverse.org
-    ## This warning is displayed once per session.
-
-``` r
 ggplot(final_data) + 
   geom_segment(aes(x = data_final_xstart, y = data_final_ystart, xend = data_final_xend, yend = data_final_yend))
 ```
