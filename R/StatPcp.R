@@ -180,14 +180,45 @@ StatPcp <- ggproto("StatPcp", Stat,
 
                      # calculate the positions for boxes(within each level within each factor)
                      box_position <- assign_box(fac_table, level_range_2, nlevels_list_con_fac, names_to_group)
+                     # postion for the observations in the factor block
+                     obs_position_2 <- assign_fac(nlevels_list_con_fac, nobs)
 
                      # bandid for the original data_spread
                      data_spread$bandid <- bandid(data_spread, continuous_fac, nobs)
 
+                     # match the positions in the factor block to the prior numeric variable, considering band
+                     ### we need to use similar method to work with the numeric variable after the factor block,
+                     # when there is no numeric variable prior to the factor block
+                     # input position adjusted for id column in data_spread
+                     # it also arranged the positions inside the factor block
+                     ### we need to come back for multiple factor blocks
+                     arranged_position_inband <- lapply(seq_along(continuous_fac),
+                                                        FUN = function(x) arrange_fac_by_ystart_bandid(
+                                                          data_spread,
+                                                          continuous_fac[1],
+                                                          continuous_fac[x] + 1,
+                                                          obs_position_2[x],
+                                                          fac_table,
+                                                          names_to_group = names(data_spread)[continuous_fac[x] + 1]))
+
                      # next to find the xstart, xend, ystart, yend, for the factor block
 
                      # for xstart of lines
-                     data_final_xstart_fac2fac <-
+                     ### we need to think about connecting between diffent sections later
+                     data_final_xstart_fac2fac <- rep(continuous_fac[-length(continuous_fac)], each = obs)
+                     # for xend of lines
+                     data_final_xend_fac2fac <- rep(continuous_fac[-1], each = obs)
+                     # for ystart of lines
+                     data_final_ystart_fac2fac <- unlist(arranged_position_inband[-length(arranged_position_inband)])
+                     # for yend of lines
+                     data_final_yend_fac2fac <- unlist(arranged_position_inband[-1])
+
+                     # to do list in the following:
+                     # 1. make fac2fac part work for more than one factor block
+                     # 2. make sure they can be properly connected between differnt parts, properly made into one data.frame
+                     # 3. make fac2fac part work when there is no numeric prior to the factor block, but there is numeric after it
+                     # 4. adjust num2fac, fac2num, since we changed method for fac2fac
+                     # 5. small modification, move data_spread$bandid to the beginning part, after all done
 
 
                    }
@@ -246,7 +277,7 @@ assign_fac <- function(nlevels_list, nobs, freespace = 0.1) {
 # make sure the levels of factors are used correctly here(match the data, match the order). How was it decided before?
 arrange_fac_by_ystart <- function(data_spread, start_position, end_position, obs_position) {
   # Map is usd here to deal with three lists in parallel
-  arranged_postion <- Map(f = function(x, y, z) {
+  arranged_postion <- Map(f = function(y, x, z) {
     # lapply uses like x[[i]] to extract sublist, assume Map is the same. And it works
     # is it safe to use name here? it should work in my example, and it does work in my example
     for (i in 1:length(z)) {
@@ -256,11 +287,10 @@ arrange_fac_by_ystart <- function(data_spread, start_position, end_position, obs
     }
     x
   },
-  data_spread[ ,start_position, drop = FALSE],
   data_spread[ ,end_position, drop = FALSE],
+  data_spread[ ,start_position, drop = FALSE],
   obs_position)
 
-  # be aware that the name of the sublist are the names of the corresponding of nums(not names of factors)
   arranged_postion
 }
 
@@ -330,7 +360,7 @@ arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_positi
 
   # actually, we may not need Map, unless when we deal with more than one factor block
   # but we do deal with it
-  arranged_position <- Map(f = function(x, y, z, l) {
+  arranged_position <- Map(f = function(y, x, z, l) {
 
     for (i in 1:length(z)) {
       aa <- fac_table[fac_table[l]==names(z[i]), ]
@@ -347,11 +377,10 @@ arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_positi
     }
     x
   },
-  data_spread[, start_position + 1, drop = FALSE],
-  data_spread[, end_position + 1, drop = FALSE],
+  data_spread[, end_position, drop = FALSE],
+  data_spread[, start_position, drop = FALSE],
   obs_position,
   names_to_group)
 
-  # be aware that the name of the sublist are the names of the corresponding of nums(not names of factors)
   arranged_position
 }
