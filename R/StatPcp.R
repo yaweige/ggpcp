@@ -175,6 +175,7 @@ StatPcp <- ggproto("StatPcp", Stat,
 
                      prior_num <- classpcp[start_fac2fac[-1] - 1] == "numeric"
 
+                     # detect if there is only one factor block or multiple
                      if(length(prior_num) != 0){
                        for (i in 1:(length(bywhich) - 1)) {
                          if (!prior_num[i]) {
@@ -183,15 +184,24 @@ StatPcp <- ggproto("StatPcp", Stat,
                        }
                      }
 
+                     # detect if all the variables are factors
+                     if((end_fac2fac[1] + 1) > length(classpcp)) bywhich <- NULL
+
+                     if (is.null(bywhich)) {
+                       start_position <- 1:nobs
+                     } else {
+                       start_position <- data_spread[bywhich + 1]
+                     }
+
                      # use Map to apply the function to every factor_block
                      arranged_fac_block <- Map(f = function(x, y) {
                        process_fac2fac(data_spread = data_spread,
                                        continuous_fac = x,
-                                       bywhich = y,
+                                       start_position = y,
                                        freespace = freespace,
                                        nobs = nobs)},
                        continuous_fac_all_list,
-                       bywhich)
+                       start_position)
 
                      # organize the output correctly into one
                      data_final_xstart_fac2fac <- unlist(lapply(arranged_fac_block,
@@ -393,6 +403,8 @@ bandid <- function(data_spread, continuous_fac, nobs, nlevels_list_con_fac) {
 
 # within each level, arrange the positions according to bandid from small to big, which is consistent with box_position
 
+# notice that, to accomadate no numeric variable case, I changed the stat_position to a data vector
+# since this function is only used to one start column and one end column(by lapply and Map to generalize)
 # start_position indicates the numeric variable in data_spread, to be adjusted by
 # end_position indicates the first factor variable in a factor block, or the last one when adjust backward
 # obs_position is the return value of assign_fac(nlevels_list_con_fac, nobs)
@@ -419,8 +431,9 @@ arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_positi
     }
     x
   },
+  # notice that, to accomadate no numeric variable case, I changed the stat_position to a data vector
   data_spread[, end_position, drop = FALSE],
-  data_spread[, start_position, drop = FALSE],
+  as.data.frame(start_position),
   obs_position,
   names_to_group)
 
@@ -432,7 +445,7 @@ arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_positi
 # input: continuous_fac, data_spread and bywhich, freespace, nobs
 # bywhich: positions, indicate which numeric variable to use for adjustment, prior or after
 # output: arranged_position_inband, or: data.frame for the final xstart, xend, ystart, yend
-process_fac2fac <- function(data_spread, continuous_fac, bywhich, freespace, nobs) {
+process_fac2fac <- function(data_spread, continuous_fac, start_position, freespace, nobs) {
   # nlevels_list for those "continued" factors, for further use
   nlevels_list_con_fac <- lapply(data_spread[, continuous_fac+1],
                                  FUN = function(x) list(nlevels = nlevels(x),
@@ -465,10 +478,12 @@ process_fac2fac <- function(data_spread, continuous_fac, bywhich, freespace, nob
   # input position adjusted for id column in data_spread
   # it also arranged the positions inside the factor block
   ### we need to come back for multiple factor blocks
+
+  # note, start_position now is a data vector for factors to be adjusted by
   arranged_position_inband <- lapply(seq_along(continuous_fac),
                                      FUN = function(x) arrange_fac_by_ystart_bandid(
                                        data_spread,
-                                       bywhich + 1,
+                                       start_position = as.data.frame(start_position),
                                        continuous_fac[x] + 1,
                                        obs_position_2[x],
                                        fac_table,
@@ -481,6 +496,7 @@ process_fac2fac <- function(data_spread, continuous_fac, bywhich, freespace, nob
                              data_final_yend_fac2fac = unlist(arranged_position_inband[-1]))
   arranged_fac_block
 }
+
 
 
 
