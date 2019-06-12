@@ -16,26 +16,26 @@
 # do I need to use like spread_ instead of spread?
 # how to get the proper data that we can know if a variable is factor or numeric from
 
+# for stat_pcp?
+
+# for statPcp
 StatPcp <- ggproto("StatPcp", Stat,
                    required_aes = c("x", "y"),
 
                    # want to figure out the number of observations
                    # want to figure out the number of different classer of the variables
+                   ### setup_params accept params from stat_pcp or geom_pcp?
+                   # setup_params = function(data, params) {
+                   #   # assume we can keep the attribute and use it here. assume the classes are as follows
+                   #   params$num <- attr(data, "classpcp") == "numeric"
+                   #   params$fac <- attr(data, "classpcp") == "factor"
+                   #   params$nobs <- nrow(data)/length(attr(data, "classpcp"))
+                   #   params$classpcp <- attr(data, "classpcp")
+                   #   params
+                   # }
                    setup_params = function(data, params) {
-                     # params$naxes <- unique(data$x)
-                     # data$id <- rep(1:(nrow(data)/params$naxes), params$naxes)
+                     params$freespace <- ifelse(is.null(freespace), 0.1, freespace)
 
-                     # spread_data <- spread(data, key = x, value = y)
-                     # classes <- vapply(spread_data, FUN = class, FUN.VALUE = character(1))
-
-                     # assume we can keep the attribute and use it here. assume the classes are as follows
-                     params$num <- attr(data, "classpcp") == "numeric"
-                     params$fac <- attr(data, "classpcp") == "factor"
-                     params$nnum <- sum(attr(data, "classpcp") == "numeric")
-                     params$nfac <- sum(attr(data, "classpcp") == "factor")
-                     params$nobs <- nrow(data)/length(attr(data, "classpcp"))
-                     params$classpcp <- attr(data, "classpcp")
-                     params
                    }
 
 
@@ -43,28 +43,51 @@ StatPcp <- ggproto("StatPcp", Stat,
                    # and how to arrange them properly in the same time
 
                    # or we can put the attribute in the function prarameters?
-                   compute_panel = function(data, scales, num, fac, nnum, nfac, nobs, classpcp, freespace = 0.1) {
+                   compute_panel = function(data, scales, freespace = 0.1) {
+
+                     # make adjustment to accept proper data set
+                     # make sure the output data_spread has the same correct expected column order
+                     data$name <- factor(data$name, levels = unique(data$name))
+                     data_spread <- spread(data[, c("id", "name", "value")], key = name, value = value)
+
+                     nobs <- max(data$id)
+                     ncol <- nrow(data)/nobs
+                     nvar <- length(levels(data$name))
+                     # ncol should be the same as nvar
+
+                     # this may not work with tibble
+                     classpcp <- data$class[1 - nobs + (1:ncol)*nobs]
+                     num <- classpcp == "numeric"
+                     fac <- classpcp == "factor"
+
+                     data_spread[, c(FALSE, num)] <-  lapply(data_spread[, c(FALSE, num)],
+                                                             FUN = function(x) as.numeric(as.character(x)))
+
+                     # to deal with factors, assign proper levels
+                     # same name, value may break down this,
+                     # if the user choose to put the same variable into the data twive
+                     original_levels <- unique(gather_data[which(gather_data$class == "factor"),c("name", "value", "level")])
+                     original_levels$name <- droplevels(original_levels$name)
+                     original_levels <- original_levels %>%
+                       group_by(name) %>%
+                       arrange(level, .by_group = TRUE) %>%
+                       ungroup()
+
+                     original_levels <- split(original_levels, f = original_levels$name)
+
+                     data_spread[, c(FALSE, fac)] <- Map(f = function(x, y){
+                       factor(x, levels = y$value)
+                     },
+                     data_spread[, c(FALSE, fac)],
+                     original_levels)
+
+                     # at this time, data_spread is like the original data set, with columns properly defined
+                     # assume numeric variables are properly scaled into 0-1
 
                      # several possible combinations: num to num, num to factor, factor to num, factor to factor
                      # need an algrothm to do this classification, write this function in a different place
                      # we use the function: classify here
                      classification <- classify(classpcp)
-
-                     # for convenience of dealing with the data
-                     data$id <- rep(1:nobs, length(classpcp))
-                     # make sure the correct order of variables in columns after spread()
-                     data$x <- factor(data$x, levels = unique(data$x))
-                     data_spread <- spread(data, key = x, value = y)
-                     data_spread[, c(FALSE, num)] <-  lapply(data_spread[, c(FALSE, num)],
-                                                             FUN = function(x) as.numeric(as.character(x)))
-                     # need to check weather the factor orders are kept correctly
-                     # this need to work together with the preparation together to guarantee
-                     # the following calculations in this function reply on the correct order of the columns
-                     data_spread[, c(FALSE, fac)] <-  lapply(data_spread[, c(FALSE, fac)],
-                                                             FUN = droplevels)
-                     # at this time, data_spread is like the original data set, with columns properly defined
-                     # assume numeric variables are properly scaled into 0-1
-
 
                      # for num to num, set up
                      if (!length(classification$num2num) == 0) {
@@ -536,6 +559,5 @@ process_fac2fac <- function(data_spread, continuous_fac, start_position, freespa
                              data_final_yend_fac2fac = unlist(arranged_position_inband[-1]))
   arranged_fac_block
 }
-
 
 
