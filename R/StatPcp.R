@@ -242,12 +242,7 @@ StatPcp <- ggproto("StatPcp", Stat,
 
 
                      # to do list in the following:
-                     # 1. make fac2fac part work for more than one factor block
-                     # 2. make sure they can be properly connected between differnt parts, properly made into one data.frame
-                     # 3. make fac2fac part work when there is no numeric prior to the factor block, but there is numeric after it
-                     # 4. adjust num2fac, fac2num, since we changed method for fac2fac
-                     # 5. small modification, move data_spread$bandid to the beginning part, after all done
-                     # 6. I want a bar to show each level, like a big error bar
+                     # 1. small modification, move data_spread$bandid to the beginning part, after all done
 
 
                      # some modification for num2fac_blcok (num2fac, fac is a factor block, more than one factor)
@@ -321,6 +316,8 @@ StatPcp <- ggproto("StatPcp", Stat,
                                               data_final_xend = data_final_xend,
                                               data_final_ystart = data_final_ystart,
                                               data_final_yend = data_final_yend)
+
+                     # This has different length from the original data coming to compute_panel
 
                    }
 )
@@ -539,7 +536,6 @@ process_fac2fac <- function(data_spread, continuous_fac, start_position, freespa
                              data_final_yend_fac2fac = unlist(arranged_position_inband[-1]))
   arranged_fac_block
 }
-
 
 
 
