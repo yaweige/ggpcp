@@ -55,7 +55,6 @@ StatPcp <- ggproto("StatPcp", Stat,
                    # want to figure out the number of different classer of the variables
                    ### setup_params accept params from stat_pcp or geom_pcp?
                    setup_params = function(data, params) {
-                     browser()
                      params$freespace <- ifelse(is.null(params$freespace), 0.1, params$freespace)
                      params
 
@@ -66,7 +65,6 @@ StatPcp <- ggproto("StatPcp", Stat,
 
                    # or we can put the attribute in the function prarameters?
                    compute_panel = function(data, scales, freespace = 0.1) {
-                     browser()
                      # make adjustment to accept proper data set
                      # make sure the output data_spread has the same correct expected column order
                      data$name <- factor(data$name, levels = unique(data$name))
