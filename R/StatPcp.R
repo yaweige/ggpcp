@@ -17,34 +17,56 @@
 # how to get the proper data that we can know if a variable is factor or numeric from
 
 # for stat_pcp?
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 
+stat_pcp <- function(mapping = NULL, data = NULL,
+                     geom = "segment", position = "identity",
+                     ...,
+                     freespace = 0.1,
+                     na.rm = FALSE,
+                     show.legend = NA,
+                     inherit.aes = TRUE) {
+  layer(
+    data = data,
+    mapping = mapping,
+    stat = StatPcp,
+    geom = geom,
+    position = position,
+    show.legend = show.legend,
+    inherit.aes = inherit.aes,
+    params = list(
+      na.rm = na.rm,
+      freespace = freespace,
+      ...
+    )
+  )
+}
 # for statPcp
 StatPcp <- ggproto("StatPcp", Stat,
-                   required_aes = c("x", "y"),
+                   ### with this line of code, remove all the data???
+                   required_aes = c("id", "name", "value", "level", "class"),
+                   # default_aes = aes(
+                   #   id = id, name = name, value = value, level = level, class = class
+                   # ),
 
                    # want to figure out the number of observations
                    # want to figure out the number of different classer of the variables
                    ### setup_params accept params from stat_pcp or geom_pcp?
-                   # setup_params = function(data, params) {
-                   #   # assume we can keep the attribute and use it here. assume the classes are as follows
-                   #   params$num <- attr(data, "classpcp") == "numeric"
-                   #   params$fac <- attr(data, "classpcp") == "factor"
-                   #   params$nobs <- nrow(data)/length(attr(data, "classpcp"))
-                   #   params$classpcp <- attr(data, "classpcp")
-                   #   params
-                   # }
                    setup_params = function(data, params) {
-                     params$freespace <- ifelse(is.null(freespace), 0.1, freespace)
+                     browser()
+                     params$freespace <- ifelse(is.null(params$freespace), 0.1, params$freespace)
+                     params
 
-                   }
-
+                   },
 
                    # want to calculate the parameters directly can be used for geom_segment and geom_ribbon
                    # and how to arrange them properly in the same time
 
                    # or we can put the attribute in the function prarameters?
                    compute_panel = function(data, scales, freespace = 0.1) {
-
+                     browser()
                      # make adjustment to accept proper data set
                      # make sure the output data_spread has the same correct expected column order
                      data$name <- factor(data$name, levels = unique(data$name))
@@ -66,7 +88,7 @@ StatPcp <- ggproto("StatPcp", Stat,
                      # to deal with factors, assign proper levels
                      # same name, value may break down this,
                      # if the user choose to put the same variable into the data twive
-                     original_levels <- unique(gather_data[which(gather_data$class == "factor"),c("name", "value", "level")])
+                     original_levels <- unique(data[which(data$class == "factor"),c("name", "value", "level")])
                      original_levels$name <- droplevels(original_levels$name)
                      original_levels <- original_levels %>%
                        group_by(name) %>%
@@ -121,7 +143,7 @@ StatPcp <- ggproto("StatPcp", Stat,
 
                        # for yend of lines
                        # first calculete the number of levels and number of observations landing in each level
-                       nlevels_list <- lapply(data_spread[, classification$num2fac + 2],
+                       nlevels_list <- lapply(data_spread[, classification$num2fac + 2, drop = FALSE],
                                               FUN = function(x) list(nlevels = nlevels(x),
                                                                      table = table(x)))
                        # uniformly assign space for each level and observations within each level
@@ -162,7 +184,7 @@ StatPcp <- ggproto("StatPcp", Stat,
                        # for yend of lines
                        data_final_yend_fac2num <- unlist(data_spread[, classification$fac2num + 2])
                        # for ystart of lines (mimic the calculation to num2fac, be careful about the difference)
-                       nlevels_list_2 <- lapply(data_spread[, classification$fac2num + 1],
+                       nlevels_list_2 <- lapply(data_spread[, classification$fac2num + 1, drop = FALSE],
                                                 FUN = function(x) list(nlevels = nlevels(x),
                                                                        table = table(x)))
                        obs_position_2 <- assign_fac(nlevels_list_2, nobs, freespace = 0.1)
@@ -305,15 +327,18 @@ StatPcp <- ggproto("StatPcp", Stat,
 
 
                      # some other modifaction for fac2num (for num-fac-num case)
-                     # we don't need to adjust fac2num for num-fac-num case, since it is adjusted by num2fac, keep consistent
+                     # we don't need to adjust fac2num for num-fac-num case, since it is adjusted by num2fac, to keep consistent
                      # so we need to modify it back
                      # detect those variables
                      fac2num_numfacnum <- classification$fac2num[classification$fac2num %in% (classification$num2fac + 1)]
                      fac2num_numfacnum_relative <- which(classification$fac2num == fac2num_numfacnum)
                      num2fac_numfacnum_relative <- which(classification$num2fac == (fac2num_numfacnum - 1))
-                     # for ystart of lines, keep it same as the num2fac result; this is the only thing that should be correct
-                     data_final_ystart_fac2num[((fac2num_numfacnum_relative - 1)*nobs + 1):(fac2num_numfacnum_relative*nobs)] <-
-                       data_final_yend_num2fac[((num2fac_numfacnum_relative - 1)*nobs + 1):(num2fac_numfacnum_relative*nobs)]
+                     if ((length(fac2num_numfacnum_relative) != 0)&(length(num2fac_numfacnum_relative) != 0)){
+                       # for ystart of lines, keep it same as the num2fac result; this is the only thing that should be correct
+                       data_final_ystart_fac2num[((fac2num_numfacnum_relative - 1)*nobs + 1):(fac2num_numfacnum_relative*nobs)] <-
+                         data_final_yend_num2fac[((num2fac_numfacnum_relative - 1)*nobs + 1):(num2fac_numfacnum_relative*nobs)]
+                     }
+
 
 
 
@@ -335,11 +360,17 @@ StatPcp <- ggproto("StatPcp", Stat,
                                           data_final_yend_num2fac,
                                           data_final_yend_fac2num,
                                           data_final_yend_fac2fac)
-                     data_final <- data.frame(data_final_xstart = data_final_xstart,
-                                              data_final_xend = data_final_xend,
-                                              data_final_ystart = data_final_ystart,
-                                              data_final_yend = data_final_yend)
+                     # data_final <- data.frame(data_final_xstart = data_final_xstart,
+                     #                          data_final_xend = data_final_xend,
+                     #                          data_final_ystart = data_final_ystart,
+                     #                          data_final_yend = data_final_yend)
 
+                     data_final <- data.frame(x = data_final_xstart,
+                                              xend = data_final_xend,
+                                              y = data_final_ystart,
+                                              yend = data_final_yend)
+
+                     data_final
                      # This has different length from the original data coming to compute_panel
 
                    }
@@ -559,5 +590,4 @@ process_fac2fac <- function(data_spread, continuous_fac, start_position, freespa
                              data_final_yend_fac2fac = unlist(arranged_position_inband[-1]))
   arranged_fac_block
 }
-
 
