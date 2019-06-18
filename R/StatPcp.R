@@ -25,6 +25,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
                      geom = "segment", position = "identity",
                      ...,
                      freespace = 0.1,
+                     #boxwidth = 0.1,
                      na.rm = FALSE,
                      show.legend = NA,
                      inherit.aes = TRUE) {
@@ -39,6 +40,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
     params = list(
       na.rm = na.rm,
       freespace = freespace,
+      #boxwidth = boxwidth,
       ...
     )
   )
@@ -46,7 +48,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
 # for statPcp
 StatPcp <- ggproto("StatPcp", Stat,
                    ### with this line of code, remove all the data???
-                   required_aes = c("id", "name", "value", "level", "class"),
+                   # required_aes = c("id", "name", "value", "level", "class"),
                    # default_aes = aes(
                    #   id = id, name = name, value = value, level = level, class = class
                    # ),
@@ -64,7 +66,8 @@ StatPcp <- ggproto("StatPcp", Stat,
                    # and how to arrange them properly in the same time
 
                    # or we can put the attribute in the function prarameters?
-                   compute_panel = function(data, scales, freespace = 0.1) {
+                   compute_panel = function(data, scales, freespace = 0.1, boxwidth = 0.1) {
+
                      # make adjustment to accept proper data set
                      # make sure the output data_spread has the same correct expected column order
                      data$name <- factor(data$name, levels = unique(data$name))
@@ -80,26 +83,29 @@ StatPcp <- ggproto("StatPcp", Stat,
                      num <- classpcp == "numeric"
                      fac <- classpcp == "factor"
 
-                     data_spread[, c(FALSE, num)] <-  lapply(data_spread[, c(FALSE, num)],
+                     data_spread[, c(FALSE, num)] <-  lapply(data_spread[, c(FALSE, num), drop = FALSE],
                                                              FUN = function(x) as.numeric(as.character(x)))
 
                      # to deal with factors, assign proper levels
                      # same name, value may break down this,
                      # if the user choose to put the same variable into the data twive
-                     original_levels <- unique(data[which(data$class == "factor"),c("name", "value", "level")])
-                     original_levels$name <- droplevels(original_levels$name)
-                     original_levels <- original_levels %>%
-                       group_by(name) %>%
-                       arrange(level, .by_group = TRUE) %>%
-                       ungroup()
+                     if (sum(fac) != 0) {
+                       original_levels <- unique(data[which(data$class == "factor"),c("name", "value", "level")])
+                       original_levels$name <- droplevels(original_levels$name)
+                       original_levels <- original_levels %>%
+                         group_by(name) %>%
+                         arrange(level, .by_group = TRUE) %>%
+                         ungroup()
 
-                     original_levels <- split(original_levels, f = original_levels$name)
+                       original_levels <- split(original_levels, f = original_levels$name)
 
-                     data_spread[, c(FALSE, fac)] <- Map(f = function(x, y){
-                       factor(x, levels = y$value)
-                     },
-                     data_spread[, c(FALSE, fac)],
-                     original_levels)
+                       data_spread[, c(FALSE, fac)] <- Map(f = function(x, y){
+                         factor(x, levels = y$value)
+                       },
+                       data_spread[, c(FALSE, fac), drop = FALSE],
+                       original_levels)
+                     }
+
 
                      # at this time, data_spread is like the original data set, with columns properly defined
                      # assume numeric variables are properly scaled into 0-1
@@ -254,7 +260,7 @@ StatPcp <- ggproto("StatPcp", Stat,
                        if (is.null(bywhich)) {
                          start_position <- 1:nobs
                        } else {
-                         start_position <- data_spread[bywhich + 1]
+                         start_position <- data_spread[,bywhich + 1,drop = FALSE]
                        }
 
                        # use Map to apply the function to every factor_block
@@ -265,7 +271,7 @@ StatPcp <- ggproto("StatPcp", Stat,
                                          freespace = freespace,
                                          nobs = nobs)},
                          continuous_fac_all_list,
-                         start_position)
+                         as.data.frame(start_position))
 
                        # organize the output correctly into one
                        data_final_xstart_fac2fac <- unlist(lapply(arranged_fac_block,
@@ -370,6 +376,21 @@ StatPcp <- ggproto("StatPcp", Stat,
 
                      data_final
                      # This has different length from the original data coming to compute_panel
+
+
+
+
+                     # more modification for boxwidth
+                     # data_final$data_final_xstart <- ifelse(data_final$data_final_xstart %in% which(fac),
+                     #                                           data_final$data_final_xstart + boxwidth,
+                     #                                           data_final$data_final_xstart)
+                     # data_final$data_final_xend <- ifelse(data_final$data_final_xend %in% which(fac),
+                     #                                         data_final$data_final_xend - boxwidth,
+                     #                                         data_final$data_final_xend)
+
+                     data_final
+
+
 
                    }
 )
@@ -476,7 +497,7 @@ assign_box <- function(fac_table, level_range_2, nlevels_list_con_fac, names_to_
 # assign observations to different band
 # continuous_fac is the position of factor block
 bandid <- function(data_spread, continuous_fac, nobs, nlevels_list_con_fac) {
-  aa <- as.data.frame(lapply(data_spread[,continuous_fac + 1],
+  aa <- as.data.frame(lapply(data_spread[,continuous_fac + 1, drop = FALSE],
                              FUN =  function(x) as.numeric(x) - 1))
   dd <- vector()
   for (i in 1:length(continuous_fac)) {
@@ -500,6 +521,7 @@ bandid <- function(data_spread, continuous_fac, nobs, nlevels_list_con_fac) {
 # end_position indicates the first factor variable in a factor block, or the last one when adjust backward
 # obs_position is the return value of assign_fac(nlevels_list_con_fac, nobs)
 # names_to_group for convience
+# works for each factor block, used for one variable each time in process_fac2fac
 arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_position,
                                          obs_position, fac_table, names_to_group) {
 
@@ -507,11 +529,13 @@ arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_positi
   # but we do deal with it
   arranged_position <- Map(f = function(y, x, z, l) {
 
+    # i for each level
     for (i in 1:length(z)) {
       aa <- fac_table[fac_table[l]==names(z[i]), ]
       aa$position_in_level <- cumsum(aa$Freq)
       bb <- aa$position_in_level
 
+      # j for each box
       for (j in 1:length(bb)) {
         position_in_box <- z[[i]][(bb[j]-aa$Freq[j] + 1):bb[j]]
         x <- replace(x,
@@ -536,24 +560,26 @@ arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_positi
 # input: continuous_fac, data_spread and bywhich, freespace, nobs
 # bywhich: positions, indicate which numeric variable to use for adjustment, prior or after
 # output: arranged_position_inband, or: data.frame for the final xstart, xend, ystart, yend
-
+# works for each factor block
 process_fac2fac <- function(data_spread, continuous_fac, start_position, freespace, nobs) {
+
   # nlevels_list for those "continued" factors, for further use
-  nlevels_list_con_fac <- lapply(data_spread[, continuous_fac+1],
+  nlevels_list_con_fac <- lapply(data_spread[, continuous_fac+1, drop = FALSE],
                                  FUN = function(x) list(nlevels = nlevels(x),
                                                         table = table(x)))
 
   # to calculate the exsiting combinations of levels, for further use
-  fac_table <- as.data.frame(table(data_spread[, continuous_fac + 1]))
+  fac_table <- as.data.frame(table(data_spread[, continuous_fac + 1, drop = FALSE]))
   fac_table <- fac_table[fac_table$Freq != 0, ]
   fac_table$bandid <- as.numeric(rownames(fac_table))
 
   # names of the factor variables, for convenience
-  names_to_group <- names(data_spread[, continuous_fac + 1])
+  names_to_group <- names(data_spread[, continuous_fac + 1, drop = FALSE])
   # the calculation is used to calculate the position for levels within factors, used inside assign_fac()
   # freespace is 0.1
+  eachobs <- 1/nobs
   level_range_2 <-  lapply(nlevels_list_con_fac,
-                           FUN = function(x) c(0, rep(cumsum(0.1*x$table)[-x$nlevels], each = 2) +
+                           FUN = function(x) c(0, rep(cumsum(eachobs*x$table)[-x$nlevels], each = 2) +
                                                  freespace/(x$nlevels-1)/2*rep(c(-1, 1), times = x$nlevels-1), 1))
 
   # calculate the positions for boxes(within each level within each factor)
