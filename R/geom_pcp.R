@@ -34,8 +34,15 @@ GeomPcp <- ggproto("GeomPcp", Geom,
                    # setup_data = function(data, params) {
                    #   we adjust the box width here?
                    # }
-                   # default_aes = aes()
-                   # required_aes = c()
+                   required_aes = c("id", "name", "value", "level", "class"),
+                   default_aes = ggplot2::aes(
+                      id = id, name = name, value = value, level = level, class = class,
+                      width = 0.75, linetype = "solid", fontsize=5,
+                      shape = 19, colour = "grey30",
+                      size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
+                      linewidth=.1, weight = 1),
+
+
                    draw_panel = function(data, panel_params, coord,
                                          arrow = NULL,
                                          arrow.fill = NULL,
