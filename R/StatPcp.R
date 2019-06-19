@@ -80,7 +80,7 @@ StatPcp <- ggproto("StatPcp", Stat,
 
                      # this may not work with tibble
                      classpcp <- data$class[1 - nobs + (1:ncol)*nobs]
-                     num <- classpcp == "numeric"
+                     num <- classpcp %in% c("numeric", "integer")
                      fac <- classpcp == "factor"
 
                      data_spread[, c(FALSE, num)] <-  lapply(data_spread[, c(FALSE, num), drop = FALSE],
@@ -243,7 +243,7 @@ StatPcp <- ggproto("StatPcp", Stat,
                          bywhich[1] <- end_fac2fac[1] + 1
                        }
 
-                       prior_num <- classpcp[start_fac2fac[-1] - 1] == "numeric"
+                       prior_num <- classpcp[start_fac2fac[-1] - 1] %in% c("numeric", "integer")
 
                        # detect if there is only one factor block or multiple
                        if(length(prior_num) != 0){
@@ -401,7 +401,7 @@ StatPcp <- ggproto("StatPcp", Stat,
 # for factor to num, we use lines
 # for factor to factor, we use ribbons
 classify <- function(classpcp) {
-  classpcp <- as.numeric(classpcp == "numeric")
+  classpcp <- as.numeric(classpcp %in% c("numeric", "integer"))
   classpcp_diff <- diff(classpcp)
   num2fac <- (1:(length(classpcp)-1))[classpcp_diff == -1]
   fac2num <- (1:(length(classpcp)-1))[classpcp_diff == 1]
@@ -413,6 +413,7 @@ classify <- function(classpcp) {
                           num2fac = num2fac,
                           fac2num = fac2num,
                           fac2fac = fac2fac)
+  classification
 }
 
 # used to assign postion for the factors
