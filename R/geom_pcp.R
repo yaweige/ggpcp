@@ -50,21 +50,21 @@ GeomPcp <- ggproto("GeomPcp", Geom,
                                          linejoin = "round",
                                          na.rm = na.rm) {
                      pcp_segment <- data.frame(
-                       x = data$data_final_xstart,
-                       xend = data$data_final_xend,
-                       y = data$data_final_ystart,
-                       yend = data$data_final_yend,
+                       x = data$x,
+                       xend = data$xend,
+                       y = data$y,
+                       yend = data$yend,
                        # And what about other parameters?
                        colour = data$colour,
                        size = data$size,
                        linetype = data$linetype,
-                       fill = alpha(data$fill, data$alpha),
+                       #fill = alpha(data$fill, data$alpha),
+                       alpha = data$alpha,
                        # is there PANEL or group? How those work...
-                       PANEL = data$PANEL,
-                       group = data$group
+                       PANEL = data$PANEL
+                       #group = data$group
                      )
 
-                     # what is the data goes to GeomSegment$draw_panel looks like, what about other parameters
                      GeomSegment$draw_panel(pcp_segment, panel_params, coord,
                                             arrow = arrow,
                                             arrow.fill = arrow.fill,
@@ -73,8 +73,3 @@ GeomPcp <- ggproto("GeomPcp", Geom,
                                             na.rm = na.rm)
                    }
 )
-
-# study the above questions: data looks like, where should the parameters goes
-# by browser() into geom_segment
-
-# how to create the function for data process, finish the basic process
