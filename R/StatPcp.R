@@ -378,7 +378,7 @@ StatPcp <- ggproto(
     # detect those variables
     # consider zero or multiple factor blocks
     num2fac_block_relative <- which((classification$num2fac + 1) %in% classification$fac2fac)
-    num2fac_block_fac_relative <- which((classification$fac2fac -1) %in% classification$num2fac)
+    num2fac_block_fac_relative <- which((unique(classification$fac2fac) -1) %in% classification$num2fac)
     num2fac_change <- unlist(lapply(num2fac_block_relative, FUN = function(x) {
       ((x - 1)*nobs + 1):(x*nobs)
     }))
@@ -400,7 +400,7 @@ StatPcp <- ggproto(
     fac2num_change <- unlist(lapply(fac2num_block_relative, FUN = function(x) {
       ((x - 1)*nobs + 1):(x*nobs)
     }))
-    fac2num_block_fac_relative <- which((classification$fac2fac + 1) %in% classification$fac2num)
+    fac2num_block_fac_relative <- which((unique(classification$fac2fac) + 1) %in% classification$fac2num)
     fac2num_fac_input <- unlist(lapply(fac2num_block_fac_relative, FUN = function(x) {
       ((x - 1)*nobs + 1):(x*nobs)
     }))
