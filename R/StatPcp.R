@@ -1,3 +1,5 @@
+# StatPcp, with a lot of temp modifications
+
 # StatPcp function
 
 # Expected input:
@@ -17,12 +19,19 @@
 # how to get the proper data that we can know if a variable is factor or numeric from  ## function class gives you that info
 
 # for stat_pcp?
+library(ggplot2)
+library(tidyr)
+library(dplyr)
 
 stat_pcp <- function(mapping = NULL, data = NULL,
                      geom = "segment", position = "identity",
                      ...,
                      freespace = 0.1,
-                     #boxwidth = 0.1,
+                     boxwidth = 0,
+                     rugwidth = 0,
+                     interwidth = 1,
+                     breaks = NULL,
+                     breakwidth = 0.1,
                      na.rm = FALSE,
                      show.legend = NA,
                      inherit.aes = TRUE) {
@@ -37,7 +46,11 @@ stat_pcp <- function(mapping = NULL, data = NULL,
     params = list(
       na.rm = na.rm,
       freespace = freespace,
-      #boxwidth = boxwidth,
+      boxwidth = boxwidth,
+      rugwidth = rugwidth,
+      interwidth = interwidth,
+      breaks = breaks,
+      breakwidth = breakwidth,
       ...
     )
   )
@@ -46,7 +59,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
 StatPcp <- ggproto(
   "StatPcp", Stat,
   ### with this line of code, remove all the data??? - HH not any more. compute_layer is adjusted for that
-  required_aes = c("id", "name", "value", "level", "class"),
+  #required_aes = c("id", "name", "value", "level", "class"),
   default_aes = ggplot2::aes(
     id = id, name = name, value = value, level = level, class = class,
     width = 0.75, linetype = "solid", fontsize=5,
@@ -60,43 +73,46 @@ StatPcp <- ggproto(
   ### setup_params accept params from stat_pcp or geom_pcp?
   setup_params = function(data, params) {
     params$freespace <- ifelse(is.null(params$freespace), 0.1, params$freespace)
+    # And other parameters
     params
 
   },
 
-  compute_layer = function(self, data, params, layout) {
-    # adjust function to avoid deleting all data
-    ggplot2:::check_required_aesthetics(
-      self$required_aes,
-      c(names(data), names(params)),
-      ggplot2:::snake_class(self)
-    )
-
-    # don't remove missing values - we don't have coordinates yet
-    # data <- remove_missing(data, params$na.rm,
-    #                        c(self$required_aes, self$non_missing_aes),
-    #                        snake_class(self),
-    #                        finite = TRUE
-    # )
-
-    # Trim off extra parameters
-    params <- params[intersect(names(params), self$parameters())]
-
-    args <- c(list(data = quote(data), scales = quote(scales)), params)
-    ggplot2:::dapply(data, "PANEL", function(data) {
-      scales <- layout$get_scales(data$PANEL[1])
-      tryCatch(do.call(self$compute_panel, args), error = function(e) {
-        warning("Computation failed in `", snake_class(self), "()`:\n",
-                e$message, call. = FALSE)
-        new_data_frame()
-      })
-    })
-  },
+  # compute_layer = function(self, data, params, layout) {
+  #   # adjust function to avoid deleting all data
+  #   ggplot2:::check_required_aesthetics(
+  #     self$required_aes,
+  #     c(names(data), names(params)),
+  #     ggplot2:::snake_class(self)
+  #   )
+  #
+  #   # don't remove missing values - we don't have coordinates yet
+  #   # data <- remove_missing(data, params$na.rm,
+  #   #                        c(self$required_aes, self$non_missing_aes),
+  #   #                        snake_class(self),
+  #   #                        finite = TRUE
+  #   # )
+  #
+  #   # Trim off extra parameters
+  #   params <- params[intersect(names(params), self$parameters())]
+  #
+  #   args <- c(list(data = quote(data), scales = quote(scales)), params)
+  #   ggplot2:::dapply(data, "PANEL", function(data) {
+  #     scales <- layout$get_scales(data$PANEL[1])
+  #     tryCatch(do.call(self$compute_panel, args), error = function(e) {
+  #       warning("Computation failed in `", ggplot2:::snake_class(self), "()`:\n",
+  #               e$message, call. = FALSE)
+  #       ggplot2:::new_data_frame()
+  #     })
+  #   })
+  # },
   # want to calculate the parameters directly can be used for geom_segment and geom_ribbon
   # and how to arrange them properly in the same time
 
   # or we can put the attribute in the function prarameters?
-  compute_panel = function(data, scales, freespace = 0.1, boxwidth = 0.1) {
+  compute_panel = function(data, scales, freespace = 0.1, boxwidth = 0,
+                           rugwidth = 0 , interwidth = 1,
+                           breaks = NULL, breakwidth = 0.1) {
 
     # make adjustment to accept proper data set
     # make sure the output data_spread has the same correct expected column order
@@ -143,7 +159,7 @@ StatPcp <- ggproto(
     # several possible combinations: num to num, num to factor, factor to num, factor to factor
     # need an algrothm to do this classification, write this function in a different place
     # we use the function: classify here
-    classification <- classify(classpcp)
+    classification <- classify(classpcp, breaks = breaks)
 
     # for num to num, set up
     if (!length(classification$num2num) == 0) {
@@ -183,7 +199,7 @@ StatPcp <- ggproto(
       # uniformly assign space for each level and observations within each level
       # inserted some space between every two levels here, called freespace for the space in total
       # obs_position is the postion assigned for factors
-      obs_position <- assign_fac(nlevels_list, nobs, freespace = 0.1)
+      obs_position <- assign_fac(nlevels_list, nobs, freespace = freespace)
 
       # for yend of lines, continued
       # write another function to arrange the positions of the end
@@ -221,7 +237,7 @@ StatPcp <- ggproto(
       nlevels_list_2 <- lapply(data_spread[, classification$fac2num + 1, drop = FALSE],
                                FUN = function(x) list(nlevels = nlevels(x),
                                                       table = table(x)))
-      obs_position_2 <- assign_fac(nlevels_list_2, nobs, freespace = 0.1)
+      obs_position_2 <- assign_fac(nlevels_list_2, nobs, freespace = freespace)
       # here arrange_fac_by_ystart, actually arranges fac (ystart) by yend
       data_final_ystart_fac2num <- unlist(arrange_fac_by_ystart(data_spread,
                                                                 start_position = classification$fac2num + 2,
@@ -259,7 +275,10 @@ StatPcp <- ggproto(
       # some values needed
       # to find the factor block(more than one factor together)
       # produce continuous_fac for each factor_block
-      continuous_fac_all <- unique(as.vector(rbind(classification$fac2fac, classification$fac2fac + 1)))
+      # 0622new: accomodate to new classification method, continuous_fac_all_raw
+      continuous_fac_all_raw <- as.vector(rbind(classification$fac2fac, classification$fac2fac + 1))
+      continuous_fac_all <- continuous_fac_all_raw[c(which(diff(continuous_fac_all_raw) != 0 & diff(continuous_fac_all_raw) != -1 ),
+                                                     length(continuous_fac_all_raw))]
       break_position <- c(0, which(diff(continuous_fac_all) != 1), length(continuous_fac_all))
       continuous_fac_all_list <- lapply(1:(length(break_position) - 1), FUN = function(x) {
         continuous_fac_all[(break_position[x] + 1):break_position[x + 1]]
@@ -269,26 +288,50 @@ StatPcp <- ggproto(
       end_fac2fac <- continuous_fac_all[break_position[-1]]
       bywhich <- start_fac2fac - 1
 
-      if (start_fac2fac[1] == 1) {
-        bywhich[1] <- end_fac2fac[1] + 1
+      # if (start_fac2fac[1] == 1) {
+      #   bywhich[1] <- end_fac2fac[1] + 1
+      # }
+      # detect if all the variables are factors
+      # if((end_fac2fac[1] + 1) > length(classpcp)) {
+      #   bywhich[1] <- NULL
+      # }
+
+      # 0622new: new way of dealing with factor blocks
+      # a naive try, all sub-factor blocks sorted by a same numeric variable as before
+      if(sum(classpcp %in% c("numeric", "integer")) != 0){
+        # work well with bywhich[1] = 0, or go out of the bound(by else)
+        while(sum(classpcp[bywhich[1]] %in% c("numeric", "integer")) == 0) {
+          bywhich[1] <- bywhich[1] + 1
+        }
+        # work well with classpcp[0]
+        while(sum(classpcp[bywhich] == "factor") != 0) {
+          bywhich[classpcp[bywhich] == "factor"] <- bywhich[classpcp[bywhich] == "factor"] - 1
+        }
+        bywhich[bywhich == 0] <- bywhich[1]
+      } else {
+        bywhich <- rep(NA, length(bywhich))
       }
 
-      prior_num <- classpcp[start_fac2fac[-1] - 1] %in% c("numeric", "integer")
+
+      # 0622new: how to sort the sub-factor block
+      # so as to the following chunk
+      # prior_num <- classpcp[start_fac2fac[-1] - 1] %in% c("numeric", "integer")
 
       # detect if there is only one factor block or multiple
-      if(length(prior_num) != 0){
-        for (i in 1:(length(bywhich) - 1)) {
-          if (!prior_num[i]) {
-            bywhich[i+1] <- end_fac2fac[i+1]  + 1
-          }
-        }
-      }
+      # actually, we don't need the following chunk, since for 2nd or later factor blocks, there is always a numeric variable in front of it
+      # if(length(prior_num) != 0){
+      #   for (i in 1:(length(bywhich) - 1)) {
+      #     if (!prior_num[i]) {
+      #       bywhich[i+1] <- end_fac2fac[i+1]  + 1
+      #     }
+      #   }
+      # }
 
-      # detect if all the variables are factors
-      if((end_fac2fac[1] + 1) > length(classpcp)) bywhich <- NULL
 
-      if (is.null(bywhich)) {
-        start_position <- 1:nobs
+
+
+      if (is.na(bywhich[1])) {
+        start_position <- as.data.frame(matrix(rep(1:nobs, length(bywhich)), ncol = length(bywhich)))
       } else {
         start_position <- data_spread[,bywhich + 1,drop = FALSE]
       }
@@ -302,16 +345,22 @@ StatPcp <- ggproto(
                         nobs = nobs)},
         continuous_fac_all_list,
         as.data.frame(start_position))
-
+      # 0622new
       # organize the output correctly into one
       data_final_xstart_fac2fac <- unlist(lapply(arranged_fac_block,
-                                                 FUN = function(x) x$data_final_xstart_fac2fac))
+                                                 FUN = function(x) x[[1]]$data_final_xstart_fac2fac))
       data_final_ystart_fac2fac <- unlist(lapply(arranged_fac_block,
-                                                 FUN = function(x) x$data_final_ystart_fac2fac))
+                                                 FUN = function(x) x[[1]]$data_final_ystart_fac2fac))
       data_final_xend_fac2fac <- unlist(lapply(arranged_fac_block,
-                                               FUN = function(x) x$data_final_xend_fac2fac))
+                                               FUN = function(x) x[[1]]$data_final_xend_fac2fac))
       data_final_yend_fac2fac <- unlist(lapply(arranged_fac_block,
-                                               FUN = function(x) x$data_final_yend_fac2fac))
+                                               FUN = function(x) x[[1]]$data_final_yend_fac2fac))
+
+      # also extract the bandid information
+      data_final_ystart_fac2fac_bandid <- unlist(lapply(arranged_fac_block,
+                                                        FUN = function(x) x[[2]]$data_final_ystart_fac2fac_bandid))
+      data_final_yend_fac2fac_bandid <- unlist(lapply(arranged_fac_block,
+                                                      FUN = function(x) x[[2]]$data_final_yend_fac2fac_bandid))
     } else {
       data_final_xstart_fac2fac <- NULL
       data_final_ystart_fac2fac <- NULL
@@ -374,6 +423,86 @@ StatPcp <- ggproto(
     }
 
 
+    # calculations and modifications for break points in factor blocks
+    # There are some parts of those modifications above should be integrated to the original calculation for better performance
+    # is there possibility that this is problem can be sovled using same band assignment at once as in usual case, instead of recursively calculate that?
+
+    if (!is.null(breaks)) {
+      #continuous_fac_all
+      #continuous_fac_all_list
+      #break_position
+      #start_fac2fac
+      #end_fac2fac
+      #arranged_fac_block
+      # data_final_yend_fac2fac
+      # data_final_ystart_fac2fac_bandid
+      # data_final_yend_fac2fac_bandid
+
+      # identify the groups of sub-factor blocks, labeled for which sub-factor block
+      sub_fac_block <- which(c(0, end_fac2fac) == c(start_fac2fac, 0))
+      diff_sub_fac_block <- c(0, which(diff(sub_fac_block) != 1), length(sub_fac_block))
+      sub_fac_block_list <- lapply(1:(length(diff_sub_fac_block) - 1), FUN = function(x) {
+        c(sub_fac_block[diff_sub_fac_block[x] + 1] - 1 ,
+          sub_fac_block[(diff_sub_fac_block[x] + 1):diff_sub_fac_block[x + 1]])
+      })
+
+      # To get the last variable positions and bandids within the first sub-factor block within a group of a sub-factor block
+      last_y <- lapply(1:length(sub_fac_block_list), FUN = function(x) {
+        # temp_yend, temp_yendid are used to save some coding for the long formular
+        temp_yend <- arranged_fac_block[[sub_fac_block_list[[x]][1]]][[1]][["data_final_yend_fac2fac"]]
+        temp_yendid <- arranged_fac_block[[sub_fac_block_list[[x]][1]]][[2]][["data_final_yend_fac2fac_bandid"]]
+        # length(temp_yend) = length(temp_yendid)
+        last_yend <- temp_yend[(length(temp_yend) - nobs + 1):length(temp_yend)]
+        last_yendid <- temp_yendid[(length(temp_yendid) - nobs + 1):length(temp_yendid)]
+        output <- list(last_yend = last_yend, last_yendid = last_yendid)
+        output
+      })
+
+      # use dirty "for loops", we should have a better way of applying this
+      # the following works for each sub-factors blocks group, we use Map to apply for each group
+
+
+      data_break_y <- Map(f = function(x, y) {
+        last_yend <- y$last_yend
+        last_yendid <- y$last_yendid
+        data_break_ystart <- vector()
+        data_break_yend <- vector()
+        for (i in x[-1]) {
+          # we need to save this ystart here
+          data_break_ystart <- c(data_break_ystart, last_yend)
+          # need some modificaation on process_fac2fac to take the exsiting bandid for numeric values into consideration
+          # and works for the current task for sub-factor blocks
+          # we shouldn't work on the first sub-factor block
+          arranged_fac_block_sub<- process_fac2fac(data_spread = data_spread,
+                                                   continuous_fac = continuous_fac_all_list[[i]],
+                                                   start_position = last_yend,
+                                                   freespace = freespace,
+                                                   nobs = nobs,
+                                                   subfac = TRUE,
+                                                   start_bandid = last_yendid)
+          # save some typing same as in calculate lasy_y
+          temp_yend <- arranged_fac_block_sub[[1]]$data_final_yend_fac2fac
+          temp_yendid <- arranged_fac_block_sub[[2]]$data_final_yend_fac2fac_bandid
+          last_yend <- temp_yend[(length(temp_yend) - nobs + 1):length(temp_yend)]
+          last_yendid <- temp_yendid[(length(temp_yendid) - nobs + 1):length(temp_yendid)]
+          # Here, we made a choice to only return the segments between the sub factor block
+          # Actually, we can return all the lines except the first sub-factor block(we can even also do this by using the original start_position first),
+          # in that case, we can use these calculation to replace the orignal factor block calculations to remove replicated calculations
+          # We might do that later, just be careful about the xstart, xend value, since it has 0
+          # we also don't return xstart, and xend, since they are calculated later
+          data_break_yend <- c(data_break_yend, temp_yend[1:nobs])
+        }
+        data_break_y <- list(data_break_ystart = data_break_ystart,
+                             data_break_yend = data_break_yend)
+        data_break_y
+      },
+      sub_fac_block_list,
+      last_y)
+
+
+
+    }
+
 
 
     # put everything together
@@ -403,24 +532,57 @@ StatPcp <- ggproto(
                              xend = data_final_xend,
                              y = data_final_ystart,
                              yend = data_final_yend)
-
-    data_final
     # This has different length from the original data coming to compute_panel
 
+    # interval length, boxwidth, rugwidth and breaks length
+
+    fac_count <- cumsum(fac)
+    num_count <- cumsum(!fac)
+    # break_count <- cumsum(1:length(classpcp) %in% breaks)
+
+    # adjust for the specified interval width
+    # interwidth doesn't work as expected
+    if (length(interwidth) == 1) {
+      interwidth <- seq(length(classpcp), from = 1, by = interwidth)
+    }
+
+    boxwidth_xend <-  interwidth + fac_count*2*boxwidth + num_count*2*rugwidth
+
+    boxwidth_xstart <- c(interwidth[1], (boxwidth_xend + 1)[-length(classpcp)])
+
+    data_boxwidth <- data_final
+    data_boxwidth$x <- boxwidth_xend[data_boxwidth$x]
+    data_boxwidth$xend <- boxwidth_xstart[data_boxwidth$xend]
 
 
+    if (!is.null(breaks)) {
+      # lines for the break points
+      # a naive try, This is one choice(no sorted lines)
+      breaks_which <- which(data_final$x %in% breaks)
+      breaks_xstart <- data_final$x[breaks_which]
+      data_break_xstart <-  boxwidth_xstart[breaks_xstart]
+      data_break_xend <- boxwidth_xend[breaks_xstart]
+      # we need to distinguish between the replicated variables, also used in above modifications
+      # is this safe?: using different selections, can they match each other(in this break case, they are all inside factor blocks, they should match)
+      # data_break_ystart <- data_final$yend[which(data_final$xend %in% breaks)]
+      # data_break_yend <- data_final$y[breaks_which]
 
-    # more modification for boxwidth
-    # data_final$data_final_xstart <- ifelse(data_final$data_final_xstart %in% which(fac),
-    #                                           data_final$data_final_xstart + boxwidth,
-    #                                           data_final$data_final_xstart)
-    # data_final$data_final_xend <- ifelse(data_final$data_final_xend %in% which(fac),
-    #                                         data_final$data_final_xend - boxwidth,
-    #                                         data_final$data_final_xend)
+      # we need to make sure the the x, y, xend, yend match each other, now it is ensured by that the calculations in fac2fac related chuncks
+      data_break_ystart <- unlist(lapply(data_break_y, FUN = function(x) {
+        x$data_break_ystart
+      }))
+      data_break_yend <- unlist(lapply(data_break_y, FUN = function(x) {
+        x$data_break_yend
+      }))
 
-    data_final
+      data_boxwidth <- data.frame(x = c(data_boxwidth$x, data_break_xstart),
+                                  y = c(data_boxwidth$y, data_break_ystart),
+                                  xend = c(data_boxwidth$xend, data_break_xend),
+                                  yend = c(data_boxwidth$yend, data_break_yend))
+    }
 
 
+    data_boxwidth
 
   }
 )
@@ -430,7 +592,8 @@ StatPcp <- ggproto(
 # for num to factor, we use lines
 # for factor to num, we use lines
 # for factor to factor, we use ribbons
-classify <- function(classpcp) {
+# 0622new: accomodate breaks
+classify <- function(classpcp, breaks) {
   classpcp <- as.numeric(classpcp %in% c("numeric", "integer"))
   classpcp_diff <- diff(classpcp)
   num2fac <- (1:(length(classpcp)-1))[classpcp_diff == -1]
@@ -438,6 +601,9 @@ classify <- function(classpcp) {
 
   num2num <- (1:(length(classpcp)-1))[classpcp_diff == 0 & classpcp[-length(classpcp)] == TRUE]
   fac2fac <- (1:(length(classpcp)-1))[classpcp_diff == 0 & classpcp[-length(classpcp)] == FALSE]
+
+  # breaks come in, need to check breaks are suitable
+  fac2fac <- sort(c(fac2fac, breaks))
 
   classification <-  list(num2num = num2num,
                           num2fac = num2fac,
@@ -501,28 +667,29 @@ arrange_fac_by_ystart <- function(data_spread, start_position, end_position, obs
 # fac_table is a summary of the exsiting combination of factors
 # level_range_2 is calculated as level_range inside assign_fac to get postions of levels
 # names_to_group is the names of those factors, for convenience
-assign_box <- function(fac_table, level_range_2, nlevels_list_con_fac, names_to_group) {
-
-  box_position <- Map(f = function(x, y, z){
-    box_proportion <- fac_table %>%
-      group_by_(z) %>%
-      mutate(proportion = Freq/sum(Freq)) %>%
-      ungroup()
-    box_position <- list()
-    for(i in 1:(y$nlevels)){
-      box_proportion_each <- box_proportion[box_proportion[z] == names(y$table)[i],]
-      eachlevel <- x[c(2*i-1, 2*i)]
-      eachbox <- eachlevel[1] + (eachlevel[2] - eachlevel[1])*cumsum(box_proportion_each$proportion)
-      names(eachlevel) <- NULL
-      box_position[[i]] <- c(eachlevel[1], eachbox)
-      names(box_position)[i] <- names(y$table)[i]
-    }
-    box_position
-  },
-  level_range_2, nlevels_list_con_fac, names_to_group)
-
-  box_position
-}
+# 0622new: we don't actually need this
+# assign_box <- function(fac_table, level_range_2, nlevels_list_con_fac, names_to_group) {
+#
+#   box_position <- Map(f = function(x, y, z){
+#     box_proportion <- fac_table %>%
+#       group_by_(z) %>%
+#       mutate(proportion = Freq/sum(Freq)) %>%
+#       ungroup()
+#     box_position <- list()
+#     for(i in 1:(y$nlevels)){
+#       box_proportion_each <- box_proportion[box_proportion[z] == names(y$table)[i],]
+#       eachlevel <- x[c(2*i-1, 2*i)]
+#       eachbox <- eachlevel[1] + (eachlevel[2] - eachlevel[1])*cumsum(box_proportion_each$proportion)
+#       names(eachlevel) <- NULL
+#       box_position[[i]] <- c(eachlevel[1], eachbox)
+#       names(box_position)[i] <- names(y$table)[i]
+#     }
+#     box_position
+#   },
+#   level_range_2, nlevels_list_con_fac, names_to_group)
+#
+#   box_position
+# }
 
 # calculate the bandid (all possible combinations of factors) for the data
 # assign observations to different band
@@ -552,7 +719,8 @@ bandid <- function(data_spread, continuous_fac, nobs, nlevels_list_con_fac) {
 # end_position indicates the first factor variable in a factor block, or the last one when adjust backward
 # obs_position is the return value of assign_fac(nlevels_list_con_fac, nobs)
 # names_to_group for convience
-# works for each factor block, used for one variable each time in process_fac2fac
+# can potentially works for each factor block, but used for one variable each time in process_fac2fac
+# Added bandid for observations as part of output
 arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_position,
                                          obs_position, fac_table, names_to_group) {
 
@@ -560,22 +728,29 @@ arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_positi
   # but we do deal with it
   arranged_position <- Map(f = function(y, x, z, l) {
 
+    x_bandid <- x
     # i for each level
     for (i in 1:length(z)) {
       aa <- fac_table[fac_table[l]==names(z[i]), ]
       aa$position_in_level <- cumsum(aa$Freq)
       bb <- aa$position_in_level
 
-      # j for each box
+      # j for each box(smallest band)
       for (j in 1:length(bb)) {
         position_in_box <- z[[i]][(bb[j]-aa$Freq[j] + 1):bb[j]]
         x <- replace(x,
                      list = which(data_spread$bandid == aa$bandid[j]),
                      values = position_in_box[rank(x[data_spread$bandid == aa$bandid[j]])]
         )
+        # 0622new: A new added part to label the bandid in the process
+        x_bandid <- replace(x_bandid,
+                            list = which(data_spread$bandid == aa$bandid[j]),
+                            values = aa$bandid[j]
+        )
       }
     }
-    x
+    output <- list(x = x, x_bandid = x_bandid)
+    output
   },
   # notice that, to accomadate no numeric variable case, I changed the stat_position to a data vector
   data_spread[, end_position, drop = FALSE],
@@ -592,7 +767,16 @@ arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_positi
 # bywhich: positions, indicate which numeric variable to use for adjustment, prior or after
 # output: arranged_position_inband, or: data.frame for the final xstart, xend, ystart, yend
 # works for each factor block
-process_fac2fac <- function(data_spread, continuous_fac, start_position, freespace, nobs) {
+# 0622new: also return bandid, and modification for dealing with sub-factor blocks
+process_fac2fac <- function(data_spread, continuous_fac, start_position, freespace, nobs, subfac = FALSE, start_bandid = NULL) {
+
+  # 0622new: to treat the start_bandid as a factor to replace the data_spread$id place, which is in the first place
+  # so we may come here if want to deal with original id later(although the id is kept as the order of every output)
+  if (subfac) {
+    data_spread[1] <- as.factor(start_bandid)
+    continuous_fac <- c(0, continuous_fac)
+  }
+
 
   # nlevels_list for those "continued" factors, for further use
   nlevels_list_con_fac <- lapply(data_spread[, continuous_fac+1, drop = FALSE],
@@ -614,12 +798,16 @@ process_fac2fac <- function(data_spread, continuous_fac, start_position, freespa
                                                  freespace/(x$nlevels-1)/2*rep(c(-1, 1), times = x$nlevels-1), 1))
 
   # calculate the positions for boxes(within each level within each factor)
-  box_position <- assign_box(fac_table, level_range_2, nlevels_list_con_fac, names_to_group)
+  # 0622new: We actually don't use: assign_box and box_position
+  # box_position <- assign_box(fac_table, level_range_2, nlevels_list_con_fac, names_to_group)
+
   # postion for the observations in the factor block
-  obs_position_2 <- assign_fac(nlevels_list_con_fac, nobs)
+  obs_position_2 <- assign_fac(nlevels_list_con_fac, nobs, freespace = freespace)
+
 
   # bandid for the original data_spread
   data_spread$bandid <- bandid(data_spread, continuous_fac, nobs, nlevels_list_con_fac)
+
 
   # match the positions in the factor block to the prior numeric variable, considering band
   ### we need to use similar method to work with the numeric variable after the factor block,
@@ -638,11 +826,21 @@ process_fac2fac <- function(data_spread, continuous_fac, start_position, freespa
                                        fac_table,
                                        names_to_group = names(data_spread)[continuous_fac[x] + 1]))
 
+  #0622new: output bandid
+  arranged_fac_block_x <- list(data_final_xstart_fac2fac = rep(continuous_fac[-length(continuous_fac)], each = nobs),
+                               data_final_ystart_fac2fac = unlist(lapply(arranged_position_inband[-length(arranged_position_inband)],
+                                                                         FUN = function(y) y[[1]][[1]])),
+                               data_final_xend_fac2fac = rep(continuous_fac[-1], each = nobs),
+                               data_final_yend_fac2fac = unlist(lapply(arranged_position_inband[-1],
+                                                                       FUN = function(y) y[[1]][[1]])))
 
-  arranged_fac_block <- list(data_final_xstart_fac2fac = rep(continuous_fac[-length(continuous_fac)], each = nobs),
-                             data_final_ystart_fac2fac = unlist(arranged_position_inband[-length(arranged_position_inband)]),
-                             data_final_xend_fac2fac = rep(continuous_fac[-1], each = nobs),
-                             data_final_yend_fac2fac = unlist(arranged_position_inband[-1]))
+  arranged_fac_block_x_bandid <- list(data_final_ystart_fac2fac_bandid = unlist(lapply(arranged_position_inband[-length(arranged_position_inband)],
+                                                                                       FUN = function(y) y[[1]][[2]])),
+                                      data_final_yend_fac2fac_bandid = unlist(lapply(arranged_position_inband[-1],
+                                                                                     FUN = function(y) y[[1]][[2]])))
+  # arranged_fac_block_x is the originally returned arranged_fac_block before
+  arranged_fac_block <- list(arranged_fac_block_x = arranged_fac_block_x,
+                             arranged_fac_block_x_bandid = arranged_fac_block_x_bandid)
+
   arranged_fac_block
 }
-
