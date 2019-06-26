@@ -39,6 +39,13 @@
 #'    often aesthetics, used to set an aesthetic to a fixed value, like
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
+#' @param freespace The total gap space among levels within each factor variable
+#' @param boxwidth The width of the box for each factor variable
+#' @param rugwidth The width of the rugs for numeric variable
+#' @param interwidth The width for the lines between every neighboring variables, either
+#'  a scalar or a vector.
+#' @param breaks To break three or more factors into peices
+#' @param breakwidth will be removed
 #'
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange

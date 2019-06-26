@@ -38,11 +38,14 @@
 #'    often aesthetics, used to set an aesthetic to a fixed value, like
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
-#'
+#' @param arrow specification for arrow heads, as created by arrow()
+#' @param arrow.fill fill colour to use for the arrow head (if closed). NULL means use colour aesthetic
+#' @param lineend Line end style (round, butt, square)
+#' @param linejoin Line join style (round, mitre, bevel)
 #' @import ggplot2
 #' @export geom_pcp
 
-geom_pcp <- function(mapping = NULL, data = NuLL,
+geom_pcp <- function(mapping = NULL, data = NULL,
                      # where was "boxplot" created, does the following work?
                      stat = "pcp", position = "identity",
                      ...,

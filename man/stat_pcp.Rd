@@ -39,6 +39,19 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 `colour = "red"` or `size = 3`. They may also be parameters
 to the paired geom/stat.}
 
+\item{freespace}{The total gap space among levels within each factor variable}
+
+\item{boxwidth}{The width of the box for each factor variable}
+
+\item{rugwidth}{The width of the rugs for numeric variable}
+
+\item{interwidth}{The width for the lines between every neighboring variables, either
+a scalar or a vector.}
+
+\item{breaks}{To break three or more factors into peices}
+
+\item{breakwidth}{will be removed}
+
 \item{na.rm}{If `FALSE`, the default, missing values are removed with
 a warning. If `TRUE`, missing values are silently removed.}
 
