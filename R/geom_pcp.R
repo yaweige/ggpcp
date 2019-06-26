@@ -1,6 +1,8 @@
-#' Add images to plot
+#' Parallel coordinate plot for both numeric and categorical data
 #'
-#' Work like geom_point with points replaced by a predefined image
+#' The parallel coordinate plot displays multiple y-axes, and shows the observations across
+#' several dimensions as ploi-lines. This function work well with both numeric and categorical
+#' variables at the same time after proper scaling.
 #'
 #' @param mapping Set of aesthetic mappings created by [aes()] or
 #'   [aes_()]. If specified and `inherit.aes = TRUE` (the

@@ -583,6 +583,22 @@ StatPcp <- ggproto(
     data_boxwidth$x <- boxwidth_xend[data_boxwidth$x]
     data_boxwidth$xend <- boxwidth_xstart[data_boxwidth$xend]
 
+    # add parallel lines(segments, rugs) after adjusted for boxwidth
+    # add segments for boxes
+    segment_which <- which(!(data_final$x %in% breaks))
+    segment_xstart <- data_final$x[segment_which]
+
+    data_segment_xstart <- boxwidth_xstart[segment_xstart]
+    data_segment_xend <- boxwidth_xend[segment_xstart]
+    data_segment_ystart <- data_final$y[segment_which]
+    data_segment_yend <- data_segment_ystart
+
+    # for the last variable seperately
+    data_segment_xstart <- c(data_segment_xstart, boxwidth_xstart[rep(length(classpcp), nobs)])
+    data_segment_xend <- c(data_segment_xend, boxwidth_xend[rep(length(classpcp), nobs)])
+    data_segment_ystart <- c(data_segment_ystart,
+                             data_final[which(data_final$xend == length(classpcp)), "yend"])
+    data_segment_yend <- data_segment_ystart
 
     if (!is.null(breaks)) {
       # lines for the break points
@@ -608,6 +624,18 @@ StatPcp <- ggproto(
                                   y = c(data_boxwidth$y, data_break_ystart),
                                   xend = c(data_boxwidth$xend, data_break_xend),
                                   yend = c(data_boxwidth$yend, data_break_yend))
+    }
+
+    if (!is.null(breaks)) {
+      data_boxwidth <- data.frame(x = c(data_boxwidth$x, data_segment_xstart, data_break_xstart),
+                                  y = c(data_boxwidth$y, data_segment_ystart, data_break_ystart),
+                                  xend = c(data_boxwidth$xend, data_segment_xend, data_break_xend),
+                                  yend = c(data_boxwidth$yend, data_segment_yend, data_break_yend))
+    } else {
+      data_boxwidth <- data.frame(x = c(data_boxwidth$x, data_segment_xstart),
+                                  y = c(data_boxwidth$y, data_segment_ystart),
+                                  xend = c(data_boxwidth$xend, data_segment_xend),
+                                  yend = c(data_boxwidth$yend, data_segment_yend))
     }
 
 

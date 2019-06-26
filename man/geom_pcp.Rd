@@ -2,7 +2,7 @@
 % Please edit documentation in R/geom_pcp.R
 \name{geom_pcp}
 \alias{geom_pcp}
-\title{Add images to plot}
+\title{Parallel coordinate plot for both numeric and categorical data}
 \usage{
 geom_pcp(mapping = NULL, data = NULL, stat = "pcp",
   position = "identity", ..., arrow = NULL, arrow.fill = NULL,
@@ -63,5 +63,7 @@ that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. [borders()].}
 }
 \description{
-Work like geom_point with points replaced by a predefined image
+The parallel coordinate plot displays multiple y-axes, and shows the observations across
+several dimensions as ploi-lines. This function work well with both numeric and categorical
+variables at the same time after proper scaling.
 }
