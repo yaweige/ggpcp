@@ -40,6 +40,13 @@
 #'    often aesthetics, used to set an aesthetic to a fixed value, like
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
+#'    #'
+#' @param freespace The total gap space among levels within each factor variable
+#' @param boxwidth The width of the box for each factor variable
+#' @param rugwidth The width of the rugs for numeric variable
+#' @param interwidth The width for the lines between every neighboring variables, either
+#'  a scalar or a vector.
+#' @param breaks To break three or more factors into peices
 #' @param arrow specification for arrow heads, as created by arrow()
 #' @param arrow.fill fill colour to use for the arrow head (if closed). NULL means use colour aesthetic
 #' @param lineend Line end style (round, butt, square)
@@ -51,6 +58,11 @@ geom_pcp <- function(mapping = NULL, data = NULL,
                      # where was "boxplot" created, does the following work?
                      stat = "pcp", position = "identity",
                      ...,
+                     freespace = 0.1,
+                     boxwidth = 0,
+                     rugwidth = 0,
+                     interwidth = 1,
+                     breaks = NULL,
                      arrow = NULL,
                      arrow.fill = NULL,
                      lineend = "butt",
@@ -67,10 +79,15 @@ geom_pcp <- function(mapping = NULL, data = NULL,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
     params = list(
-      arrow = NULL,
-      arrow.fill = NULL,
-      lineend = "butt",
-      linejoin = "round",
+      freespace = freespace,
+      boxwidth = boxwidth,
+      rugwidth = rugwidth,
+      interwidth = interwidth,
+      breaks = breaks,
+      arrow = arrow,
+      arrow.fill = arrow.fill,
+      lineend = lineend,
+      linejoin = linejoin,
       na.rm = na.rm,
       ...
     )
@@ -123,7 +140,7 @@ GeomPcp <- ggproto("GeomPcp", Geom,
                                             arrow = arrow,
                                             arrow.fill = arrow.fill,
                                             lineend = lineend,
-                                            linejoin = "round",
+                                            linejoin = linejoin,
                                             na.rm = na.rm)
                    }
 )
