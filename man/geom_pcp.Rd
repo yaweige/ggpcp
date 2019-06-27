@@ -5,9 +5,10 @@
 \title{Parallel coordinate plot for both numeric and categorical data}
 \usage{
 geom_pcp(mapping = NULL, data = NULL, stat = "pcp",
-  position = "identity", ..., arrow = NULL, arrow.fill = NULL,
-  lineend = "butt", linejoin = "round", na.rm = FALSE,
-  show.legend = NA, inherit.aes = TRUE)
+  position = "identity", ..., freespace = 0.1, boxwidth = 0,
+  rugwidth = 0, interwidth = 1, breaks = NULL, arrow = NULL,
+  arrow.fill = NULL, lineend = "butt", linejoin = "round",
+  na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by [aes()] or
@@ -38,7 +39,19 @@ a call to a position adjustment function.}
 \item{...}{Other arguments passed on to [layer()]. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
 `colour = "red"` or `size = 3`. They may also be parameters
-to the paired geom/stat.}
+to the paired geom/stat.
+#'}
+
+\item{freespace}{The total gap space among levels within each factor variable}
+
+\item{boxwidth}{The width of the box for each factor variable}
+
+\item{rugwidth}{The width of the rugs for numeric variable}
+
+\item{interwidth}{The width for the lines between every neighboring variables, either
+a scalar or a vector.}
+
+\item{breaks}{To break three or more factors into peices}
 
 \item{arrow}{specification for arrow heads, as created by arrow()}
 

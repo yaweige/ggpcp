@@ -5,8 +5,9 @@
 \title{Boxes for the levels in each factor variable in parallel coordinate plot}
 \usage{
 geom_pcp_box(mapping = NULL, data = NULL, stat = "pcpbox",
-  position = "identity", rule = "evenodd", ..., na.rm = FALSE,
-  show.legend = NA, inherit.aes = TRUE)
+  position = "identity", rule = "evenodd", ..., freespace = 0.1,
+  boxwidth = 0, rugwidth = 0, na.rm = FALSE, show.legend = NA,
+  inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by [aes()] or
@@ -43,6 +44,12 @@ an explanation.}
 often aesthetics, used to set an aesthetic to a fixed value, like
 `colour = "red"` or `size = 3`. They may also be parameters
 to the paired geom/stat.}
+
+\item{freespace}{The total gap space among levels within each factor variable}
+
+\item{boxwidth}{The width of the box for each factor variable}
+
+\item{rugwidth}{The width of the rugs for numeric variable}
 
 \item{na.rm}{If `FALSE`, the default, missing values are removed with
 a warning. If `TRUE`, missing values are silently removed.}
