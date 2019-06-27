@@ -55,7 +55,7 @@ geom_pcp_box <- function(mapping = NULL, data = NULL,
     data = data,
     mapping = mapping,
     stat = stat,
-    geom = GeomPolygon,
+    geom = GeomPcpbox,
     position = position,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
@@ -68,38 +68,39 @@ geom_pcp_box <- function(mapping = NULL, data = NULL,
 }
 
 
-GeomPcp <- ggproto("GeomPcp", Geom,
-                   # setup_data = function(data, params) {
-                   #   we adjust the box width here?
-                   # }
-                   required_aes = c("id", "name", "value", "level", "class"),
-                   default_aes = ggplot2::aes(
-                     id = id, name = name, value = value, level = level, class = class,
-                     width = 0.75, linetype = "solid", fontsize=5,
-                     shape = 19, colour = "grey30",
-                     size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
-                     linewidth=.1, weight = 1),
+GeomPcpbox <- ggproto("GeomPcpbox", Geom,
+                      # setup_data = function(data, params) {
+                      #   we adjust the box width here?
+                      # }
+                      # required_aes = c("id", "name", "value", "level", "class"),
+                      # default_aes = ggplot2::aes(
+                      #   id = id, name = name, value = value, level = level, class = class,
+                      #   width = 0.75, linetype = "solid", fontsize=5,
+                      #   shape = 19, colour = "grey30",
+                      #   size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
+                      #   linewidth=.1, weight = 1),
 
+                      default_aes = aes(colour = "NA", fill = "grey20", size = 0.5, linetype = 1,
+                                        alpha = NA, subgroup = NULL),
 
-                   draw_panel = function(data, panel_params,
-                                         coord,
-                                         rule = "evenodd") {
-                     pcp_box <- data.frame(
-                       x = data$x,
-                       y = data$y,
-                       yend = data$yend,
-                       # And what about other parameters?
-                       colour = data$colour,
-                       size = data$size,
-                       linetype = data$linetype,
-                       #fill = alpha(data$fill, data$alpha),
-                       alpha = data$alpha,
-                       # is there PANEL or group? How those work...
-                       PANEL = data$PANEL,
-                       group = data$group
-                     )
+                      draw_panel = function(data, panel_params,
+                                            coord,
+                                            rule = "evenodd") {
+                        pcp_box <- data.frame(
+                          x = data$x,
+                          y = data$y,
+                          # And what about other parameters?
+                          colour = data$colour,
+                          size = data$size,
+                          linetype = data$linetype,
+                          fill = data$fill,
+                          alpha = data$alpha,
+                          # is there PANEL or group? How those work...
+                          PANEL = data$PANEL,
+                          group = data$group
+                        )
 
-                     GeomPolygon$draw_panel(pcp_box, panel_params, coord,
-                                            rule = rule)
-                   }
+                        GeomPolygon$draw_panel(pcp_box, panel_params, coord,
+                                               rule = rule)
+                      }
 )

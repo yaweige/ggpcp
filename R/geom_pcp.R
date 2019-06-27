@@ -62,7 +62,7 @@ geom_pcp <- function(mapping = NULL, data = NULL,
     data = data,
     mapping = mapping,
     stat = stat,
-    geom = GeomPoint,
+    geom = GeomPcp,
     position = position,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
@@ -82,14 +82,20 @@ GeomPcp <- ggproto("GeomPcp", Geom,
                    # setup_data = function(data, params) {
                    #   we adjust the box width here?
                    # }
-                   required_aes = c("id", "name", "value", "level", "class"),
-                   default_aes = ggplot2::aes(
-                      id = id, name = name, value = value, level = level, class = class,
-                      width = 0.75, linetype = "solid", fontsize=5,
-                      shape = 19, colour = "grey30",
-                      size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
-                      linewidth=.1, weight = 1),
 
+                   # it seems that we can't have id = id, name = name, value = value,
+                   # level = level, class = class, in default_aes
+                   # neither does required_aes
+
+                   # required_aes = c("id", "name", "value", "level", "class"),
+                   # default_aes = ggplot2::aes(
+                   #   id = id, name = name, value = value, level = level, class = class,
+                   #   width = 0.75, linetype = "solid", fontsize=5,
+                   #   shape = 19, colour = "grey30",
+                   #   size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
+                   #   linewidth=.1, weight = 1),
+
+                   default_aes = aes(colour = "black", size = 0.5, linetype = 1, alpha = NA),
 
                    draw_panel = function(data, panel_params, coord,
                                          arrow = NULL,
