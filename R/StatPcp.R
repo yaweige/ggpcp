@@ -45,7 +45,6 @@
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
 #' @param breaks To break three or more factors into peices
-#' @param breakwidth will be removed
 #'
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange
@@ -60,7 +59,6 @@ stat_pcp <- function(mapping = NULL, data = NULL,
                      rugwidth = 0,
                      interwidth = 1,
                      breaks = NULL,
-                     breakwidth = 0.1,
                      na.rm = FALSE,
                      show.legend = NA,
                      inherit.aes = TRUE) {
@@ -79,7 +77,6 @@ stat_pcp <- function(mapping = NULL, data = NULL,
       rugwidth = rugwidth,
       interwidth = interwidth,
       breaks = breaks,
-      breakwidth = breakwidth,
       ...
     )
   )
@@ -141,7 +138,7 @@ StatPcp <- ggproto(
   # or we can put the attribute in the function prarameters?
   compute_panel = function(data, scales, freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
-                           breaks = NULL, breakwidth = 0.1) {
+                           breaks = NULL) {
 
     # make adjustment to accept proper data set
     # make sure the output data_spread has the same correct expected column order
@@ -563,22 +560,29 @@ StatPcp <- ggproto(
                              yend = data_final_yend)
     # This has different length from the original data coming to compute_panel
 
-    # interval length, boxwidth, rugwidth and breaks length
-
-    fac_count <- cumsum(fac)
-    num_count <- cumsum(!fac)
-    # break_count <- cumsum(1:length(classpcp) %in% breaks)
-
-    # adjust for the specified interval width
-    # interwidth doesn't work as expected
+    # interval length, boxwidth, rugwidth
+    # adjusted for different lengths
     if (length(interwidth) == 1) {
-      interwidth <- seq(length(classpcp), from = 1, by = interwidth)
+      interwidth <- rep(interwidth, times = length(classpcp) - 1)
     }
+    interwidth <- cumsum(c(1, interwidth))
 
-    boxwidth_xend <-  interwidth + fac_count*2*boxwidth + num_count*2*rugwidth
+    if (length(boxwidth) == 1) {
+      boxwidth <- rep(boxwidth, times = sum(fac))
+    }
+    if (length(rugwidth) == 1) {
+      rugwidth <- rep(rugwidth, times = sum(!fac))
+    }
+    # calculate cumulated changes
+    boxrugwidth <- seq_along(classpcp)
+    boxrugwidth[fac] <- boxwidth
+    boxrugwidth[!fac] <- rugwidth
+    cumboxrugwidth <- cumsum(boxrugwidth)
+    # calculate the ajusted position
+    boxwidth_xend <-  interwidth + cumboxrugwidth
+    boxwidth_xstart <- boxwidth_xend - boxrugwidth
 
-    boxwidth_xstart <- c(interwidth[1], (boxwidth_xend + 1)[-length(classpcp)])
-
+    # adjust the data according to the adjusted position
     data_boxwidth <- data_final
     data_boxwidth$x <- boxwidth_xend[data_boxwidth$x]
     data_boxwidth$xend <- boxwidth_xstart[data_boxwidth$xend]
@@ -901,3 +905,4 @@ process_fac2fac <- function(data_spread, continuous_fac, start_position, freespa
 
   arranged_fac_block
 }
+

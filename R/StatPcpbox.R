@@ -40,6 +40,8 @@
 #' @param freespace The total gap space among levels within each factor variable
 #' @param boxwidth The width of the box for each factor variable
 #' @param rugwidth The width of the rugs for numeric variable
+#' @param interwidth The width for the lines between every neighboring variables, either
+#'  a scalar or a vector.
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange
 #' @importFrom tidyr spread
@@ -50,6 +52,7 @@ stat_pcp_box <- function(mapping = NULL, data = NULL,
                          freespace = 0.1,
                          boxwidth = 0,
                          rugwidth = 0,
+                         interwidth = 1,
                          na.rm = FALSE,
                          show.legend = NA,
                          inherit.aes = TRUE) {
@@ -66,6 +69,7 @@ stat_pcp_box <- function(mapping = NULL, data = NULL,
       freespace = freespace,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
+      interwidth = interwidth,
       ...
     )
   )
@@ -83,7 +87,8 @@ StatPcpbox <- ggproto(
   compute_panel = function(data, scales,
                            freespace = 0.1,
                            boxwidth = 0.1,
-                           rugwidth = 0.05
+                           rugwidth = 0.05,
+                           interwidth = 1
   ) {
     # the following code are some of the internal part of StatPcp
     # common data process
@@ -114,11 +119,27 @@ StatPcpbox <- ggproto(
       original_levels)
     }
     # boxwidth
-    # for xstart, for xend
-    fac_count <- cumsum(fac)
-    num_count <- cumsum(!fac)
-    boxwidth_xend <-  seq_along(classpcp) + fac_count*2*boxwidth + num_count*2*rugwidth
-    boxwidth_xstart <- c(1, (boxwidth_xend + 1)[-length(classpcp)])
+    # interval length, boxwidth, rugwidth
+    # adjusted for different lengths
+    if (length(interwidth) == 1) {
+      interwidth <- rep(interwidth, times = length(classpcp) - 1)
+    }
+    interwidth <- cumsum(c(1, interwidth))
+
+    if (length(boxwidth) == 1) {
+      boxwidth <- rep(boxwidth, times = sum(fac))
+    }
+    if (length(rugwidth) == 1) {
+      rugwidth <- rep(rugwidth, times = sum(!fac))
+    }
+    # calculate cumulated changes
+    boxrugwidth <- seq_along(classpcp)
+    boxrugwidth[fac] <- boxwidth
+    boxrugwidth[!fac] <- rugwidth
+    cumboxrugwidth <- cumsum(boxrugwidth)
+    # calculate the ajusted position
+    boxwidth_xend <-  interwidth + cumboxrugwidth
+    boxwidth_xstart <- boxwidth_xend - boxrugwidth
 
     # box
     eachobs <- 1/nobs

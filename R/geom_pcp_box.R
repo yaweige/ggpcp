@@ -41,6 +41,8 @@
 #' @param freespace The total gap space among levels within each factor variable
 #' @param boxwidth The width of the box for each factor variable
 #' @param rugwidth The width of the rugs for numeric variable
+#' @param interwidth The width for the lines between every neighboring variables, either
+#'  a scalar or a vector.
 #' @param rule Either `"evenodd"` or `"winding"`. If polygons with holes are
 #'    being drawn (using the `subgroup` aesthetic) this argument defines how the
 #'    hole coordinates are interpreted. See the examples in [grid::pathGrob()] for
@@ -54,6 +56,7 @@ geom_pcp_box <- function(mapping = NULL, data = NULL,
                          freespace = 0.1,
                          boxwidth = 0,
                          rugwidth = 0,
+                         interwidth = 1,
                          na.rm = FALSE,
                          show.legend = NA,
                          inherit.aes = TRUE) {
@@ -69,6 +72,7 @@ geom_pcp_box <- function(mapping = NULL, data = NULL,
       freespace = freespace,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
+      interwidth = interwidth,
       na.rm = na.rm,
       rule = rule,
       ...

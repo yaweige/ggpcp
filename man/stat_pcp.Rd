@@ -6,8 +6,8 @@
 \usage{
 stat_pcp(mapping = NULL, data = NULL, geom = "segment",
   position = "identity", ..., freespace = 0.1, boxwidth = 0,
-  rugwidth = 0, interwidth = 1, breaks = NULL, breakwidth = 0.1,
-  na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)
+  rugwidth = 0, interwidth = 1, breaks = NULL, na.rm = FALSE,
+  show.legend = NA, inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by [aes()] or
@@ -49,8 +49,6 @@ to the paired geom/stat.}
 a scalar or a vector.}
 
 \item{breaks}{To break three or more factors into peices}
-
-\item{breakwidth}{will be removed}
 
 \item{na.rm}{If `FALSE`, the default, missing values are removed with
 a warning. If `TRUE`, missing values are silently removed.}

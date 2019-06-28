@@ -6,8 +6,8 @@
 \usage{
 geom_pcp_box(mapping = NULL, data = NULL, stat = "pcpbox",
   position = "identity", rule = "evenodd", ..., freespace = 0.1,
-  boxwidth = 0, rugwidth = 0, na.rm = FALSE, show.legend = NA,
-  inherit.aes = TRUE)
+  boxwidth = 0, rugwidth = 0, interwidth = 1, na.rm = FALSE,
+  show.legend = NA, inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by [aes()] or
@@ -50,6 +50,9 @@ to the paired geom/stat.}
 \item{boxwidth}{The width of the box for each factor variable}
 
 \item{rugwidth}{The width of the rugs for numeric variable}
+
+\item{interwidth}{The width for the lines between every neighboring variables, either
+a scalar or a vector.}
 
 \item{na.rm}{If `FALSE`, the default, missing values are removed with
 a warning. If `TRUE`, missing values are silently removed.}
