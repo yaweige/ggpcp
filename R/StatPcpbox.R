@@ -142,14 +142,18 @@ StatPcpbox <- ggproto(
     boxwidth_xstart <- boxwidth_xend - boxrugwidth
 
     # box
-    eachobs <- 1/nobs
     # fac coming from the classpcp == "factor"
     nlevels_list <- lapply(data_spread[, c(FALSE, fac), drop = FALSE],
                            FUN = function(x) list(nlevels = nlevels(x),
                                                   table = table(x)))
+    eachobs <- (1 - freespace)/nobs
     level_range <- lapply(nlevels_list,
-                          FUN = function(x) c(0, rep(cumsum(eachobs*x$table)[-x$nlevels], each = 2) +
-                                                freespace/(x$nlevels-1)/2*rep(c(-1, 1), times = x$nlevels-1), 1))
+                          FUN = function(x) {
+                            freespace_offset <- rep(freespace/(x$nlevels - 1), times = x$nlevels - 1)
+                            freespace_offset_cum <- cumsum(freespace_offset)
+                            c(0, rep(cumsum(eachobs*x$table), each = 2)[-2*x$nlevels]) +
+                              c(0, 0, rep(freespace_offset_cum, each = 2))
+                          })
     data_box_y <- rep(unlist(level_range), each = 2)
 
     data_box_x <- Map(f = function(x, y, z) {

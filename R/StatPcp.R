@@ -677,11 +677,23 @@ classify <- function(classpcp, breaks) {
 # here is a long calculation formula
 # defined another function inside this function, make sure they are correctly nested
 assign_fac <- function(nlevels_list, nobs, freespace = 0.1) {
-  eachobs <- 1/nobs
-  # assign each level
+
+
+  # adjustment offset for freespace
+  eachobs <- (1 - freespace)/nobs
   level_range <- lapply(nlevels_list,
-                        FUN = function(x) c(0, rep(cumsum(eachobs*x$table)[-x$nlevels], each = 2) +
-                                              freespace/(x$nlevels-1)/2*rep(c(-1, 1), times = x$nlevels-1), 1))
+                        FUN = function(x) {
+                          freespace_offset <- rep(freespace/(x$nlevels - 1), times = x$nlevels - 1)
+                          freespace_offset_cum <- cumsum(freespace_offset)
+                          c(0, rep(cumsum(eachobs*x$table), each = 2)[-2*x$nlevels]) +
+                            c(0, 0, rep(freespace_offset_cum, each = 2))
+                        })
+
+  # eachobs <- 1/nobs
+  # assign each level
+  # level_range <- lapply(nlevels_list,
+  #                       FUN = function(x) c(0, rep(cumsum(eachobs*x$table)[-x$nlevels], each = 2) +
+  #                                             freespace/(x$nlevels-1)/2*rep(c(-1, 1), times = x$nlevels-1), 1))
   # assign each obs
   obs_position <- Map(f = function(x, y){
     obs_position_each <- vector("list", length = length(x)/2)
@@ -853,10 +865,14 @@ process_fac2fac <- function(data_spread, continuous_fac, start_position, freespa
   names_to_group <- names(data_spread[, continuous_fac + 1, drop = FALSE])
   # the calculation is used to calculate the position for levels within factors, used inside assign_fac()
   # freespace is 0.1
-  eachobs <- 1/nobs
-  level_range_2 <-  lapply(nlevels_list_con_fac,
-                           FUN = function(x) c(0, rep(cumsum(eachobs*x$table)[-x$nlevels], each = 2) +
-                                                 freespace/(x$nlevels-1)/2*rep(c(-1, 1), times = x$nlevels-1), 1))
+  # eachobs <- (1 - freespace)/nobs
+  # level_range_2 <- lapply(nlevels_list_con_fac,
+  #                       FUN = function(x) {
+  #                         freespace_offset <- rep(freespace/(x$nlevels - 1), times = x$nlevels - 1)
+  #                         freespace_offset_cum <- cumsum(freespace_offset)
+  #                         c(0, rep(cumsum(eachobs*x$table), each = 2)[-2*x$nlevels]) +
+  #                           c(0, 0, rep(freespace_offset_cum, each = 2))
+  #                       })
 
   # calculate the positions for boxes(within each level within each factor)
   # 0622new: We actually don't use: assign_box and box_position
