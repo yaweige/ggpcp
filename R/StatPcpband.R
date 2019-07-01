@@ -311,10 +311,10 @@ StatPcpband <- ggproto(
 band_merge <- function(data_band_unmerged, eachobs) {
   if(nrow(data_band_unmerged) >= 2) {
     data_band_unmerged <- data_band_unmerged %>%
-      arrange(band_ystart_min) %>%
-      mutate(ystart_distance = band_ystart_min - c(0, band_ystart_max[-length(band_ystart_max)]),
-             yend_distance = band_yend_min - c(2, band_yend_max[-length(band_yend_max)])) %>%
-      mutate(to_merge = (ystart_distance <= 1.001 * eachobs)&(yend_distance <= 1.001 * eachobs & yend_distance > 0))
+      arrange(.data$band_ystart_min) %>%
+      mutate(ystart_distance = .data$band_ystart_min - c(0, .data$band_ystart_max[-length(.data$band_ystart_max)]),
+             yend_distance = .data$band_yend_min - c(2, .data$band_yend_max[-length(.data$band_yend_max)])) %>%
+      mutate(to_merge = (.data$ystart_distance <= 1.001 * eachobs)&(.data$yend_distance <= 1.001 * eachobs & .data$yend_distance > 0))
     # there might be rounding error, so not strictly equal
     # in which case, freespace = 0, might cause problem? Will two bands from two levels are merged
     merge_which <- which(data_band_unmerged$to_merge)

@@ -46,7 +46,7 @@
 #'  a scalar or a vector.
 #' @param breaks To break three or more factors into peices
 #' @import ggplot2
-#' @export geom_pcp
+#' @export geom_pcp_band
 
 geom_pcp_band <- function(mapping = NULL, data = NULL,
                           # where was "boxplot" created, does the following work?
