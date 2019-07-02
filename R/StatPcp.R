@@ -139,7 +139,6 @@ StatPcp <- ggproto(
   compute_panel = function(data, scales, freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
                            breaks = NULL) {
-
     # make adjustment to accept proper data set
     # make sure the output data_spread has the same correct expected column order
     data$name <- factor(data$name, levels = unique(data$name))
@@ -642,6 +641,8 @@ StatPcp <- ggproto(
                                   yend = c(data_boxwidth$yend, data_segment_yend))
     }
 
+    datanames <- names(data)
+    finalnames <- names(data_boxwidth)
 
     data_boxwidth
 

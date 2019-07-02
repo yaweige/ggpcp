@@ -5,6 +5,7 @@
 #' @param  data The data set used
 #' @param columns choose the columns to be used
 #' @export gather_pcp
+#' @importFrom dplyr left_join
 
 gather_pcp <- function(data, columns) {
   data <- data[,columns]
@@ -21,5 +22,9 @@ gather_pcp <- function(data, columns) {
                             "level" = data_level,
                             "class" = data_class,
                             stringsAsFactors = FALSE)
-  gather_data
+  data$id <- 1:nrow(data)
+  add_names <- c("id", setdiff(names(data), names(gather_data)))
+
+  gather_data_wide <- left_join(gather_data, data[, add_names], by="id")
+  gather_data_wide
 }
