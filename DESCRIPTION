@@ -1,12 +1,16 @@
 Package: ggpcp
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Parallel Coordinate Plots in the ggplot2 Framework
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Authors@R: c(
+    person("Yawei", "Ge", , "yaweige@iastate.edu", c("aut", "cre")),
+    person("Heike", "Hofmann", , role = "aut"))
+Maintainer: Yawei Ge <yaweige@iastate.edu>
+Description: Modern Parallel Coordinate Plots have been introduced in the 1980s as 
+    a way to visualize arbitrarily many numeric variables. This implementation
+    additionally allows categorical variables into the plots. We also make use of 
+    the ggplot2 layer system.
+License: GPL-3
 Imports: 
     ggplot2 (>= 3.2.0),
     dplyr,

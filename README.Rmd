@@ -1,10 +1,20 @@
 ---
-title: "Example"
-author: "Yawei Ge"
-date: "6/14/2019"
-output: rmarkdown::github_document
-always_allow_html: yes
+title: "ggpcp"
+author: "Yawei Ge, Heike Hofmann"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    keep_md: true
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+R package for creating parallel coordinate plots in the ggplot2 framework
+
+[![CRAN Status](http://www.r-pkg.org/badges/version/ggpcp)](https://cran.r-project.org/package=ggpcp) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/ggpcp)](http://www.r-pkg.org/pkg/ggpcp) 
+[![Travis-CI Build Status](https://travis-ci.org/heike/gglogo.svg?branch=master)](https://travis-ci.org/yaweige/ggpcp)
 
 ```{r warning = FALSE, message = FALSE}
 library(ggplot2)
