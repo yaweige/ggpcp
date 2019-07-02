@@ -21,4 +21,5 @@ gather_pcp <- function(data, columns) {
                             "level" = data_level,
                             "class" = data_class,
                             stringsAsFactors = FALSE)
+  gather_data
 }
