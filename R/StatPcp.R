@@ -104,34 +104,34 @@ StatPcp <- ggproto(
 
   },
 
-  # compute_layer = function(self, data, params, layout) {
-  #   # adjust function to avoid deleting all data
-  #   ggplot2:::check_required_aesthetics(
-  #     self$required_aes,
-  #     c(names(data), names(params)),
-  #     ggplot2:::snake_class(self)
-  #   )
-  #
-  #   # don't remove missing values - we don't have coordinates yet
-  #   # data <- remove_missing(data, params$na.rm,
-  #   #                        c(self$required_aes, self$non_missing_aes),
-  #   #                        snake_class(self),
-  #   #                        finite = TRUE
-  #   # )
-  #
-  #   # Trim off extra parameters
-  #   params <- params[intersect(names(params), self$parameters())]
-  #
-  #   args <- c(list(data = quote(data), scales = quote(scales)), params)
-  #   ggplot2:::dapply(data, "PANEL", function(data) {
-  #     scales <- layout$get_scales(data$PANEL[1])
-  #     tryCatch(do.call(self$compute_panel, args), error = function(e) {
-  #       warning("Computation failed in `", ggplot2:::snake_class(self), "()`:\n",
-  #               e$message, call. = FALSE)
-  #       ggplot2:::new_data_frame()
-  #     })
-  #   })
-  # },
+  compute_layer = function(self, data, params, layout) {
+    # adjust function to avoid deleting all data
+    ggplot2:::check_required_aesthetics(
+      self$required_aes,
+      c(names(data), names(params)),
+      ggplot2:::snake_class(self)
+    )
+
+    # don't remove missing values - we don't have coordinates yet
+    # data <- remove_missing(data, params$na.rm,
+    #                        c(self$required_aes, self$non_missing_aes),
+    #                        snake_class(self),
+    #                        finite = TRUE
+    # )
+
+    # Trim off extra parameters
+    params <- params[intersect(names(params), self$parameters())]
+
+    args <- c(list(data = quote(data), scales = quote(scales)), params)
+    ggplot2:::dapply(data, "PANEL", function(data) {
+      scales <- layout$get_scales(data$PANEL[1])
+      tryCatch(do.call(self$compute_panel, args), error = function(e) {
+        warning("Computation failed in `", ggplot2:::snake_class(self), "()`:\n",
+                e$message, call. = FALSE)
+        ggplot2:::new_data_frame()
+      })
+    })
+  },
   # want to calculate the parameters directly can be used for geom_segment and geom_ribbon
   # and how to arrange them properly in the same time
 

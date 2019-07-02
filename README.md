@@ -44,16 +44,16 @@ data(flea, package = "GGally")
 
 flea %>% 
   gather_pcp(1:7) %>%
-  group_by(name) %>%
+  group_by(name) %>%  # should go into transformation
   mutate(value = (level-min(level))/(max(level)-min(level))) %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp()
+  geom_pcp() # adding colour is possible once gather_pcp does not delete original data
 ```
 
 ![](README_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 ```r
-#  geom_pcp(aes(colour=species))
+#  geom_pcp(aes(colour=species)) 
 ```
 
 # Related work
