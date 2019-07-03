@@ -622,11 +622,6 @@ StatPcp <- ggproto(
       data_break_yend <- unlist(lapply(data_break_y, FUN = function(x) {
         x$data_break_yend
       }))
-
-      data_boxwidth <- data.frame(x = c(data_boxwidth$x, data_break_xstart),
-                                  y = c(data_boxwidth$y, data_break_ystart),
-                                  xend = c(data_boxwidth$xend, data_break_xend),
-                                  yend = c(data_boxwidth$yend, data_break_yend))
     }
 
     if (!is.null(breaks)) {
@@ -645,8 +640,7 @@ StatPcp <- ggproto(
     data_boxwidth$id <- rep(1:nobs, times = nrow(data_boxwidth)/nobs)
     datanames <- setdiff(names(data), c("name", "value", "level", "class"))
     # don't include the pcp specific variables - those are dealt with
-    finalnames <- names(data_boxwidth)
-    output_data <- left_join(data_boxwidth, data[,datanames], by = "id")
+    output_data <- left_join(data_boxwidth, unique(data[,datanames]), by = "id")
 
     output_data
   }
