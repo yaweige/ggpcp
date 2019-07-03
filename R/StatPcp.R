@@ -644,6 +644,9 @@ StatPcp <- ggproto(
     datanames <- names(data)
     finalnames <- names(data_boxwidth)
 
+    data_boxwidth$id <- rep(1:nobs, times = nrow(data_boxwidth)/nobs)
+    # output_data <- left_join(data_boxwidth, data, by = "id")
+    # browser()
     data_boxwidth
 
   }
