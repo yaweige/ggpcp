@@ -641,14 +641,14 @@ StatPcp <- ggproto(
                                   yend = c(data_boxwidth$yend, data_segment_yend))
     }
 
-    datanames <- names(data)
-    finalnames <- names(data_boxwidth)
 
     data_boxwidth$id <- rep(1:nobs, times = nrow(data_boxwidth)/nobs)
-    # output_data <- left_join(data_boxwidth, data, by = "id")
-    # browser()
-    data_boxwidth
+    datanames <- setdiff(names(data), c("name", "value", "level", "class"))
+    # don't include the pcp specific variables - those are dealt with
+    finalnames <- names(data_boxwidth)
+    output_data <- left_join(data_boxwidth, data[,datanames], by = "id")
 
+    output_data
   }
 )
 

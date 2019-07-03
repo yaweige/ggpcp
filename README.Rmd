@@ -46,8 +46,18 @@ flea %>%
   group_by(name) %>%  # should go into transformation
   mutate(value = (level-min(level))/(max(level)-min(level))) %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-#  geom_pcp() # adding colour is possible once gather_pcp does not delete original data
   geom_pcp(aes(colour=species)) 
+```
+
+```{r}
+flea %>% 
+  mutate(species = factor(species, levels = c("Heptapot.",  "Concinna", "Heikert."))) %>%
+  gather_pcp(1:7) %>%
+  group_by(name) %>%  # should go into transformation
+  mutate(value = (level-min(level))/(max(level)-min(level))) %>%
+  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
+  geom_pcp_box(boxwidth = 0.1, fill="grey50") +
+  geom_pcp(aes(colour=species), boxwidth = 0.1) 
 ```
 
 # Related work
