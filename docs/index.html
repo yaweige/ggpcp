@@ -98,6 +98,25 @@
 <a class="sourceLine" id="cb4-7" title="7"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp_box.html">geom_pcp_box</a></span>(<span class="dt">boxwidth =</span> <span class="fl">0.1</span>, <span class="dt">fill=</span><span class="st">"grey50"</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb4-8" title="8"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp.html">geom_pcp</a></span>(<span class="kw">aes</span>(<span class="dt">colour=</span>species), <span class="dt">boxwidth =</span> <span class="fl">0.1</span>) </a></code></pre></div>
 <p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p><code>ggpcp</code> deals with categorical variables by using the space on the y axis of a categorical variable to spread points out evenly. This allows us to track individual points through the parallel coordinate plot even in the presence of categorical variables.</p>
+<div id="another-look-at-the-titanic-data" class="section level2">
+<h2 class="hasAnchor">
+<a href="#another-look-at-the-titanic-data" class="anchor"></a>Another look at the Titanic Data</h2>
+<p>For categorical variables <code>ggpcp</code> presents a result similar to parsets by Kosara et al (2013).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">titanic &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>(Titanic)</a>
+<a class="sourceLine" id="cb5-2" title="2">titanic &lt;-<span class="st"> </span>titanic <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="st">  </span>purrr<span class="op">::</span><span class="kw"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span>(<span class="dt">.f =</span> <span class="cf">function</span>(x) <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep</a></span>(x, titanic<span class="op">$</span>Freq)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="op">-</span>Freq)</a>
+<a class="sourceLine" id="cb5-5" title="5"></a>
+<a class="sourceLine" id="cb5-6" title="6">titanic <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="st">  </span><span class="kw"><a href="reference/gather_pcp.html">gather_pcp</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">id =</span> id, <span class="dt">name =</span> name, <span class="dt">value =</span> value, <span class="dt">level =</span> level, <span class="dt">class =</span> class)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-9" title="9"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp.html">geom_pcp</a></span>(<span class="kw">aes</span>(<span class="dt">colour =</span> Survived), <span class="dt">alpha =</span> <span class="fl">0.01</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-10" title="10"><span class="st">  </span><span class="kw">scale_colour_manual</span>(<span class="dt">values=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"darkorange"</span>, <span class="st">"steelblue"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-11" title="11"><span class="st">  </span><span class="kw">guides</span>(<span class="dt">colour=</span><span class="kw">guide_legend</span>(<span class="dt">override.aes =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">alpha=</span><span class="dv">1</span>))) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-12" title="12"><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks=</span><span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="dt">labels=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(titanic)))</a></code></pre></div>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+</div>
 </div>
 <div id="related-work" class="section level1">
 <h1 class="hasAnchor">
@@ -110,6 +129,18 @@
 <div id="references" class="section level2">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
+<ul>
+<li>Hofmann H., Vendettuoli M.: Common Angle Plots as Perception-True Visualizations of Categorical Associations, IEEE Transactions on Visualization and Computer Graphics, 19(12), 2297-2305, 2013.</li>
+<li>Inselberg A., The Plane with Parallel Coordinates, The Visual Computer, 1(2), 69-91, 1985.</li>
+<li>Kosara R., Bendix F., Hauser H., Parallel Sets: Interactive Exploration and Visual Analysis of Categorical Data, IEEE Transactions on Visualization and Computer Graphics, 12(4), 558-568, 2006.</li>
+<li>Wegman, E., Hyperdimensional Data Analysis Using Parallel Coordinates, JASA, 85(411), 664-675, 1990.</li>
+<li>Schloerke B., Crowley J., Cook D., Briatte F., Marbach M., Thoen E., Elberg ., Larmarange J.: GGally: Extension to ‘ggplot2’, R package version 1.4.0.</li>
+<li>Schonlau M.: Visualizing Categorical Data Arising in the Health Sciences Using Hammock Plots, Proc. of Section on Statistical Graphics ASA, 2003.</li>
+<li>Venables W.N., Ripley B.D.: Modern Applied Statistics with S (4th ed), Springer, 2002.</li>
+<li>Wickham H., ggplot2: Elegant graphics for data analysis (2nd ed), Springer, 2016</li>
+<li>Wickham H., Tidy data. The Journal of Statistical Software, 59, 2014.</li>
+<li>Wilkinson L., The Grammar of Graphics. Statistics and Computing, Springer, 1999.</li>
+</ul>
 </div>
 </div>
   </div>

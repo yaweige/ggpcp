@@ -143,7 +143,6 @@ StatPcp <- ggproto(
     # make sure the output data_spread has the same correct expected column order
     data$name <- factor(data$name, levels = unique(data$name))
     data_spread <- spread(data[, c("id", "name", "value")], key = name, value = value)
-
     nobs <- max(data$id)
     ncol <- nrow(data)/nobs
     nvar <- length(levels(data$name))

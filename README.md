@@ -1,7 +1,7 @@
 ---
 title: "ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "July 03, 2019"
+date: "July 05, 2019"
 output: 
   html_document:
     keep_md: true
@@ -47,12 +47,78 @@ flea %>%
   group_by(name) %>%  # should go into transformation
   mutate(value = (level-min(level))/(max(level)-min(level))) %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-#  geom_pcp() # adding colour is possible once gather_pcp does not delete original data
   geom_pcp(aes(colour=species)) 
 ```
 
 ![](README_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
+
+```r
+flea %>% 
+  mutate(species = factor(species, levels = c("Heptapot.",  "Concinna", "Heikert."))) %>%
+  gather_pcp(1:7) %>%
+  group_by(name) %>%  # should go into transformation
+  mutate(value = (level-min(level))/(max(level)-min(level))) %>%
+  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
+  geom_pcp_box(boxwidth = 0.1, fill="grey50") +
+  geom_pcp(aes(colour=species), boxwidth = 0.1) 
+```
+
+![](README_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+`ggpcp` deals with categorical variables by using the space on the y axis of a categorical variable to spread points out evenly. This allows us to track individual points through the parallel coordinate plot even in the presence of categorical variables. 
+
+## Another look at the Titanic Data
+
+For categorical variables `ggpcp` presents a result similar to parsets by Kosara et al (2013). 
+
+
+```r
+titanic <- as.data.frame(Titanic)
+titanic <- titanic %>% 
+  purrr::map(.f = function(x) rep(x, titanic$Freq)) %>% 
+  as.data.frame() %>% select(-Freq)
+
+titanic %>% 
+  gather_pcp(1:4) %>%
+  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
+  geom_pcp(aes(colour = Survived), alpha = 0.01) +
+  scale_colour_manual(values=c("darkorange", "steelblue")) +
+  guides(colour=guide_legend(override.aes = list(alpha=1))) +
+  scale_x_continuous(breaks=1:4, labels=c(names(titanic)))
+```
+
+![](README_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+By setting break points between blocks of categorical variables, we can focus on the two-dimensional relationship between variables on adjacent axes:
+
+
+```r
+titanic %>% 
+  gather_pcp(1:4) %>%
+  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
+  geom_pcp(aes(colour = Class), alpha = 0.01, breaks=2:3) +
+#  scale_colour_manual(values=c("darkorange", "steelblue")) +
+  guides(colour=guide_legend(override.aes = list(alpha=1))) +
+  scale_x_continuous(breaks=1:4, labels=c(names(titanic)))
+```
+
+![](README_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
+To combine the option of tracking individuals with the focus on 2d relationships between axes, we introduce a box for each axis to allow the tracking. For the thousands of people on board the Titanic individual tracking is tricky, but with good eyesight and a large screen still manageable :)
+
+
+```r
+titanic %>% 
+  gather_pcp(1:4) %>%
+  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
+  geom_pcp_box(boxwidth=0.1, fill=NA) +
+  geom_pcp(aes(colour = Class), alpha = 0.01, boxwidth=0.1, breaks=2:3) +
+  guides(colour=guide_legend(override.aes = list(alpha=1))) +
+  scale_x_continuous(breaks=1:4+ 1:4*0.1-0.05, labels=c(names(titanic)))
+```
+
+![](README_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 # Related work
 
 Parallel coordinate plots have been implemented in analysis software since the mid 1980s (Inselberg 1985, Wegman 1990). Several packages in R are dedicated to visualizing parallel coordinate plots. 
@@ -67,3 +133,14 @@ The [bigPint](https://github.com/rstats-gsoc/gsoc2017/wiki/bigPint%3A-Big-multiv
 All of these implementations have in common that they describe highly specialized  plots - in the sense that there are tens of parameters describing construction, type, and appearance of the plot. While giving the user some flexibility this way, this approach goes a bit against the modular approach of the tidyverse, and in particular against the layered approach of ggplot2, i.e. the approaches make use of ggplot2, but are not native to the ggplot2 approach. 
 
 ## References
+
++ Hofmann H., Vendettuoli M.: Common Angle Plots as Perception-True Visualizations of Categorical Associations, IEEE Transactions on Visualization and Computer Graphics, 19(12), 2297-2305, 2013.
++ Inselberg A., The Plane with Parallel Coordinates, The Visual Computer, 1(2), 69-91, 1985.
++ Kosara R., Bendix F., Hauser H., Parallel Sets: Interactive Exploration and Visual Analysis of Categorical Data, IEEE Transactions on Visualization and Computer Graphics, 12(4), 558-568, 2006.
++ Wegman, E., Hyperdimensional Data Analysis Using Parallel Coordinates, JASA, 85(411), 664-675, 1990.
++ Schloerke B., Crowley J., Cook D., Briatte F., Marbach M., Thoen E., Elberg ., Larmarange J.: GGally: Extension to 'ggplot2', R package version 1.4.0.
++ Schonlau M.: Visualizing Categorical Data Arising in the Health Sciences Using Hammock Plots, Proc. of Section on Statistical Graphics ASA, 2003.
++ Venables W.N., Ripley B.D.: Modern Applied Statistics with S (4th ed), Springer, 2002.
++ Wickham H., ggplot2: Elegant graphics for data analysis (2nd ed), Springer, 2016
++ Wickham H., Tidy data. The Journal of Statistical Software, 59, 2014.
++ Wilkinson L., The Grammar of Graphics. Statistics and Computing, Springer, 1999. 
