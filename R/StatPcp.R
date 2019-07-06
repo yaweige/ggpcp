@@ -84,8 +84,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
 # for statPcp
 StatPcp <- ggproto(
   "StatPcp", Stat,
-  ### with this line of code, remove all the data??? - HH not any more. compute_layer is adjusted for that
-  #required_aes = c("id", "name", "value", "level", "class"),
+  required_aes = c("id", "name", "value", "level", "class"),
   default_aes = ggplot2::aes(
     id = id, name = name, value = value, level = level, class = class,
     width = 0.75, linetype = "solid", fontsize=5,
@@ -93,6 +92,10 @@ StatPcp <- ggproto(
     size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
     linewidth=.1, weight = 1),
 
+  setup_data = function (data, params) {
+    # here is where you could get rid of the grouping structure
+    data
+  },
 
   # want to figure out the number of observations
   # want to figure out the number of different classer of the variables

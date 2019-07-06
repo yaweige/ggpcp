@@ -112,7 +112,7 @@ GeomPcp <- ggproto("GeomPcp", Geom,
                    #   size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
                    #   linewidth=.1, weight = 1),
 
-                   default_aes = aes(colour = "black", size = 0.5, linetype = 1, alpha = NA),
+                   default_aes = aes(colour = "grey30", size = 0.5, linetype = 1, alpha = NA),
 
                    draw_panel = function(data, panel_params, coord,
                                          arrow = NULL,

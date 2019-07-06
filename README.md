@@ -1,7 +1,7 @@
 ---
 title: "ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "July 05, 2019"
+date: "July 06, 2019"
 output: 
   html_document:
     keep_md: true
@@ -85,7 +85,7 @@ titanic %>%
   geom_pcp(aes(colour = Survived), alpha = 0.01) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) +
-  scale_x_continuous(breaks=1:4, labels=c(names(titanic)))
+  scale_x_continuous(breaks=1:4, labels=c(names(titanic))) 
 ```
 
 ![](README_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
@@ -119,6 +119,51 @@ titanic %>%
 ```
 
 ![](README_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
+## Mixed data: categorical and numeric variables
+
+The `mtcars` data is terribly old, but serves a good purpose here. All of the variables are coded as numeric variables, even when they should, in fact, be factor variables. In a standard parallel coordinate plot we get the usual uninformative fishnet. 
+
+```r
+mtcars %>% 
+  gather_pcp(1:ncol(mtcars)) %>%
+  group_by(name) %>%  # should go into transformation
+  mutate(value = (level-min(level))/(max(level)-min(level))) %>%
+  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
+  geom_pcp(aes(colour = mpg)) +
+  scale_x_continuous(breaks=1:ncol(mtcars), labels=c(names(mtcars)))
+```
+
+![](README_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+Once the variables are coded properly as factor variables, we get a much more informative view:
+
+
+```r
+mtcars %>% 
+  mutate(cyl = factor(cyl),
+         vs = factor(vs),
+         am = factor(am),
+         gear=factor(gear),
+         carb = factor(carb)) %>%
+  gather_pcp(1:ncol(mtcars)) %>%
+  group_by(name) %>%  # should go into transformation
+  mutate(value = (level-min(level))/(max(level)-min(level))) %>%
+  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
+  geom_pcp(aes(colour = mpg), boxwidth=0.1) 
+```
+
+![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+
+```r
+  scale_x_continuous(breaks=1:ncol(mtcars), labels=c(names(mtcars)))
+```
+
+```
+## <ScaleContinuousPosition>
+##  Range:  
+##  Limits:    0 --    1
+```
+
 # Related work
 
 Parallel coordinate plots have been implemented in analysis software since the mid 1980s (Inselberg 1985, Wegman 1990). Several packages in R are dedicated to visualizing parallel coordinate plots. 
@@ -137,10 +182,10 @@ All of these implementations have in common that they describe highly specialize
 + Hofmann H., Vendettuoli M.: Common Angle Plots as Perception-True Visualizations of Categorical Associations, IEEE Transactions on Visualization and Computer Graphics, 19(12), 2297-2305, 2013.
 + Inselberg A., The Plane with Parallel Coordinates, The Visual Computer, 1(2), 69-91, 1985.
 + Kosara R., Bendix F., Hauser H., Parallel Sets: Interactive Exploration and Visual Analysis of Categorical Data, IEEE Transactions on Visualization and Computer Graphics, 12(4), 558-568, 2006.
-+ Wegman, E., Hyperdimensional Data Analysis Using Parallel Coordinates, JASA, 85(411), 664-675, 1990.
 + Schloerke B., Crowley J., Cook D., Briatte F., Marbach M., Thoen E., Elberg ., Larmarange J.: GGally: Extension to 'ggplot2', R package version 1.4.0.
 + Schonlau M.: Visualizing Categorical Data Arising in the Health Sciences Using Hammock Plots, Proc. of Section on Statistical Graphics ASA, 2003.
 + Venables W.N., Ripley B.D.: Modern Applied Statistics with S (4th ed), Springer, 2002.
++ Wegman, E., Hyperdimensional Data Analysis Using Parallel Coordinates, JASA, 85(411), 664-675, 1990.
 + Wickham H., ggplot2: Elegant graphics for data analysis (2nd ed), Springer, 2016
 + Wickham H., Tidy data. The Journal of Statistical Software, 59, 2014.
 + Wilkinson L., The Grammar of Graphics. Statistics and Computing, Springer, 1999. 
