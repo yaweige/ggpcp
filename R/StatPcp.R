@@ -724,7 +724,7 @@ arrange_fac_by_ystart <- function(data_spread, start_position, end_position, obs
     for (i in 1:length(z)) {
       x <- replace(x,
                    list = which(y == names(z)[i]),
-                   z[[i]][rank(x[y == names(z)[i]])])
+                   z[[i]][rank(x[y == names(z)[i]], ties.method="random")])
     }
     x
   },
@@ -813,7 +813,7 @@ arrange_fac_by_ystart_bandid <- function(data_spread, start_position, end_positi
         position_in_box <- z[[i]][(bb[j]-aa$Freq[j] + 1):bb[j]]
         x <- replace(x,
                      list = which(data_spread$bandid == aa$bandid[j]),
-                     values = position_in_box[rank(x[data_spread$bandid == aa$bandid[j]])]
+                     values = position_in_box[rank(x[data_spread$bandid == aa$bandid[j]], ties.method="random")]
         )
         # 0622new: A new added part to label the bandid in the process
         x_bandid <- replace(x_bandid,
