@@ -1,7 +1,7 @@
 ---
 title: "ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "July 06, 2019"
+date: "July 08, 2019"
 output: 
   html_document:
     keep_md: true
@@ -122,7 +122,7 @@ titanic %>%
 
 ## Mixed data: categorical and numeric variables
 
-The `mtcars` data is terribly old, but serves a good purpose here. All of the variables are coded as numeric variables, even when they should, in fact, be factor variables. In a standard parallel coordinate plot we get the usual uninformative fishnet. 
+The `mtcars` data is terribly old, but serves a good purpose here. All of the variables are coded as numeric variables, even when they should, in fact, be factor variables. In a standard parallel coordinate plot we get the usual uninformative fishnet between categorical variables such as `vs`, `am`, and `gear`, but also visible for variable `cyl`: 
 
 ```r
 mtcars %>% 
@@ -135,6 +135,7 @@ mtcars %>%
 ```
 
 ![](README_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
 Once the variables are coded properly as factor variables, we get a much more informative view:
 
 
@@ -149,20 +150,18 @@ mtcars %>%
   group_by(name) %>%  # should go into transformation
   mutate(value = (level-min(level))/(max(level)-min(level))) %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp(aes(colour = mpg), boxwidth=0.1) 
+  geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
+  geom_pcp(aes(colour = mpg), boxwidth=0.1, breaks=9:10, size=1, alpha =0.9) +
+  scale_x_continuous(breaks=1:ncol(mtcars) + 
+                       0.1*cumsum(c(0,1, 0,0,0,0,0,1,1,1,1)) -
+                       0.05*c(0,1, 0,0,0,0,0,1,1,1,1), labels=c(names(mtcars))) +
+  scale_colour_gradient2("mpg", mid="grey50", midpoint = 20) +
+  theme_bw()
 ```
 
 ![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
-```r
-  scale_x_continuous(breaks=1:ncol(mtcars), labels=c(names(mtcars)))
-```
-
-```
-## <ScaleContinuousPosition>
-##  Range:  
-##  Limits:    0 --    1
-```
+What becomes obvious in this plot, is that the miles per gallons (mpg) for each - encoded as the first variable in the plot and as color of the lines - is correlated strongly with all of the variables, not just the numeric variables. A large number of cylinders (cyl), a V-shaped engine (vs = 0), an automatic transmission (am = 0), a low number of forward gears and a high number of carburetors are related to a low value of mpg.
 
 # Related work
 
