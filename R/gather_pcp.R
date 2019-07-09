@@ -8,7 +8,9 @@
 #' @importFrom dplyr left_join
 
 gather_pcp <- function(data, columns) {
-  data <- data[,columns]
+  originaldata <- data # HH: fix for below
+  data <- data[,columns] # HH: that deletes EVERYTHING else that's not shown in the parallel coordinate plot
+  # ggplot will delete columns that are not needed after the plot specification is done.
 
   data_id <- rep(1:nrow(data), ncol(data))
   data_name <- rep(colnames(data), each = nrow(data))
@@ -22,9 +24,9 @@ gather_pcp <- function(data, columns) {
                             "level" = data_level,
                             "class" = data_class,
                             stringsAsFactors = FALSE)
-  data$id <- 1:nrow(data)
-  add_names <- c("id", setdiff(names(data), names(gather_data)))
+  originaldata$id <- 1:nrow(originaldata)
+  add_names <- c("id", setdiff(names(originaldata), names(gather_data)))
 
-  gather_data_wide <- left_join(gather_data, data[, add_names], by="id")
+  gather_data_wide <- left_join(gather_data, originaldata[, add_names], by="id")
   gather_data_wide
 }
