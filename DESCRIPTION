@@ -16,7 +16,7 @@ Imports:
     dplyr,
     tidyr
 Depends: 
-    R (>= 3.5)
+    R (>= 3.4)
 Remotes: 
     tidyverse/ggplot2
 Encoding: UTF-8
