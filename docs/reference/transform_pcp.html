@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • ggpcp</title>
+<title>Transforming values in a parallel coordinate plot — transform_pcp • ggpcp</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,10 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Transforming values in a parallel coordinate plot — transform_pcp" />
+
+<meta property="og:description" content="Transforming values in a parallel coordinate plot" />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -47,7 +50,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -89,84 +92,43 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Transforming values in a parallel coordinate plot</h1>
+    
+    <div class="hidden name"><code>transform_pcp.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p>Transforming values in a parallel coordinate plot</p>
+    
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
-
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="gather_pcp.html">gather_pcp()</a></code> </p>
-        </td>
-        <td><p>gather for parallel coordinate plot</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="geom_pcp.html">geom_pcp()</a></code> </p>
-        </td>
-        <td><p>Parallel coordinate plot for both numeric and categorical data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="geom_pcp_band.html">geom_pcp_band()</a></code> </p>
-        </td>
-        <td><p>Bands for the parallel coordinate plot</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="geom_pcp_box.html">geom_pcp_box()</a></code> </p>
-        </td>
-        <td><p>Boxes for the levels in each factor variable in parallel coordinate plot</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="stat_pcp.html">stat_pcp()</a></code> </p>
-        </td>
-        <td><p>Parallel coordinate plot for both numeric and categorical data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="stat_pcp_band.html">stat_pcp_band()</a></code> </p>
-        </td>
-        <td><p>Bands for the parallel coordinate plot</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="stat_pcp_box.html">stat_pcp_box()</a></code> </p>
-        </td>
-        <td><p>Boxes for the levels in each factor variable in parallel coordinate plot</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="transform_pcp.html">transform_pcp()</a></code> </p>
-        </td>
-        <td><p>Transforming values in a parallel coordinate plot</p></td>
-      </tr>
-    </tbody>
+    <pre class="usage"><span class='fu'>transform_pcp</span>(<span class='no'>data</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"minmax"</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>data</th>
+      <td><p>data frame as returned by gather_pcp</p></td>
+    </tr>
+    <tr>
+      <th>method</th>
+      <td><p>string specifying the method that should be used for scaling the values
+in a parallel coordinate plot. One of "minmax' (default),</p></td>
+    </tr>
     </table>
-  </div>
+    
 
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
-    </ul>
+      <li><a href="#arguments">Arguments</a></li>
+                </ul>
+
   </div>
 </div>
 

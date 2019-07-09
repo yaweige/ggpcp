@@ -128,8 +128,7 @@ mtcars %>%
          gear=factor(gear),
          carb = factor(carb)) %>%
   gather_pcp(1:ncol(mtcars)) %>%
-  group_by(name) %>%  # should go into transformation
-  mutate(value = (level-min(level))/(max(level)-min(level))) %>%
+  transform_pcp(method = "minmax") %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
   geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
   geom_pcp(aes(colour = mpg), boxwidth=0.1, breaks=9:10, size=1, alpha =0.9) +
@@ -142,6 +141,29 @@ mtcars %>%
 
 What becomes obvious in this plot, is that the miles per gallons (mpg) for each - encoded as the first variable in the plot and as color of the lines - is correlated strongly with all of the variables, not just the numeric variables. A large number of cylinders (cyl), a V-shaped engine (vs = 0), an automatic transmission (am = 0), a low number of forward gears and a high number of carburetors are related to a low value of mpg (red lines).
 
+## Aesthetics
+
+`gather_pcp` takes the specified columns of the data set and turns them into a long form, creating the new variables `id`, `name`, `value`, `level` and `class`. 
+Additionally, the original variables are kept for a more convenient specification of aesthetics in the plot: 
+
+```{r}
+mtcars %>% 
+  gather_pcp(columns = 1:ncol(mtcars)) %>%
+  head()
+
+mtcars %>%
+  mutate(cyl = factor(cyl),
+         vs = factor(vs),
+         am = factor(am),
+         gear=factor(gear),
+         carb = factor(carb)) %>%
+  gather_pcp(columns = 1:3) %>%
+  transform_pcp() %>%
+  ggplot(aes(id = id, name= name, value=value, level = level, class=class, colour = am)) +
+  geom_pcp() +
+  scale_x_continuous(breaks=1:3, labels = names(mtcars)[1:3])
+```
+I need a better example for this.
 
 # Related work
 
