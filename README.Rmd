@@ -128,7 +128,7 @@ mtcars %>%
          gear=factor(gear),
          carb = factor(carb)) %>%
   gather_pcp(1:ncol(mtcars)) %>%
-  transform_pcp(method = "minmax") %>%
+  transform_pcp(method = "uniminmax") %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
   geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
   geom_pcp(aes(colour = mpg), boxwidth=0.1, breaks=9:10, size=1, alpha =0.9) +
