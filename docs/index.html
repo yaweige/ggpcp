@@ -199,7 +199,8 @@
 <a class="sourceLine" id="cb12-9" title="9"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">id =</span> id, <span class="dt">name=</span> name, <span class="dt">value=</span>value, <span class="dt">level =</span> level, <span class="dt">class=</span>class, <span class="dt">colour =</span> am)) <span class="op">+</span></a>
 <a class="sourceLine" id="cb12-10" title="10"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp.html">geom_pcp</a></span>() <span class="op">+</span></a>
 <a class="sourceLine" id="cb12-11" title="11"><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">labels =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(mtcars)[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>])</a></code></pre></div>
-<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="700"> I need a better example for this.</p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p>I need a better example for this. See also: <a href="https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp" class="uri">https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp</a></p>
 </div>
 </div>
 <div id="related-work" class="section level1">
@@ -209,7 +210,13 @@
 <p>Using base plots the main function for drawing parallel coordinate plots is <code>parcoord</code> implemented in MASS (Venables and Ripley 2004). The package <code>gclus</code> (Hurley 2019) implements <code>cparcoord</code> to include panel color as a representation of the strength of a correlation between neighboring axes.</p>
 <p>Within the ggplot2 environment there are several packages implementing parallel coordinate plots. For numeric variables there’s the function <code>ggparcoord</code> from the <code>GGally</code> package, for categorical variables the <code>ggparallel</code> package provides an implementation of pcp-like plots, such as the Hammock plot (Schonlau 2003) and parsets (Kosara et al, 2013).</p>
 <p>The <a href="https://github.com/rstats-gsoc/gsoc2017/wiki/bigPint%3A-Big-multivariate-data-plotted-interactively">bigPint</a> Google Summer of Code project 2017 implemented static and interactive versions of parallel coordinate plots within the framework of plotting large data interactively. These functions are meant for exploration and discovery and are not fully parameterized for their appearance.</p>
-<p>All of these implementations have in common that they describe highly specialized plots - in the sense that there are tens of parameters describing construction, type, and appearance of the plot. While giving the user some flexibility this way, this approach goes a bit against the modular approach of the tidyverse, and in particular against the layered approach of ggplot2, i.e. the approaches make use of ggplot2, but are not native to the ggplot2 approach.</p>
+</div>
+<div id="motivation-for-the-re-implementation" class="section level1">
+<h1 class="hasAnchor">
+<a href="#motivation-for-the-re-implementation" class="anchor"></a>Motivation for the Re-implementation</h1>
+<p>As can be seen from the examples above, there are a lot of approaches to parallel coordinate plots, so why do we need another implementation?</p>
+<p>All of the implementations described above have in common that they describe highly specialized plots - in the sense that there are tens of parameters describing construction, type, and appearance of the plot. While giving the user some flexibility this way, this approach goes against the modular approach of the tidyverse, and in particular against the layered approach of ggplot2, i.e. at best the approaches make use of ggplot2, but they do not make use of the ideas behind ggplot2.</p>
+<p>The main idea of <code>ggpcp</code> is that we separate the data transformations from the visualization, i.e. rather than working with a single function to draw a plot, we are providing a set of functions that work together.</p>
 <div id="references" class="section level2">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>

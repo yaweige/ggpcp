@@ -1,7 +1,7 @@
 ---
 title: "ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "July 08, 2019"
+date: "July 11, 2019"
 output: 
   html_document:
     keep_md: true
@@ -147,8 +147,7 @@ mtcars %>%
          gear=factor(gear),
          carb = factor(carb)) %>%
   gather_pcp(1:ncol(mtcars)) %>%
-  group_by(name) %>%  # should go into transformation
-  mutate(value = (level-min(level))/(max(level)-min(level))) %>%
+  transform_pcp(method = "minmax") %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
   geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
   geom_pcp(aes(colour = mpg), boxwidth=0.1, breaks=9:10, size=1, alpha =0.9) +
@@ -161,7 +160,55 @@ mtcars %>%
 
 ![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
-What becomes obvious in this plot, is that the miles per gallons (mpg) for each - encoded as the first variable in the plot and as color of the lines - is correlated strongly with all of the variables, not just the numeric variables. A large number of cylinders (cyl), a V-shaped engine (vs = 0), an automatic transmission (am = 0), a low number of forward gears and a high number of carburetors are related to a low value of mpg.
+What becomes obvious in this plot, is that the miles per gallons (mpg) for each - encoded as the first variable in the plot and as color of the lines - is correlated strongly with all of the variables, not just the numeric variables. A large number of cylinders (cyl), a V-shaped engine (vs = 0), an automatic transmission (am = 0), a low number of forward gears and a high number of carburetors are related to a low value of mpg (red lines).
+
+## Aesthetics
+
+`gather_pcp` takes the specified columns of the data set and turns them into a long form, creating the new variables `id`, `name`, `value`, `level` and `class`. 
+Additionally, the original variables are kept for a more convenient specification of aesthetics in the plot: 
+
+
+```r
+mtcars %>% 
+  gather_pcp(columns = 1:ncol(mtcars)) %>%
+  head()
+```
+
+```
+##   id name value level   class  mpg cyl disp  hp drat    wt  qsec vs am
+## 1  1  mpg    21  21.0 numeric 21.0   6  160 110 3.90 2.620 16.46  0  1
+## 2  2  mpg    21  21.0 numeric 21.0   6  160 110 3.90 2.875 17.02  0  1
+## 3  3  mpg  22.8  22.8 numeric 22.8   4  108  93 3.85 2.320 18.61  1  1
+## 4  4  mpg  21.4  21.4 numeric 21.4   6  258 110 3.08 3.215 19.44  1  0
+## 5  5  mpg  18.7  18.7 numeric 18.7   8  360 175 3.15 3.440 17.02  0  0
+## 6  6  mpg  18.1  18.1 numeric 18.1   6  225 105 2.76 3.460 20.22  1  0
+##   gear carb
+## 1    4    4
+## 2    4    4
+## 3    4    1
+## 4    3    1
+## 5    3    2
+## 6    3    1
+```
+
+```r
+mtcars %>%
+  mutate(cyl = factor(cyl),
+         vs = factor(vs),
+         am = factor(am),
+         gear=factor(gear),
+         carb = factor(carb)) %>%
+  gather_pcp(columns = 1:3) %>%
+  transform_pcp() %>%
+  ggplot(aes(id = id, name= name, value=value, level = level, class=class, colour = am)) +
+  geom_pcp() +
+  scale_x_continuous(breaks=1:3, labels = names(mtcars)[1:3])
+```
+
+![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
+I need a better example for this.
+See also: https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp
 
 # Related work
 
@@ -174,11 +221,20 @@ Within the ggplot2 environment there are several packages implementing parallel 
 The [bigPint](https://github.com/rstats-gsoc/gsoc2017/wiki/bigPint%3A-Big-multivariate-data-plotted-interactively) Google Summer of Code project  2017 implemented static and interactive versions of parallel coordinate plots within the framework of plotting large data interactively. These functions are meant for exploration and discovery and are not fully parameterized for their appearance.
 
 
-All of these implementations have in common that they describe highly specialized  plots - in the sense that there are tens of parameters describing construction, type, and appearance of the plot. While giving the user some flexibility this way, this approach goes a bit against the modular approach of the tidyverse, and in particular against the layered approach of ggplot2, i.e. the approaches make use of ggplot2, but are not native to the ggplot2 approach. 
+# Motivation for the Re-implementation
+
+As can be seen from the examples above, there are a lot of approaches to parallel coordinate plots, so why do we need another implementation?
+
+All of the implementations described above have in common that they describe highly specialized  plots - in the sense that there are tens of parameters describing construction, type, and appearance of the plot. While giving the user some flexibility this way, this approach goes against the modular approach of the tidyverse, and in particular against the layered approach of ggplot2, i.e. at best the approaches make use of ggplot2, but they do not make use of the ideas behind ggplot2. 
+
+The main idea of `ggpcp` is that we separate the data transformations from the visualization, i.e. rather than working with a single function to draw a plot, we are providing a set of functions that work together.
+
 
 ## References
 
-+ Hofmann H., Vendettuoli M.: Common Angle Plots as Perception-True Visualizations of Categorical Associations, IEEE Transactions on Visualization and Computer Graphics, 19(12), 2297-2305, 2013.
++ Hofmann H., Vendettuoli M.: Common Angle Plots as Perception-True Visualizations of Categorical Associations, IEEE Transactions on Visualization and Computer Graphics, 19(12), 2297-2305, 2013. doi: 10.1109/TVCG.2013.140
++ Hurley C.: gclus: Clustering Graphics. R package version 1.3.2.
+  https://CRAN.R-project.org/package=gclus
 + Inselberg A., The Plane with Parallel Coordinates, The Visual Computer, 1(2), 69-91, 1985.
 + Kosara R., Bendix F., Hauser H., Parallel Sets: Interactive Exploration and Visual Analysis of Categorical Data, IEEE Transactions on Visualization and Computer Graphics, 12(4), 558-568, 2006.
 + Schloerke B., Crowley J., Cook D., Briatte F., Marbach M., Thoen E., Elberg ., Larmarange J.: GGally: Extension to 'ggplot2', R package version 1.4.0.
