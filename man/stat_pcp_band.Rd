@@ -6,7 +6,7 @@
 \usage{
 stat_pcp_band(mapping = NULL, data = NULL, geom = "ribbon",
   position = "identity", ..., freespace = 0.1, boxwidth = 0,
-  rugwidth = 0, interwidth = 1, breaks = NULL, na.rm = FALSE,
+  rugwidth = 0, interwidth = 1, breakpoint = NULL, na.rm = FALSE,
   show.legend = NA, inherit.aes = TRUE)
 }
 \arguments{
@@ -48,7 +48,7 @@ to the paired geom/stat.}
 \item{interwidth}{The width for the lines between every neighboring variables, either
 a scalar or a vector.}
 
-\item{breaks}{To break three or more factors into peices}
+\item{breakpoint}{To break three or more factors into peices}
 
 \item{na.rm}{If `FALSE`, the default, missing values are removed with
 a warning. If `TRUE`, missing values are silently removed.}

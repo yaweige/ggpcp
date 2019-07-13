@@ -6,7 +6,7 @@
 \usage{
 geom_pcp(mapping = NULL, data = NULL, stat = "pcp",
   position = "identity", ..., freespace = 0.1, boxwidth = 0,
-  rugwidth = 0, interwidth = 1, breaks = NULL, arrow = NULL,
+  rugwidth = 0, interwidth = 1, breakpoint = NULL, arrow = NULL,
   arrow.fill = NULL, lineend = "butt", linejoin = "round",
   na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)
 }
@@ -51,7 +51,7 @@ to the paired geom/stat.
 \item{interwidth}{The width for the lines between every neighboring variables, either
 a scalar or a vector.}
 
-\item{breaks}{To break three or more factors into peices}
+\item{breakpoint}{To break three or more factors into peices}
 
 \item{arrow}{specification for arrow heads, as created by arrow()}
 
