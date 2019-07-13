@@ -44,7 +44,7 @@
 #' @param rugwidth The width of the rugs for numeric variable
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
-#' @param breaks To break three or more factors into peices
+#' @param breakpoint To break three or more factors into peices
 #'
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange
@@ -58,7 +58,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
                      boxwidth = 0,
                      rugwidth = 0,
                      interwidth = 1,
-                     breaks = NULL,
+                     breakpoint = NULL,
                      na.rm = FALSE,
                      show.legend = NA,
                      inherit.aes = TRUE) {
@@ -76,7 +76,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
       interwidth = interwidth,
-      breaks = breaks,
+      breakpoint = breakpoint,
       ...
     )
   )
@@ -141,7 +141,7 @@ StatPcp <- ggproto(
   # or we can put the attribute in the function prarameters?
   compute_panel = function(data, scales, freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
-                           breaks = NULL) {
+                           breakpoint = NULL) {
     # make adjustment to accept proper data set
     # make sure the output data_spread has the same correct expected column order
     data$name <- factor(data$name, levels = unique(data$name))
@@ -186,7 +186,7 @@ StatPcp <- ggproto(
     # several possible combinations: num to num, num to factor, factor to num, factor to factor
     # need an algrothm to do this classification, write this function in a different place
     # we use the function: classify here
-    classification <- classify(classpcp, breaks = breaks)
+    classification <- classify(classpcp, breakpoint = breakpoint)
 
     # for num to num, set up
     if (!length(classification$num2num) == 0) {
@@ -454,7 +454,7 @@ StatPcp <- ggproto(
     # There are some parts of those modifications above should be integrated to the original calculation for better performance
     # is there possibility that this is problem can be sovled using same band assignment at once as in usual case, instead of recursively calculate that?
 
-    if (!is.null(breaks)) {
+    if (!is.null(breakpoint)) {
       #continuous_fac_all
       #continuous_fac_all_list
       #break_position
@@ -590,7 +590,7 @@ StatPcp <- ggproto(
 
     # add parallel lines(segments, rugs) after adjusted for boxwidth
     # add segments for boxes
-    segment_which <- which(!(data_final$x %in% breaks))
+    segment_which <- which(!(data_final$x %in% breakpoint))
     segment_xstart <- data_final$x[segment_which]
 
     data_segment_xstart <- boxwidth_xstart[segment_xstart]
@@ -605,17 +605,17 @@ StatPcp <- ggproto(
                              data_final[which(data_final$xend == length(classpcp)), "yend"])
     data_segment_yend <- data_segment_ystart
 
-    if (!is.null(breaks)) {
+    if (!is.null(breakpoint)) {
       # lines for the break points
       # a naive try, This is one choice(no sorted lines)
-      breaks_which <- which(data_final$x %in% breaks)
-      breaks_xstart <- data_final$x[breaks_which]
-      data_break_xstart <-  boxwidth_xstart[breaks_xstart]
-      data_break_xend <- boxwidth_xend[breaks_xstart]
+      breakpoint_which <- which(data_final$x %in% breakpoint)
+      breakpoint_xstart <- data_final$x[breakpoint_which]
+      data_break_xstart <-  boxwidth_xstart[breakpoint_xstart]
+      data_break_xend <- boxwidth_xend[breakpoint_xstart]
       # we need to distinguish between the replicated variables, also used in above modifications
       # is this safe?: using different selections, can they match each other(in this break case, they are all inside factor blocks, they should match)
-      # data_break_ystart <- data_final$yend[which(data_final$xend %in% breaks)]
-      # data_break_yend <- data_final$y[breaks_which]
+      # data_break_ystart <- data_final$yend[which(data_final$xend %in% breakpoint)]
+      # data_break_yend <- data_final$y[breakpoint_which]
 
       # we need to make sure the the x, y, xend, yend match each other, now it is ensured by that the calculations in fac2fac related chuncks
       data_break_ystart <- unlist(lapply(data_break_y, FUN = function(x) {
@@ -626,7 +626,7 @@ StatPcp <- ggproto(
       }))
     }
 
-    if (!is.null(breaks)) {
+    if (!is.null(breakpoint)) {
       data_boxwidth <- data.frame(x = c(data_boxwidth$x, data_segment_xstart, data_break_xstart),
                                   y = c(data_boxwidth$y, data_segment_ystart, data_break_ystart),
                                   xend = c(data_boxwidth$xend, data_segment_xend, data_break_xend),
@@ -653,8 +653,8 @@ StatPcp <- ggproto(
 # for num to factor, we use lines
 # for factor to num, we use lines
 # for factor to factor, we use ribbons
-# 0622new: accomodate breaks
-classify <- function(classpcp, breaks) {
+# 0622new: accomodate breakpoint
+classify <- function(classpcp, breakpoint) {
   classpcp <- as.numeric(classpcp %in% c("numeric", "integer"))
   classpcp_diff <- diff(classpcp)
   num2fac <- (1:(length(classpcp)-1))[classpcp_diff == -1]
@@ -663,8 +663,8 @@ classify <- function(classpcp, breaks) {
   num2num <- (1:(length(classpcp)-1))[classpcp_diff == 0 & classpcp[-length(classpcp)] == TRUE]
   fac2fac <- (1:(length(classpcp)-1))[classpcp_diff == 0 & classpcp[-length(classpcp)] == FALSE]
 
-  # breaks come in, need to check breaks are suitable
-  fac2fac <- sort(c(fac2fac, breaks))
+  # breakpoint come in, need to check breakpoint are suitable
+  fac2fac <- sort(c(fac2fac, breakpoint))
 
   classification <-  list(num2num = num2num,
                           num2fac = num2fac,

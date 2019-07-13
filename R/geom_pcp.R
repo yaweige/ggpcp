@@ -46,7 +46,7 @@
 #' @param rugwidth The width of the rugs for numeric variable
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
-#' @param breaks To break three or more factors into peices
+#' @param breakpoint To break three or more factors into peices
 #' @param arrow specification for arrow heads, as created by arrow()
 #' @param arrow.fill fill colour to use for the arrow head (if closed). NULL means use colour aesthetic
 #' @param lineend Line end style (round, butt, square)
@@ -62,7 +62,7 @@ geom_pcp <- function(mapping = NULL, data = NULL,
                      boxwidth = 0,
                      rugwidth = 0,
                      interwidth = 1,
-                     breaks = NULL,
+                     breakpoint = NULL,
                      arrow = NULL,
                      arrow.fill = NULL,
                      lineend = "butt",
@@ -83,7 +83,7 @@ geom_pcp <- function(mapping = NULL, data = NULL,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
       interwidth = interwidth,
-      breaks = breaks,
+      breakpoint = breakpoint,
       arrow = arrow,
       arrow.fill = arrow.fill,
       lineend = lineend,

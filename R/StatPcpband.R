@@ -42,7 +42,7 @@
 #' @param rugwidth The width of the rugs for numeric variable
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
-#' @param breaks To break three or more factors into peices
+#' @param breakpoint To break three or more factors into peices
 #'
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange select mutate summarise
@@ -57,7 +57,7 @@ stat_pcp_band <- function(mapping = NULL, data = NULL,
                           boxwidth = 0,
                           rugwidth = 0,
                           interwidth = 1,
-                          breaks = NULL,
+                          breakpoint = NULL,
                           na.rm = FALSE,
                           show.legend = NA,
                           inherit.aes = TRUE) {
@@ -75,7 +75,7 @@ stat_pcp_band <- function(mapping = NULL, data = NULL,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
       interwidth = interwidth,
-      breaks = breaks,
+      breakpoint = breakpoint,
       ...
     )
   )
@@ -99,7 +99,7 @@ StatPcpband <- ggproto(
 
   compute_panel = function(data, scales, freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
-                           breaks = NULL) {
+                           breakpoint = NULL) {
 
 
     # make adjustment to accept proper data set
@@ -144,7 +144,7 @@ StatPcpband <- ggproto(
     # at this time, data_spread is like the original data set, with columns properly defined
     # assume numeric variables are properly scaled into 0-1
 
-    classification <- classify(classpcp, breaks = breaks)
+    classification <- classify(classpcp, breakpoint = breakpoint)
 
     # for factor to factor, set up
 
@@ -216,7 +216,7 @@ StatPcpband <- ggproto(
 
       # This part is new for bands
 
-      # a better way of calculating bands may be applying the calculation during the calculation of lines for breaks,
+      # a better way of calculating bands may be applying the calculation during the calculation of lines for breakpoint,
       # but that will still need some ideas from here. In generally, we could think breaking at any possible position,
       # and decide the bandid to pass to next sub-factor block according to if we really want to break
 

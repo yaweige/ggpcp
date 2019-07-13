@@ -44,7 +44,7 @@
 #' @param rugwidth The width of the rugs for numeric variable
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
-#' @param breaks To break three or more factors into peices
+#' @param breakpoint To break three or more factors into peices
 #' @import ggplot2
 #' @export geom_pcp_band
 
@@ -56,7 +56,7 @@ geom_pcp_band <- function(mapping = NULL, data = NULL,
                           boxwidth = 0,
                           rugwidth = 0,
                           interwidth = 1,
-                          breaks = NULL,
+                          breakpoint = NULL,
                           na.rm = FALSE,
                           show.legend = NA,
                           inherit.aes = TRUE) {
@@ -73,7 +73,7 @@ geom_pcp_band <- function(mapping = NULL, data = NULL,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
       interwidth = interwidth,
-      breaks = breaks,
+      breakpoint = breakpoint,
       na.rm = na.rm,
       ...
     )
