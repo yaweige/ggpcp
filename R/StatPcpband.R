@@ -143,6 +143,9 @@ StatPcpband <- ggproto(
 
     # at this time, data_spread is like the original data set, with columns properly defined
     # assume numeric variables are properly scaled into 0-1
+    if (is.character(breakpoint)) {
+      breakpoint <- which(names(data_spread) %in% breakpoint) - 1
+    }
 
     classification <- classify(classpcp, breakpoint = breakpoint)
 

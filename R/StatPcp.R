@@ -186,6 +186,12 @@ StatPcp <- ggproto(
     # several possible combinations: num to num, num to factor, factor to num, factor to factor
     # need an algrothm to do this classification, write this function in a different place
     # we use the function: classify here
+
+    # if the names of orignal varibles have "id", something might be wrong
+    if (is.character(breakpoint)) {
+      breakpoint <- which(names(data_spread) %in% breakpoint) - 1
+    }
+
     classification <- classify(classpcp, breakpoint = breakpoint)
 
     # for num to num, set up
