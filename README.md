@@ -1,7 +1,7 @@
 ---
 title: "ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "July 11, 2019"
+date: "July 23, 2019"
 output: 
   html_document:
     keep_md: true
@@ -11,9 +11,12 @@ output:
 
 R package for creating parallel coordinate plots in the ggplot2 framework
 
-[![CRAN Status](http://www.r-pkg.org/badges/version/ggpcp)](https://cran.r-project.org/package=ggpcp) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/ggpcp)](http://www.r-pkg.org/pkg/ggpcp) 
-[![Travis build status](https://travis-ci.org/yaweige/ggpcp.svg?branch=master)](https://travis-ci.org/yaweige/ggpcp)
 
+```r
+# [![CRAN Status](http://www.r-pkg.org/badges/version/ggpcp)](https://cran.r-project.org/package=ggpcp) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/ggpcp)](http://www.r-pkg.org/pkg/ggpcp) 
+
+# [![Travis build status](https://travis-ci.org/yaweige/ggpcp.svg?branch=master)](https://travis-ci.org/yaweige/ggpcp)
+```
 
 
 # Installation
@@ -97,7 +100,7 @@ By setting break points between blocks of categorical variables, we can focus on
 titanic %>% 
   gather_pcp(1:4) %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
-  geom_pcp(aes(colour = Class), alpha = 0.01, breaks=2:3) +
+  geom_pcp(aes(colour = Class), alpha = 0.01, breakpoint=2:3) +
 #  scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) +
   scale_x_continuous(breaks=1:4, labels=c(names(titanic)))
@@ -113,7 +116,7 @@ titanic %>%
   gather_pcp(1:4) %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
   geom_pcp_box(boxwidth=0.1, fill=NA) +
-  geom_pcp(aes(colour = Class), alpha = 0.01, boxwidth=0.1, breaks=2:3) +
+  geom_pcp(aes(colour = Class), alpha = 0.01, boxwidth=0.1, breakpoint=2:3) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) +
   scale_x_continuous(breaks=1:4+ 1:4*0.1-0.05, labels=c(names(titanic)))
 ```
@@ -147,10 +150,10 @@ mtcars %>%
          gear=factor(gear),
          carb = factor(carb)) %>%
   gather_pcp(1:ncol(mtcars)) %>%
-  transform_pcp(method = "minmax") %>%
+  transform_pcp(method = "uniminmax") %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
   geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
-  geom_pcp(aes(colour = mpg), boxwidth=0.1, breaks=9:10, size=1, alpha =0.9) +
+  geom_pcp(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
   scale_x_continuous(breaks=1:ncol(mtcars) + 
                        0.1*cumsum(c(0,1, 0,0,0,0,0,1,1,1,1)) -
                        0.05*c(0,1, 0,0,0,0,0,1,1,1,1), labels=c(names(mtcars))) +
