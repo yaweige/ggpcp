@@ -5,11 +5,16 @@
 #' @param  data The data set used
 #' @param columns choose the columns to be used
 #' @export gather_pcp
-#' @importFrom dplyr left_join
+#' @importFrom dplyr left_join %>% select
+#' @importFrom rlang enquos !!!
 
-gather_pcp <- function(data, columns) {
+gather_pcp <- function(data, ...) {
+  columns<- enquos(...)
+
   originaldata <- data # HH: fix for below
-  data <- data[,columns] # HH: that deletes EVERYTHING else that's not shown in the parallel coordinate plot
+
+  data <- data %>% select(!!!columns)
+  #data <- data[,columns] # HH: that deletes EVERYTHING else that's not shown in the parallel coordinate plot
   # ggplot will delete columns that are not needed after the plot specification is done.
 
   data_id <- rep(1:nrow(data), ncol(data))
