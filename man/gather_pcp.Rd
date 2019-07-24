@@ -4,7 +4,7 @@
 \alias{gather_pcp}
 \title{gather for parallel coordinate plot}
 \usage{
-gather_pcp(data, columns)
+gather_pcp(data, ...)
 }
 \arguments{
 \item{data}{The data set used}
