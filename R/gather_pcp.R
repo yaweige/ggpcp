@@ -3,7 +3,7 @@
 #' It should be used before using other drawing functions
 #'
 #' @param  data The data set used
-#' @param columns choose the columns to be used
+#' @param ... choose the columns to be used
 #' @export gather_pcp
 #' @importFrom dplyr left_join %>% select
 #' @importFrom rlang enquos !!!

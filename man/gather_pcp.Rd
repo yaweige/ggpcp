@@ -9,7 +9,7 @@ gather_pcp(data, ...)
 \arguments{
 \item{data}{The data set used}
 
-\item{columns}{choose the columns to be used}
+\item{...}{choose the columns to be used}
 }
 \description{
 It should be used before using other drawing functions
