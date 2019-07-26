@@ -68,11 +68,8 @@ flea %>%
   gather_pcp(1:7, 6, 3) %>%
   transform_pcp(method="uniminmax") %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp(aes(colour=species, size = species), alpha = 0.5) 
-```
-
-```
-## Warning: Using size for a discrete variable is not advised.
+  geom_pcp(aes(colour=species, size = species), alpha = 0.5) +
+  scale_size_manual(values=c(0.5, 0.65, 0.8))
 ```
 
 ![](README_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
