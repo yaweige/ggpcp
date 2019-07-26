@@ -89,6 +89,9 @@ geom_pcp <- function(mapping = NULL, data = NULL,
                      na.rm = FALSE,
                      show.legend = NA,
                      inherit.aes = TRUE) {
+#  browser()
+#  mapping$x <- structure(1L, class = "pcp")
+
   layer(
     data = data,
     mapping = mapping,
@@ -114,52 +117,53 @@ geom_pcp <- function(mapping = NULL, data = NULL,
 }
 
 
-GeomPcp <- ggproto("GeomPcp", Geom,
-                   # setup_data = function(data, params) {
-                   #   we adjust the box width here?
-                   # }
+GeomPcp <- ggproto(
+  "GeomPcp", Geom,
+  # setup_data = function(data, params) {
+  #   we adjust the box width here?
+  # }
 
-                   # it seems that we can't have id = id, name = name, value = value,
-                   # level = level, class = class, in default_aes
-                   # neither does required_aes
+  # it seems that we can't have id = id, name = name, value = value,
+  # level = level, class = class, in default_aes
+  # neither does required_aes
 
-                   # required_aes = c("id", "name", "value", "level", "class"),
-                   # default_aes = ggplot2::aes(
-                   #   id = id, name = name, value = value, level = level, class = class,
-                   #   width = 0.75, linetype = "solid", fontsize=5,
-                   #   shape = 19, colour = "grey30",
-                   #   size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
-                   #   linewidth=.1, weight = 1),
+  # required_aes = c("id", "name", "value", "level", "class"),
+  # default_aes = ggplot2::aes(
+  #   id = id, name = name, value = value, level = level, class = class,
+  #   width = 0.75, linetype = "solid", fontsize=5,
+  #   shape = 19, colour = "grey30",
+  #   size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
+  #   linewidth=.1, weight = 1),
 
-                   default_aes = aes(colour = "grey30", size = 0.5, linetype = 1, alpha = NA),
+  default_aes = aes(colour = "grey30", size = 0.5, linetype = 1, alpha = NA),
 
-                   draw_panel = function(data, panel_params, coord,
-                                         arrow = NULL,
-                                         arrow.fill = NULL,
-                                         lineend = "butt",
-                                         linejoin = "round",
-                                         na.rm = na.rm) {
-                     pcp_segment <- data.frame(
-                       x = data$x,
-                       xend = data$xend,
-                       y = data$y,
-                       yend = data$yend,
-                       # And what about other parameters?
-                       colour = data$colour,
-                       size = data$size,
-                       linetype = data$linetype,
-                       #fill = alpha(data$fill, data$alpha),
-                       alpha = data$alpha,
-                       # is there PANEL or group? How those work...
-                       PANEL = data$PANEL
-                       #group = data$group
-                     )
+  draw_panel = function(data, panel_params, coord,
+                        arrow = NULL,
+                        arrow.fill = NULL,
+                        lineend = "butt",
+                        linejoin = "round",
+                        na.rm = na.rm) {
+    pcp_segment <- data.frame(
+      x = data$x,
+      xend = data$xend,
+      y = data$y,
+      yend = data$yend,
+      # And what about other parameters?
+      colour = data$colour,
+      size = data$size,
+      linetype = data$linetype,
+      #fill = alpha(data$fill, data$alpha),
+      alpha = data$alpha,
+      # is there PANEL or group? How those work...
+      PANEL = data$PANEL
+      #group = data$group
+    )
 
-                     GeomSegment$draw_panel(pcp_segment, panel_params, coord,
-                                            arrow = arrow,
-                                            arrow.fill = arrow.fill,
-                                            lineend = lineend,
-                                            linejoin = linejoin,
-                                            na.rm = na.rm)
-                   }
+    GeomSegment$draw_panel(pcp_segment, panel_params, coord,
+                           arrow = arrow,
+                           arrow.fill = arrow.fill,
+                           lineend = lineend,
+                           linejoin = linejoin,
+                           na.rm = na.rm)
+  }
 )
