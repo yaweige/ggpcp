@@ -135,7 +135,9 @@ GeomPcp <- ggproto(
   #   size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
   #   linewidth=.1, weight = 1),
 
-  default_aes = aes(colour = "grey30", size = 0.5, linetype = 1, alpha = NA),
+  default_aes = aes(
+    colour = "grey30", size = 0.5, linetype = "solid", alpha = 1,
+    linewidth=.1, stroke = 0.1),
 
   draw_panel = function(data, panel_params, coord,
                         arrow = NULL,
@@ -143,23 +145,26 @@ GeomPcp <- ggproto(
                         lineend = "butt",
                         linejoin = "round",
                         na.rm = na.rm) {
-    pcp_segment <- data.frame(
-      x = data$x,
-      xend = data$xend,
-      y = data$y,
-      yend = data$yend,
-      # And what about other parameters?
-      colour = data$colour,
-      size = data$size,
-      linetype = data$linetype,
-      #fill = alpha(data$fill, data$alpha),
-      alpha = data$alpha,
-      # is there PANEL or group? How those work...
-      PANEL = data$PANEL
-      #group = data$group
-    )
+## HH: the following piece of code does not look like it is doing anything
+    # except deleting existing columns. I am commenting it out and use data
+    # in the call directly
+    # pcp_segment <- data.frame(
+    #   x = data$x,
+    #   xend = data$xend,
+    #   y = data$y,
+    #   yend = data$yend,
+    #   # And what about other parameters?
+    #   colour = data$colour,
+    #   size = data$size,
+    #   linetype = data$linetype,
+    #   #fill = alpha(data$fill, data$alpha),
+    #   alpha = data$alpha,
+    #   # is there PANEL or group? How those work...
+    #   PANEL = data$PANEL
+    #   #group = data$group
+    # )
 
-    GeomSegment$draw_panel(pcp_segment, panel_params, coord,
+    GeomSegment$draw_panel(data, panel_params, coord,
                            arrow = arrow,
                            arrow.fill = arrow.fill,
                            lineend = lineend,

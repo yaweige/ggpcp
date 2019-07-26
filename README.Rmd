@@ -47,7 +47,7 @@ flea %>%
   gather_pcp(1:7) %>%
   transform_pcp(method="uniminmax") %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp(aes(colour=species)) 
+  geom_pcp(aes(colour=species, linetype = species), size = 0.75, alpha = 0.5) 
 ```
 
 ```{r}
