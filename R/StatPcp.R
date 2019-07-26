@@ -127,7 +127,7 @@ StatPcp <- ggproto(
 
     args <- c(list(data = quote(data), scales = quote(scales)), params)
     ggplot2:::dapply(data, "PANEL", function(data) {
-      scales <- layout$get_scales(data$PANEL[1])
+      #scales <- layout$get_scales(data$PANEL[1])
       tryCatch(do.call(self$compute_panel, args), error = function(e) {
         warning("Computation failed in `", ggplot2:::snake_class(self), "()`:\n",
                 e$message, call. = FALSE)

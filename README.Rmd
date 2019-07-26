@@ -29,7 +29,7 @@ R package for creating parallel coordinate plots in the ggplot2 framework
 devtools::install_github("yaweige/ggpcp", build_vignettes = TRUE)
 ```
 
-# Using the functionality
+# Getting Started
 
 Load the library
 
@@ -42,12 +42,31 @@ Load a dataset
 ```{r, message = FALSE}
 library(tidyverse)
 data(flea, package = "GGally")
+```
 
+## A first parallel coordinate plot
+
+Drawing a parallel coordinate plot in `ggpcp` consists of a three-step process:
+
+- First we need to collect all of the variables from the data set that should go into the parallel coordinate plot. We use the function `gather_pcp` for it.
+`gather_pcp` has two main arguments: the first one is the data, the second is a specification of all of the variables you want to include in the parallel coordinate plot. You can specify variables by 
+
+    - position, e.g. `1:4, 7, 5, 4`, 
+    - name, e.g. `class`, `age`, `sex`, `aede1:aede3` or 
+    - selector, e.g. `starts_with("aede")`, see `?tidyselect::
+select_helpers`
+
+- Second, we choose a transformation. This ...
+
+- Third, we are ready to plot: `geom_pcp` is a layer that draws lines for each observation of a parallel coordinate plot. We can use additional mappings such as colour, linetype or size of the lines.
+
+```{r}
 flea %>% 
-  gather_pcp(1:7) %>%
+  gather_pcp(1:7, 6, 3) %>%
   transform_pcp(method="uniminmax") %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp(aes(colour=species, linetype = species), size = 0.75, alpha = 0.5) 
+  geom_pcp(aes(colour=species, size = species), alpha = 0.5) +
+  scale_size_manual(values=c(0.5, 0.65, 0.8))
 ```
 
 ```{r}

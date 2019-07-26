@@ -89,8 +89,6 @@ geom_pcp <- function(mapping = NULL, data = NULL,
                      na.rm = FALSE,
                      show.legend = NA,
                      inherit.aes = TRUE) {
-#  browser()
-#  mapping$x <- structure(1L, class = "pcp")
 
   layer(
     data = data,
