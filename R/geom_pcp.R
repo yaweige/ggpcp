@@ -135,7 +135,8 @@ GeomPcp <- ggproto(
 
   default_aes = aes(
     colour = "grey30", size = 0.5, linetype = "solid", alpha = 1,
-    linewidth=.1, stroke = 0.1),
+    linewidth=.1, stroke = 2
+  ),
 
   draw_panel = function(data, panel_params, coord,
                         arrow = NULL,
