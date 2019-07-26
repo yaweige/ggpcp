@@ -401,6 +401,115 @@ StatPcp <- ggproto(
       data_final_yend_fac2fac <- NULL
     }
 
+    # calculations and modifications for break points in factor blocks
+    # There are some parts of those modifications above should be integrated to the original calculation for better performance
+    # is there possibility that this is problem can be sovled using same band assignment at once as in usual case, instead of recursively calculate that?
+
+    if (!is.null(breakpoint)) {
+      #continuous_fac_all
+      #continuous_fac_all_list
+      #break_position
+      #start_fac2fac
+      #end_fac2fac
+      #arranged_fac_block
+      # data_final_yend_fac2fac
+      # data_final_ystart_fac2fac_bandid
+      # data_final_yend_fac2fac_bandid
+
+      # identify the groups of sub-factor blocks, labeled for which sub-factor block
+      sub_fac_block <- which(c(0, end_fac2fac) == c(start_fac2fac, 0))
+      diff_sub_fac_block <- c(0, which(diff(sub_fac_block) != 1), length(sub_fac_block))
+      sub_fac_block_list <- lapply(1:(length(diff_sub_fac_block) - 1), FUN = function(x) {
+        c(sub_fac_block[diff_sub_fac_block[x] + 1] - 1 ,
+          sub_fac_block[(diff_sub_fac_block[x] + 1):diff_sub_fac_block[x + 1]])
+      })
+
+      # To get the last variable positions and bandids within the first sub-factor block within a group of a sub-factor block
+      last_y <- lapply(1:length(sub_fac_block_list), FUN = function(x) {
+        # temp_yend, temp_yendid are used to save some coding for the long formular
+        temp_yend <- arranged_fac_block[[sub_fac_block_list[[x]][1]]][[1]][["data_final_yend_fac2fac"]]
+        temp_yendid <- arranged_fac_block[[sub_fac_block_list[[x]][1]]][[2]][["data_final_yend_fac2fac_bandid"]]
+        # length(temp_yend) = length(temp_yendid)
+        last_yend <- temp_yend[(length(temp_yend) - nobs + 1):length(temp_yend)]
+        last_yendid <- temp_yendid[(length(temp_yendid) - nobs + 1):length(temp_yendid)]
+        output <- list(last_yend = last_yend, last_yendid = last_yendid)
+        output
+      })
+
+      # use dirty "for loops", we should have a better way of applying this
+      # the following works for each sub-factors blocks group, we use Map to apply for each group
+
+
+      data_break_y <- Map(f = function(x, y) {
+        last_yend <- y$last_yend
+        last_yendid <- y$last_yendid
+        data_break_ystart <- vector()
+        data_break_yend <- vector()
+        # the following variables used to replace those values for factor block which were calculated before
+        # actually, we might save some calculation by adding some conditions on the previous calculation
+        data_replace_block_ystart <- vector()
+        data_replace_block_yend <- vector()
+        data_replace_block_xstart <- vector()
+        data_replace_block_xend <- vector()
+        for (i in x[-1]) {
+          # we need to save this ystart here
+          data_break_ystart <- c(data_break_ystart, last_yend)
+          # need some modificaation on process_fac2fac to take the exsiting bandid for numeric values into consideration
+          # and works for the current task for sub-factor blocks
+          # we shouldn't work on the first sub-factor block
+          arranged_fac_block_sub<- process_fac2fac(data_spread = data_spread,
+                                                   continuous_fac = continuous_fac_all_list[[i]],
+                                                   start_position = last_yend,
+                                                   freespace = freespace,
+                                                   nobs = nobs,
+                                                   subfac = TRUE,
+                                                   start_bandid = last_yendid)
+          # save some typing same as in calculate lasy_y
+          temp_yend <- arranged_fac_block_sub[[1]]$data_final_yend_fac2fac
+          temp_yendid <- arranged_fac_block_sub[[2]]$data_final_yend_fac2fac_bandid
+          last_yend <- temp_yend[(length(temp_yend) - nobs + 1):length(temp_yend)]
+          last_yendid <- temp_yendid[(length(temp_yendid) - nobs + 1):length(temp_yendid)]
+          # Here, we made a choice to only return the segments between the sub factor block
+          # Actually, we can return all the lines except the first sub-factor block(we can even also do this by using the original start_position first),
+          # in that case, we can use these calculation to replace the orignal factor block calculations to remove replicated calculations
+          # We might do that later, just be careful about the xstart, xend value, since it has 0
+          # we also don't return xstart, and xend, since they are calculated later
+
+          # When use process_fac2fac(subfac = TRUE), the returned xstart, xend positions are not correct, we can change this in that function
+          # or regenerate afterwards like what I will do in the following, since it is trivil calculation
+
+          # the followings are used to replace those values calculated for factor blocks before
+          data_replace_block_xstart <- c(data_replace_block_xstart, rep(continuous_fac_all_list[[i]][-length(continuous_fac_all_list[[i]])], each = nobs))
+          data_replace_block_xend <- c(data_replace_block_xend, rep(continuous_fac_all_list[[i]][-length(continuous_fac_all_list[[i]])], each = nobs) + 1)
+          data_replace_block_ystart <- c(data_replace_block_ystart, temp_yend[1:length(rep(continuous_fac_all_list[[i]][-length(continuous_fac_all_list[[i]])], each = nobs))])
+          data_replace_block_yend <- c(data_replace_block_yend, temp_yend[-(1:nobs)])
+
+          data_break_yend <- c(data_break_yend, temp_yend[1:nobs])
+        }
+        data_break_y <- list(data_break_ystart = data_break_ystart,
+                             data_break_yend = data_break_yend,
+                             data_replace_block_xstart = data_replace_block_xstart,
+                             data_replace_block_xend = data_replace_block_xend,
+                             data_replace_block_ystart = data_replace_block_ystart,
+                             data_replace_block_yend = data_replace_block_yend)
+        data_break_y
+      },
+      sub_fac_block_list,
+      last_y)
+
+      replace_position_xstart <- unique(unlist(lapply(data_break_y, FUN = function(x) {
+        x$data_replace_block_xstart
+      })))
+      data_final_ystart_fac2fac[data_final_xstart_fac2fac %in% replace_position_xstart] <- unlist(lapply(data_break_y, FUN = function(x) {
+        x$data_replace_block_ystart
+      }))
+      data_final_yend_fac2fac[data_final_xstart_fac2fac %in% replace_position_xstart] <- unlist(lapply(data_break_y, FUN = function(x) {
+        x$data_replace_block_yend
+      }))
+
+    }
+
+
 
     # to do list in the following:
     # 1. small modification, move data_spread$bandid to the beginning part, after all done
@@ -456,85 +565,6 @@ StatPcp <- ggproto(
     }
 
 
-    # calculations and modifications for break points in factor blocks
-    # There are some parts of those modifications above should be integrated to the original calculation for better performance
-    # is there possibility that this is problem can be sovled using same band assignment at once as in usual case, instead of recursively calculate that?
-
-    if (!is.null(breakpoint)) {
-      #continuous_fac_all
-      #continuous_fac_all_list
-      #break_position
-      #start_fac2fac
-      #end_fac2fac
-      #arranged_fac_block
-      # data_final_yend_fac2fac
-      # data_final_ystart_fac2fac_bandid
-      # data_final_yend_fac2fac_bandid
-
-      # identify the groups of sub-factor blocks, labeled for which sub-factor block
-      sub_fac_block <- which(c(0, end_fac2fac) == c(start_fac2fac, 0))
-      diff_sub_fac_block <- c(0, which(diff(sub_fac_block) != 1), length(sub_fac_block))
-      sub_fac_block_list <- lapply(1:(length(diff_sub_fac_block) - 1), FUN = function(x) {
-        c(sub_fac_block[diff_sub_fac_block[x] + 1] - 1 ,
-          sub_fac_block[(diff_sub_fac_block[x] + 1):diff_sub_fac_block[x + 1]])
-      })
-
-      # To get the last variable positions and bandids within the first sub-factor block within a group of a sub-factor block
-      last_y <- lapply(1:length(sub_fac_block_list), FUN = function(x) {
-        # temp_yend, temp_yendid are used to save some coding for the long formular
-        temp_yend <- arranged_fac_block[[sub_fac_block_list[[x]][1]]][[1]][["data_final_yend_fac2fac"]]
-        temp_yendid <- arranged_fac_block[[sub_fac_block_list[[x]][1]]][[2]][["data_final_yend_fac2fac_bandid"]]
-        # length(temp_yend) = length(temp_yendid)
-        last_yend <- temp_yend[(length(temp_yend) - nobs + 1):length(temp_yend)]
-        last_yendid <- temp_yendid[(length(temp_yendid) - nobs + 1):length(temp_yendid)]
-        output <- list(last_yend = last_yend, last_yendid = last_yendid)
-        output
-      })
-
-      # use dirty "for loops", we should have a better way of applying this
-      # the following works for each sub-factors blocks group, we use Map to apply for each group
-
-
-      data_break_y <- Map(f = function(x, y) {
-        last_yend <- y$last_yend
-        last_yendid <- y$last_yendid
-        data_break_ystart <- vector()
-        data_break_yend <- vector()
-        for (i in x[-1]) {
-          # we need to save this ystart here
-          data_break_ystart <- c(data_break_ystart, last_yend)
-          # need some modificaation on process_fac2fac to take the exsiting bandid for numeric values into consideration
-          # and works for the current task for sub-factor blocks
-          # we shouldn't work on the first sub-factor block
-          arranged_fac_block_sub<- process_fac2fac(data_spread = data_spread,
-                                                   continuous_fac = continuous_fac_all_list[[i]],
-                                                   start_position = last_yend,
-                                                   freespace = freespace,
-                                                   nobs = nobs,
-                                                   subfac = TRUE,
-                                                   start_bandid = last_yendid)
-          # save some typing same as in calculate lasy_y
-          temp_yend <- arranged_fac_block_sub[[1]]$data_final_yend_fac2fac
-          temp_yendid <- arranged_fac_block_sub[[2]]$data_final_yend_fac2fac_bandid
-          last_yend <- temp_yend[(length(temp_yend) - nobs + 1):length(temp_yend)]
-          last_yendid <- temp_yendid[(length(temp_yendid) - nobs + 1):length(temp_yendid)]
-          # Here, we made a choice to only return the segments between the sub factor block
-          # Actually, we can return all the lines except the first sub-factor block(we can even also do this by using the original start_position first),
-          # in that case, we can use these calculation to replace the orignal factor block calculations to remove replicated calculations
-          # We might do that later, just be careful about the xstart, xend value, since it has 0
-          # we also don't return xstart, and xend, since they are calculated later
-          data_break_yend <- c(data_break_yend, temp_yend[1:nobs])
-        }
-        data_break_y <- list(data_break_ystart = data_break_ystart,
-                             data_break_yend = data_break_yend)
-        data_break_y
-      },
-      sub_fac_block_list,
-      last_y)
-
-
-
-    }
 
 
 
