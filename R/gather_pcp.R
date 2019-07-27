@@ -17,6 +17,15 @@ gather_pcp <- function(data, ...) {
   #data <- data[,columns] # HH: that deletes EVERYTHING else that's not shown in the parallel coordinate plot
   # ggplot will delete columns that are not needed after the plot specification is done.
 
+  # to do the class coercion for character variables
+
+  character_position <- which(unlist(lapply(data, is.character)))
+
+  if (length(character_position) != 0) {
+    data[, character_position] <- data.frame(lapply(data[, character_position, drop = FALSE], as.factor))
+  }
+
+
   data_id <- rep(1:nrow(data), ncol(data))
   data_name <- rep(colnames(data), each = nrow(data))
   data_value <- unlist(lapply(data, FUN = as.character))
