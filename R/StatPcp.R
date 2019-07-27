@@ -338,7 +338,9 @@ StatPcp <- ggproto(
         }
         # work well with classpcp[0]
         while(sum(classpcp[bywhich] == "factor") != 0) {
-          bywhich[classpcp[bywhich] == "factor"] <- bywhich[classpcp[bywhich] == "factor"] - 1
+          num_of_0 <- sum(bywhich == 0)
+          bywhich_adjust_position <- c(rep(FALSE, num_of_0), classpcp[bywhich] == "factor")
+          bywhich[bywhich_adjust_position] <- bywhich[bywhich_adjust_position] - 1
         }
         bywhich[bywhich == 0] <- bywhich[1]
       } else {
@@ -359,7 +361,6 @@ StatPcp <- ggproto(
       #     }
       #   }
       # }
-
 
 
 
