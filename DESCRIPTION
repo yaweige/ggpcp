@@ -16,7 +16,8 @@ Imports:
     dplyr,
     tidyr,
     assertthat,
-    rlang
+    rlang,
+    stringr
 Depends: 
     R (>= 3.4)
 Remotes: 

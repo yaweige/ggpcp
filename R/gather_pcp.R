@@ -7,13 +7,34 @@
 #' @export gather_pcp
 #' @importFrom dplyr left_join %>% select
 #' @importFrom rlang enquos !!!
+#' @importFrom stringr str_detect
 
 gather_pcp <- function(data, ...) {
-  columns<- enquos(...)
+  #columns<- enquos(...)
 
   originaldata <- data # HH: fix for below
+  # kind of stupid, but works for some cases now
+  columns <- eval(substitute(alist(...)))
+  columns <- unlist(lapply(columns, deparse))
 
-  data <- data %>% select(!!!columns)
+  columns_name <- columns %in% colnames(data)
+
+  columns_num <-stringr::str_detect(columns, pattern = "^\\d+$")
+  columns[columns_num] <- colnames(data)[as.numeric(columns[columns_num])]
+
+  # need to deal with name:name pattern later
+  # need to deal with the order of evaluated parts and the name, number parts
+  # the following assume the results are numbers & positions
+  evaluated_col_position <- unlist(lapply(as.list(columns[!columns_name & !columns_num]), function(x) {
+    eval(parse(text = x))
+  }))
+
+  evaluated_col <- colnames(data)[evaluated_col_position]
+
+  newcol <- c(columns[columns_name | columns_num], evaluated_col)
+
+  data <- data[, newcol]
+  #data <- data %>% select(!!!columns)
   #data <- data[,columns] # HH: that deletes EVERYTHING else that's not shown in the parallel coordinate plot
   # ggplot will delete columns that are not needed after the plot specification is done.
 
