@@ -22,17 +22,27 @@ gather_pcp <- function(data, ...) {
   columns_num <-stringr::str_detect(columns, pattern = "^\\d+$")
   columns[columns_num] <- colnames(data)[as.numeric(columns[columns_num])]
 
-  # need to deal with name:name pattern later
-  # need to deal with the order of evaluated parts and the name, number parts
-  # the following assume the results are numbers & positions
-  evaluated_col_position <- unlist(lapply(as.list(columns[!columns_name & !columns_num]), function(x) {
-    eval(parse(text = x))
-  }))
+  # to deal with name:name, name:position pattern
+  columns_colon <-  stringr::str_detect(columns, pattern = "^.+:.+$")
 
-  evaluated_col <- colnames(data)[evaluated_col_position]
+  for (i in seq_along(colnames(data))) {
+    columns[columns_colon] <- stringr::str_replace_all(columns[columns_colon], pattern = colnames(data)[i], replacement = as.character(i))
+  }
 
-  newcol <- c(columns[columns_name | columns_num], evaluated_col)
 
+  # the following assume the results are numbers & positions, then matched to names
+  evaluated_col<- lapply(as.list(columns[!columns_name & !columns_num]), function(x) {
+    colnames(data)[eval(parse(text = x))]
+  })
+  # deal with the order of evaluated parts and the name, number parts
+  insert_position <- which(!columns_name & !columns_num)
+
+  newcol <- as.list(columns)
+  for (i in seq_along(insert_position)) {
+    newcol[insert_position[i]] <- evaluated_col[i]
+  }
+
+  newcol <- unlist(newcol)
   data <- data[, newcol]
   #data <- data %>% select(!!!columns)
   #data <- data[,columns] # HH: that deletes EVERYTHING else that's not shown in the parallel coordinate plot
