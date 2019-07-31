@@ -136,23 +136,8 @@ StatPcpband <- ggproto(
       # detect if there is a numeric variable prior to the factor block, after the factor block
       start_fac2fac <- continuous_fac_all[break_position[-length(break_position)] + 1]
       end_fac2fac <- continuous_fac_all[break_position[-1]]
-      bywhich <- start_fac2fac - 1
-
-      # 0622new: new way of dealing with factor blocks
-      # a naive try, all sub-factor blocks sorted by a same numeric variable as before
-      if(sum(classpcp %in% c("numeric", "integer")) != 0){
-        # work well with bywhich[1] = 0, or go out of the bound(by else)
-        while(sum(classpcp[bywhich[1]] %in% c("numeric", "integer")) == 0) {
-          bywhich[1] <- bywhich[1] + 1
-        }
-        # work well with classpcp[0]
-        while(sum(classpcp[bywhich] == "factor") != 0) {
-          bywhich[classpcp[bywhich] == "factor"] <- bywhich[classpcp[bywhich] == "factor"] - 1
-        }
-        bywhich[bywhich == 0] <- bywhich[1]
-      } else {
-        bywhich <- rep(NA, length(bywhich))
-      }
+      # to identify which columns should be used to sort factor blocks
+      bywhich <- prepare_bywhich(start_fac2fac, classpcp)
 
       if (is.na(bywhich[1])) {
         start_position <- as.data.frame(matrix(rep(1:nobs, length(bywhich)), ncol = length(bywhich)))

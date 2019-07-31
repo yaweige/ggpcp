@@ -294,50 +294,9 @@ StatPcp <- ggproto(
       # detect if there is a numeric variable prior to the factor block, after the factor block
       start_fac2fac <- continuous_fac_all[break_position[-length(break_position)] + 1]
       end_fac2fac <- continuous_fac_all[break_position[-1]]
-      bywhich <- start_fac2fac - 1
 
-      # if (start_fac2fac[1] == 1) {
-      #   bywhich[1] <- end_fac2fac[1] + 1
-      # }
-      # detect if all the variables are factors
-      # if((end_fac2fac[1] + 1) > length(classpcp)) {
-      #   bywhich[1] <- NULL
-      # }
-
-      # 0622new: new way of dealing with factor blocks
-      # a naive try, all sub-factor blocks sorted by a same numeric variable as before
-      if(sum(classpcp %in% c("numeric", "integer")) != 0){
-        # work well with bywhich[1] = 0, or go out of the bound(by else)
-        while(sum(classpcp[bywhich[1]] %in% c("numeric", "integer")) == 0) {
-          bywhich[1] <- bywhich[1] + 1
-        }
-        # work well with classpcp[0]
-        while(sum(classpcp[bywhich] == "factor") != 0) {
-          num_of_0 <- sum(bywhich == 0)
-          bywhich_adjust_position <- c(rep(FALSE, num_of_0), classpcp[bywhich] == "factor")
-          bywhich[bywhich_adjust_position] <- bywhich[bywhich_adjust_position] - 1
-        }
-        bywhich[bywhich == 0] <- bywhich[1]
-      } else {
-        bywhich <- rep(NA, length(bywhich))
-      }
-
-
-      # 0622new: how to sort the sub-factor block
-      # so as to the following chunk
-      # prior_num <- classpcp[start_fac2fac[-1] - 1] %in% c("numeric", "integer")
-
-      # detect if there is only one factor block or multiple
-      # actually, we don't need the following chunk, since for 2nd or later factor blocks, there is always a numeric variable in front of it
-      # if(length(prior_num) != 0){
-      #   for (i in 1:(length(bywhich) - 1)) {
-      #     if (!prior_num[i]) {
-      #       bywhich[i+1] <- end_fac2fac[i+1]  + 1
-      #     }
-      #   }
-      # }
-
-
+      # to identify which columns should be used to sort factor blocks
+      bywhich <- prepare_bywhich(start_fac2fac, classpcp)
 
       if (is.na(bywhich[1])) {
         start_position <- as.data.frame(matrix(rep(1:nobs, length(bywhich)), ncol = length(bywhich)))
@@ -993,3 +952,30 @@ prepare_width_ajustment <- function(classpcp, boxwidth, rugwidth, interwidth) {
                          boxwidth_xend = boxwidth_xend)
   width_adjusted
 }
+
+# The function is used to identify which positions factors/factor blocks should use to sort the values
+# it returns the positions of which variables should be used, but when use for data_spread, we need bywhich + 1 for the first column adjustment
+
+prepare_bywhich <- function(start_fac2fac, classpcp) {
+  bywhich <- start_fac2fac - 1
+
+  # all sub-factor blocks sorted by a same numeric variable as before
+  if(sum(classpcp %in% c("numeric", "integer")) != 0){
+    # work well with bywhich[1] = 0, or go out of the bound(by else)
+    while(sum(classpcp[bywhich[1]] %in% c("numeric", "integer")) == 0) {
+      bywhich[1] <- bywhich[1] + 1
+    }
+    # work well with classpcp[0]
+    while(sum(classpcp[bywhich] == "factor") != 0) {
+      num_of_0 <- sum(bywhich == 0)
+      bywhich_adjust_position <- c(rep(FALSE, num_of_0), classpcp[bywhich] == "factor")
+      bywhich[bywhich_adjust_position] <- bywhich[bywhich_adjust_position] - 1
+    }
+    bywhich[bywhich == 0] <- bywhich[1]
+  } else {
+    bywhich <- rep(NA, length(bywhich))
+  }
+
+  bywhich
+}
+
