@@ -101,26 +101,8 @@ StatPcpbox <- ggproto(
 
     # boxwidth
     # interval length, boxwidth, rugwidth
-    # adjusted for different lengths
-    if (length(interwidth) == 1) {
-      interwidth <- rep(interwidth, times = length(classpcp) - 1)
-    }
-    interwidth <- cumsum(c(1, interwidth))
-
-    if (length(boxwidth) == 1) {
-      boxwidth <- rep(boxwidth, times = sum(classpcp == "factor"))
-    }
-    if (length(rugwidth) == 1) {
-      rugwidth <- rep(rugwidth, times = sum(!classpcp == "factor"))
-    }
-    # calculate cumulated changes
-    boxrugwidth <- seq_along(classpcp)
-    boxrugwidth[classpcp == "factor"] <- boxwidth
-    boxrugwidth[!classpcp == "factor"] <- rugwidth
-    cumboxrugwidth <- cumsum(boxrugwidth)
-    # calculate the ajusted position
-    boxwidth_xend <-  interwidth + cumboxrugwidth
-    boxwidth_xstart <- boxwidth_xend - boxrugwidth
+    # interval length, boxwidth, rugwidth ajustment preparation
+    width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth)
 
     # box
     # fac coming from the classpcp == "factor"
@@ -141,8 +123,8 @@ StatPcpbox <- ggproto(
       rep(c(y, z, z, y), times = x$nlevels)
     },
     nlevels_list,
-    boxwidth_xstart[classpcp == "factor"],
-    boxwidth_xend[classpcp == "factor"])
+    width_adjusted$boxwidth_xstart[classpcp == "factor"],
+    width_adjusted$boxwidth_xend[classpcp == "factor"])
 
     data_box_x <- unlist(data_box_x)
     data_box_group <- rep(1:(length(data_box_y)/4), each = 4)

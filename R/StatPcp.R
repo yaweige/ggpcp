@@ -573,7 +573,7 @@ StatPcp <- ggproto(
                              yend = data_final_yend)
     # This has different length from the original data coming to compute_panel
 
-    # interval length, boxwidth, rugwidth
+    # interval length, boxwidth, rugwidth ajustment preparation
     width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth)
 
     # adjust the data according to the adjusted position

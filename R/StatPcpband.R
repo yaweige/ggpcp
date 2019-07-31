@@ -240,33 +240,14 @@ StatPcpband <- ggproto(
     }
 
 
-    # more modification for boxwidth, rugwidth, interwidth
-    # adjusted for different lengths
-    if (length(interwidth) == 1) {
-      interwidth <- rep(interwidth, times = length(classpcp) - 1)
-    }
-    interwidth <- cumsum(c(1, interwidth))
-
-    if (length(boxwidth) == 1) {
-      boxwidth <- rep(boxwidth, times = sum(classpcp == "factor"))
-    }
-    if (length(rugwidth) == 1) {
-      rugwidth <- rep(rugwidth, times = sum(!classpcp == "factor"))
-    }
-    # calculate cumulated changes
-    boxrugwidth <- seq_along(classpcp)
-    boxrugwidth[classpcp == "factor"] <- boxwidth
-    boxrugwidth[!classpcp == "factor"] <- rugwidth
-    cumboxrugwidth <- cumsum(boxrugwidth)
-    # calculate the ajusted position
-    boxwidth_xend <-  interwidth + cumboxrugwidth
-    boxwidth_xstart <- boxwidth_xend - boxrugwidth
+    # interval length, boxwidth, rugwidth ajustment preparation
+    width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth)
 
 
 
     # to modify and convert to long form
-    data_band_final_wide[ ,5] <- boxwidth_xend[data_band_final_wide[ ,5]]
-    data_band_final_wide[ ,6] <- boxwidth_xstart[data_band_final_wide[ ,6]]
+    data_band_final_wide[ ,5] <- width_adjusted$boxwidth_xend[data_band_final_wide[ ,5]]
+    data_band_final_wide[ ,6] <- width_adjusted$boxwidth_xstart[data_band_final_wide[ ,6]]
     data_band_final_long <- data.frame(x = c(data_band_final_wide[ ,5], data_band_final_wide[ ,6]),
                                        ymin = c(data_band_final_wide[ ,1], data_band_final_wide[ ,3]) - 0.5*eachobs,
                                        ymax = c(data_band_final_wide[ ,2], data_band_final_wide[ ,4]) + 0.5*eachobs)
