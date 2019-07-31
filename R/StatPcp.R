@@ -574,45 +574,26 @@ StatPcp <- ggproto(
     # This has different length from the original data coming to compute_panel
 
     # interval length, boxwidth, rugwidth
-    # adjusted for different lengths
-    if (length(interwidth) == 1) {
-      interwidth <- rep(interwidth, times = length(classpcp) - 1)
-    }
-    interwidth <- cumsum(c(1, interwidth))
-
-    if (length(boxwidth) == 1) {
-      boxwidth <- rep(boxwidth, times = sum(classpcp == "factor"))
-    }
-    if (length(rugwidth) == 1) {
-      rugwidth <- rep(rugwidth, times = sum(!classpcp == "factor"))
-    }
-    # calculate cumulated changes
-    boxrugwidth <- seq_along(classpcp)
-    boxrugwidth[classpcp == "factor"] <- boxwidth
-    boxrugwidth[!classpcp == "factor"] <- rugwidth
-    cumboxrugwidth <- cumsum(boxrugwidth)
-    # calculate the ajusted position
-    boxwidth_xend <-  interwidth + cumboxrugwidth
-    boxwidth_xstart <- boxwidth_xend - boxrugwidth
+    width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth)
 
     # adjust the data according to the adjusted position
     data_boxwidth <- data_final
-    data_boxwidth$x <- boxwidth_xend[data_boxwidth$x]
-    data_boxwidth$xend <- boxwidth_xstart[data_boxwidth$xend]
+    data_boxwidth$x <- width_adjusted$boxwidth_xend[data_boxwidth$x]
+    data_boxwidth$xend <- width_adjusted$boxwidth_xstart[data_boxwidth$xend]
 
     # add parallel lines(segments, rugs) after adjusted for boxwidth
     # add segments for boxes
     segment_which <- which(!(data_final$x %in% breakpoint))
     segment_xstart <- data_final$x[segment_which]
 
-    data_segment_xstart <- boxwidth_xstart[segment_xstart]
-    data_segment_xend <- boxwidth_xend[segment_xstart]
+    data_segment_xstart <- width_adjusted$boxwidth_xstart[segment_xstart]
+    data_segment_xend <- width_adjusted$boxwidth_xend[segment_xstart]
     data_segment_ystart <- data_final$y[segment_which]
     data_segment_yend <- data_segment_ystart
 
     # for the last variable seperately
-    data_segment_xstart <- c(data_segment_xstart, boxwidth_xstart[rep(length(classpcp), nobs)])
-    data_segment_xend <- c(data_segment_xend, boxwidth_xend[rep(length(classpcp), nobs)])
+    data_segment_xstart <- c(data_segment_xstart, width_adjusted$boxwidth_xstart[rep(length(classpcp), nobs)])
+    data_segment_xend <- c(data_segment_xend, width_adjusted$boxwidth_xend[rep(length(classpcp), nobs)])
     data_segment_ystart <- c(data_segment_ystart,
                              data_final[which(data_final$xend == length(classpcp)), "yend"])
     data_segment_yend <- data_segment_ystart
@@ -622,8 +603,8 @@ StatPcp <- ggproto(
       # a naive try, This is one choice(no sorted lines)
       breakpoint_which <- which(data_final$x %in% breakpoint)
       breakpoint_xstart <- data_final$x[breakpoint_which]
-      data_break_xstart <-  boxwidth_xstart[breakpoint_xstart]
-      data_break_xend <- boxwidth_xend[breakpoint_xstart]
+      data_break_xstart <-  width_adjusted$boxwidth_xstart[breakpoint_xstart]
+      data_break_xend <- width_adjusted$boxwidth_xend[breakpoint_xstart]
       # we need to distinguish between the replicated variables, also used in above modifications
       # is this safe?: using different selections, can they match each other(in this break case, they are all inside factor blocks, they should match)
       # data_break_ystart <- data_final$yend[which(data_final$xend %in% breakpoint)]
@@ -934,9 +915,10 @@ process_fac2fac <- function(data_spread, continuous_fac, start_position, freespa
   arranged_fac_block
 }
 
+
+
 # Function for data preparation: to convert the input data to the form which can be used directly in the following: data_spread
 # argument classpcp and nobs are kept because they are also useful outside this function
-
 prepare_data <- function(data, classpcp, nobs) {
 
   # to make R CMD CHECK happy
@@ -978,4 +960,36 @@ prepare_data <- function(data, classpcp, nobs) {
   }
 
   data_spread
+}
+
+
+# The function for the preparation of adjusment for boxwidth, rugwidth, interwidth
+# used to calculate the adjusted values, which are used later in other places to actually do the adjustment
+
+prepare_width_ajustment <- function(classpcp, boxwidth, rugwidth, interwidth) {
+  # interval length, boxwidth, rugwidth
+  # adjusted for different lengths
+  if (length(interwidth) == 1) {
+    interwidth <- rep(interwidth, times = length(classpcp) - 1)
+  }
+  interwidth <- cumsum(c(1, interwidth))
+
+  if (length(boxwidth) == 1) {
+    boxwidth <- rep(boxwidth, times = sum(classpcp == "factor"))
+  }
+  if (length(rugwidth) == 1) {
+    rugwidth <- rep(rugwidth, times = sum(!classpcp == "factor"))
+  }
+  # calculate cumulated changes
+  boxrugwidth <- seq_along(classpcp)
+  boxrugwidth[classpcp == "factor"] <- boxwidth
+  boxrugwidth[!classpcp == "factor"] <- rugwidth
+  cumboxrugwidth <- cumsum(boxrugwidth)
+  # calculate the ajusted position
+  boxwidth_xend <-  interwidth + cumboxrugwidth
+  boxwidth_xstart <- boxwidth_xend - boxrugwidth
+
+  width_adjusted <- list(boxwidth_xstart = boxwidth_xstart,
+                         boxwidth_xend = boxwidth_xend)
+  width_adjusted
 }
