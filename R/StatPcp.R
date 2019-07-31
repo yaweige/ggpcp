@@ -142,42 +142,17 @@ StatPcp <- ggproto(
   compute_panel = function(data, scales, freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
                            breakpoint = NULL) {
-    # make adjustment to accept proper data set
-    # make sure the output data_spread has the same correct expected column order
-    data$name <- factor(data$name, levels = unique(data$name))
-    data_spread <- spread(data[, c("id", "name", "value")], key = name, value = value)
+    # Data preparation: to convert the input data to the form we can directly use
+    # nobs, classpcp will also be used in other places, so they are kept
+
+    # If the input data is changed, we might need other ways to do the following part
+    # but these three values/outputs are required, should be *exact* the same things
+
+    # number of observations
     nobs <- max(data$id)
-    ncol <- nrow(data)/nobs
-    nvar <- length(levels(data$name))
-    # ncol should be the same as nvar
-
-    # this may not work with tibble
-    classpcp <- data$class[1 - nobs + (1:ncol)*nobs]
-    num <- classpcp %in% c("numeric", "integer")
-    fac <- classpcp == "factor"
-
-    data_spread[, c(FALSE, num)] <-  lapply(data_spread[, c(FALSE, num), drop = FALSE],
-                                            FUN = function(x) as.numeric(as.character(x)))
-
-    # to deal with factors, assign proper levels
-    # same name, value may break down this,
-    # if the user choose to put the same variable into the data twive
-    if (sum(fac) != 0) {
-      original_levels <- unique(data[which(data$class == "factor"),c("name", "value", "level")])
-      original_levels$name <- droplevels(original_levels$name)
-      original_levels <- original_levels %>%
-        group_by(name) %>%
-        arrange(level, .by_group = TRUE) %>%
-        ungroup()
-
-      original_levels <- split(original_levels, f = original_levels$name)
-
-      data_spread[, c(FALSE, fac)] <- Map(f = function(x, y){
-        factor(x, levels = y$value)
-      },
-      data_spread[, c(FALSE, fac), drop = FALSE],
-      original_levels)
-    }
+    # a vector to tell the class of variables
+    classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
+    data_spread <- prepare_data(data, classpcp, nobs)
 
 
     # at this time, data_spread is like the original data set, with columns properly defined
@@ -606,15 +581,15 @@ StatPcp <- ggproto(
     interwidth <- cumsum(c(1, interwidth))
 
     if (length(boxwidth) == 1) {
-      boxwidth <- rep(boxwidth, times = sum(fac))
+      boxwidth <- rep(boxwidth, times = sum(classpcp == "factor"))
     }
     if (length(rugwidth) == 1) {
-      rugwidth <- rep(rugwidth, times = sum(!fac))
+      rugwidth <- rep(rugwidth, times = sum(!classpcp == "factor"))
     }
     # calculate cumulated changes
     boxrugwidth <- seq_along(classpcp)
-    boxrugwidth[fac] <- boxwidth
-    boxrugwidth[!fac] <- rugwidth
+    boxrugwidth[classpcp == "factor"] <- boxwidth
+    boxrugwidth[!classpcp == "factor"] <- rugwidth
     cumboxrugwidth <- cumsum(boxrugwidth)
     # calculate the ajusted position
     boxwidth_xend <-  interwidth + cumboxrugwidth
@@ -959,3 +934,48 @@ process_fac2fac <- function(data_spread, continuous_fac, start_position, freespa
   arranged_fac_block
 }
 
+# Function for data preparation: to convert the input data to the form which can be used directly in the following: data_spread
+# argument classpcp and nobs are kept because they are also useful outside this function
+
+prepare_data <- function(data, classpcp, nobs) {
+
+  # to make R CMD CHECK happy
+  level <-  value <- name <- NULL
+
+  # make adjustment to accept proper data set
+  # make sure the output data_spread has the same correct expected column order
+  data$name <- factor(data$name, levels = unique(data$name))
+  data_spread <- spread(data[, c("id", "name", "value")], key = name, value = value)
+  ncol <- nrow(data)/nobs
+  nvar <- length(levels(data$name))
+  # ncol should be the same as nvar
+
+  # this may not work with tibble
+  num <- classpcp %in% c("numeric", "integer")
+  fac <- classpcp == "factor"
+
+  data_spread[, c(FALSE, num)] <-  lapply(data_spread[, c(FALSE, num), drop = FALSE],
+                                          FUN = function(x) as.numeric(as.character(x)))
+
+  # to deal with factors, assign proper levels
+  # same name, value may break down this,
+  # if the user choose to put the same variable into the data twive
+  if (sum(fac) != 0) {
+    original_levels <- unique(data[which(data$class == "factor"),c("name", "value", "level")])
+    original_levels$name <- droplevels(original_levels$name)
+    original_levels <- original_levels %>%
+      group_by(name) %>%
+      arrange(level, .by_group = TRUE) %>%
+      ungroup()
+
+    original_levels <- split(original_levels, f = original_levels$name)
+
+    data_spread[, c(FALSE, fac)] <- Map(f = function(x, y){
+      factor(x, levels = y$value)
+    },
+    data_spread[, c(FALSE, fac), drop = FALSE],
+    original_levels)
+  }
+
+  data_spread
+}
