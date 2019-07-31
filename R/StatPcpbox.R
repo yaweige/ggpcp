@@ -91,33 +91,14 @@ StatPcpbox <- ggproto(
                            interwidth = 1
   ) {
     # the following code are some of the internal part of StatPcp
-    # common data process
-    data$name <- factor(data$name, levels = unique(data$name))
-    data_spread <- spread(data[, c("id", "name", "value")], key = name, value = value)
+
+    # Data preparation: to convert the input data to the form we can directly use
+    # number of observations
     nobs <- max(data$id)
-    ncol <- nrow(data)/nobs
-    nvar <- length(levels(data$name))
-    classpcp <- data$class[1 - nobs + (1:ncol)*nobs]
-    num <- classpcp %in% c("numeric", "integer")
-    fac <- classpcp == "factor"
-    data_spread[, c(FALSE, num)] <-  lapply(data_spread[, c(FALSE, num), drop = FALSE],
-                                            FUN = function(x) as.numeric(as.character(x)))
-    if (sum(fac) != 0) {
-      original_levels <- unique(data[which(data$class == "factor"),c("name", "value", "level")])
-      original_levels$name <- droplevels(original_levels$name)
-      original_levels <- original_levels %>%
-        group_by(name) %>%
-        arrange(level, .by_group = TRUE) %>%
-        ungroup()
+    # a vector to tell the class of variables
+    classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
+    data_spread <- prepare_data(data, classpcp, nobs)
 
-      original_levels <- split(original_levels, f = original_levels$name)
-
-      data_spread[, c(FALSE, fac)] <- Map(f = function(x, y){
-        factor(x, levels = y$value)
-      },
-      data_spread[, c(FALSE, fac), drop = FALSE],
-      original_levels)
-    }
     # boxwidth
     # interval length, boxwidth, rugwidth
     # adjusted for different lengths
@@ -127,15 +108,15 @@ StatPcpbox <- ggproto(
     interwidth <- cumsum(c(1, interwidth))
 
     if (length(boxwidth) == 1) {
-      boxwidth <- rep(boxwidth, times = sum(fac))
+      boxwidth <- rep(boxwidth, times = sum(classpcp == "factor"))
     }
     if (length(rugwidth) == 1) {
-      rugwidth <- rep(rugwidth, times = sum(!fac))
+      rugwidth <- rep(rugwidth, times = sum(!classpcp == "factor"))
     }
     # calculate cumulated changes
     boxrugwidth <- seq_along(classpcp)
-    boxrugwidth[fac] <- boxwidth
-    boxrugwidth[!fac] <- rugwidth
+    boxrugwidth[classpcp == "factor"] <- boxwidth
+    boxrugwidth[!classpcp == "factor"] <- rugwidth
     cumboxrugwidth <- cumsum(boxrugwidth)
     # calculate the ajusted position
     boxwidth_xend <-  interwidth + cumboxrugwidth
@@ -143,7 +124,7 @@ StatPcpbox <- ggproto(
 
     # box
     # fac coming from the classpcp == "factor"
-    nlevels_list <- lapply(data_spread[, c(FALSE, fac), drop = FALSE],
+    nlevels_list <- lapply(data_spread[, c(FALSE, classpcp == "factor"), drop = FALSE],
                            FUN = function(x) list(nlevels = nlevels(x),
                                                   table = table(x)))
     eachobs <- (1 - freespace)/nobs
@@ -160,8 +141,8 @@ StatPcpbox <- ggproto(
       rep(c(y, z, z, y), times = x$nlevels)
     },
     nlevels_list,
-    boxwidth_xstart[fac],
-    boxwidth_xend[fac])
+    boxwidth_xstart[classpcp == "factor"],
+    boxwidth_xend[classpcp == "factor"])
 
     data_box_x <- unlist(data_box_x)
     data_box_group <- rep(1:(length(data_box_y)/4), each = 4)
