@@ -1,5 +1,5 @@
 ---
-title: "ggpcp"
+title: "Introduction to ggpcp"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ggpcp}
@@ -14,6 +14,146 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+brief introduction here
+
+```{r setup, message = FALSE}
+library(ggplot2)
+library(dplyr)
 library(ggpcp)
 ```
+
+## Work flow
+
+To use ggpcp package functionalities, we generally need to do the following steps:
+
+1. Choose the columns you want to use to draw the plot with gather_pcp().
+
+2. Pass the outcome to the transform_pcp() to do the transformation.
+
+3. Pass the transformed data to ggplot functions and ggpcp layer functions to draw the plot.
+
+## Transform the data from a wide form to a long form with gather_pcp()
+
+gather_pcp() allows you to transform the orginal data to the required form of ggpcp. It chooses the selected columns and transform those columns from a wide form to a long form while keeping all the original variables in the data set. The returned data frame has five columns for directly use of ggpcp, which will be passed to geom_pcp() later:
+
+* id: identify the observations.
+* name: the original variable names.
+* value: the values for the corresponding varibles indicated by **name** `name` *name*.
+* level: for factor variables, this indicates the level of the factor variable. For numeric variables, it's the numeric value of that variable which is the same the value column.
+* class: the class for the variable indicated in name, usually "numeric" and "factor".
+
+The original data are duplicated and kept for ease of future use when you want to map a variable to an aesthetics like color or size etc. An example is:
+
+```{r}
+data("mtcars")
+head(mtcars)
+
+# make the output as tibble to be consistent
+mtcars %>% gather_pcp(1:4) %>% head()
+```
+
+The gather_pcp() has its first argument as data, in which case you can use a pipe operator as in other tidyverse packages. The second argument `...` accept many ways of selection of vatiables:
+
+* positions: 1:3, c(1, 3, 2)
+* names: mpg, cyl
+* selectors: starts_with("m")
+* other expressions: mpg:cyl, sample(1:3, size = 3)
+
+The following code does the exact same selection as the previous one.
+
+```{r, eval = FALSE}
+mtcars %>% gather_pcp(mpg, 2, disp:hp)
+```
+
+## Scaling the data with transform_pcp()
+
+In most cases, you will need to scale your data in a proper way to best show them in a parallel coordinate plot. And if you have factor variables in your data, they will be shown in the range of 0-1, so you will need to scale the numeric variables to that range before drawing the plot.
+
+We provides four approaches to implement scaling by transform_pcp():
+
+* "std": univariately, subtract mean and divide by standard deviation
+* "robust": univariately, subtract median and divide by median absolute deviation
+* "uniminmax": univariately, scale so the minimum of the variable is zero, and the maximum is one
+* "globalminmax": gobal scaling, the global maximum is mapped to one, global minimum across the variables is mapped to zero
+
+To continue the work flow:
+
+```{r}
+mtcars %>% gather_pcp(1:4) %>% transform_pcp(method = "uniminmax") %>% head()
+```
+
+## Draw lines with geom_pcp()
+
+After all the preparation steps above, you can pass the output data to ggplot2 and make use of the function geom_pcp() to draw the basic coordinate parallel coordinate plot, which is composed by lines and axes.
+
+There are five aesthetics required for the layer functions of ggpcp. They provide necessary information to draw the plot and know the levels for factor variables. (note: id is not actually useful as we assume the id is from 1 to nrow now, which is the exact outcome following the steps above. I think we can remove it later.)
+
+```{r}
+mtcars %>% 
+  gather_pcp(1:4) %>% 
+  transform_pcp(method = "uniminmax") %>%
+  ggplot() + 
+  geom_pcp(aes(id = id, name = name, value = value, level = level, class = class))
+```
+
+We can see from the plot above, the second variable is actually a categorical one. So we can treat it as a factor variable to get a better plot, which evenly spreads the observations for the factor variable and provides the ability to track each observation. And add some color according to that.
+
+```{r}
+mtcars %>% 
+  mutate(cyl = factor(cyl)) %>%
+  gather_pcp(1:4) %>% 
+  transform_pcp(method = "uniminmax") %>%
+  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
+  geom_pcp(aes(color = cyl))
+```
+
+This is an extremely powerful functionality when it is used to deal with a sequence of factor variables. (When there is no numeric variable, we don't need to scale anything with transform_pcp().)
+
+```{r}
+mtcars %>% 
+  mutate(vs = factor(cyl),
+         am = factor(am),
+         gear = factor(gear),
+         carb = factor(carb)) %>%
+  gather_pcp(vs:carb) %>%
+  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
+  geom_pcp(aes(color = vs))
+```
+
+## Draw boxes with geom_pcp_box()
+
+To show the levels of factor variables clearer, you can use geom_pcp_box(), which is used to draw boxes for the levels. We can see from the following example.
+
+```{r}
+mtcars %>% 
+  mutate(vs = factor(cyl),
+         am = factor(am),
+         gear = factor(gear),
+         carb = factor(carb)) %>%
+  gather_pcp(vs:carb) %>%
+  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
+  geom_pcp(aes(color = vs)) + 
+  geom_pcp_box()
+```
+
+If you want to see the boxes not black segments, you need to provide another argument: boxwidth to, unfortunately, both layer functions.
+
+```{r}
+mtcars %>% 
+  mutate(vs = factor(cyl),
+         am = factor(am),
+         gear = factor(gear),
+         carb = factor(carb)) %>%
+  gather_pcp(vs:carb) %>%
+  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
+  geom_pcp(aes(color = vs), boxwidth = 0.2) + 
+  geom_pcp_box(boxwidth = 0.2, fill = NA)
+```
+
+## Draw bands with geom_pcp_band()
+
+## note: make use of breakpoint when necessary
+## note: 
+## Other examples
+
+
