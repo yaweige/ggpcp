@@ -93,7 +93,7 @@ GeomPcpbox <- ggproto("GeomPcpbox", Geom,
                       #   size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
                       #   linewidth=.1, weight = 1),
 
-                      default_aes = aes(colour = "NA", fill = "grey20", size = 0.5, linetype = 1,
+                      default_aes = aes(colour = "NA", fill = NA, size = 0.5, linetype = 1,
                                         alpha = NA, subgroup = NULL),
 
                       draw_panel = function(data, panel_params,
