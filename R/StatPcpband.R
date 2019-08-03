@@ -43,6 +43,7 @@
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
 #' @param breakpoint To break three or more factors into peices
+#' @param merge To merge the bands or not
 #'
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange select mutate summarise
