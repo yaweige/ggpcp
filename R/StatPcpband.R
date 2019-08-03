@@ -58,6 +58,7 @@ stat_pcp_band <- function(mapping = NULL, data = NULL,
                           rugwidth = 0,
                           interwidth = 1,
                           breakpoint = NULL,
+                          merge = FALSE,
                           na.rm = FALSE,
                           show.legend = NA,
                           inherit.aes = TRUE) {
@@ -76,6 +77,7 @@ stat_pcp_band <- function(mapping = NULL, data = NULL,
       rugwidth = rugwidth,
       interwidth = interwidth,
       breakpoint = breakpoint,
+      merge = merge,
       ...
     )
   )
@@ -99,7 +101,7 @@ StatPcpband <- ggproto(
 
   compute_panel = function(data, scales, freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
-                           breakpoint = NULL) {
+                           breakpoint = NULL, merge = FALSE) {
 
 
     # Data preparation: to convert the input data to the form we can directly use
@@ -207,7 +209,14 @@ StatPcpband <- ggproto(
           ungroup() %>%
           select(-data_final_ystart_fac2fac_bandid)
         # merge the bands when necessary, we will need a function to do this
-        data_band_merged <- band_merge(data_band_unmerged, eachobs)
+
+        if (merge) {
+          data_band_merged <- band_merge(data_band_unmerged, eachobs)
+        } else {
+          data_band_merged <- as.data.frame(data_band_unmerged)
+        }
+        data_band_merged
+
       })
 
       data_band_final_list <- lapply(1:6, FUN = function(x) {
@@ -217,6 +226,13 @@ StatPcpband <- ggproto(
         }
         temp
       })
+
+      names(data_band_final_list) <- c("band_ystart_min",
+                                       "band_ystart_max",
+                                       "band_yend_min",
+                                       "band_yend_max",
+                                       "band_xstart",
+                                       "band_xend")
 
       data_band_final_wide <- as.data.frame(data_band_final_list)
 
