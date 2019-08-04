@@ -45,6 +45,7 @@
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
 #' @param breakpoint To break three or more factors into peices
+#' @param merge To merge the bands or not
 #' @import ggplot2
 #' @export geom_pcp_band
 
@@ -57,6 +58,7 @@ geom_pcp_band <- function(mapping = NULL, data = NULL,
                           rugwidth = 0,
                           interwidth = 1,
                           breakpoint = NULL,
+                          merge = FALSE,
                           na.rm = FALSE,
                           show.legend = NA,
                           inherit.aes = TRUE) {
@@ -74,6 +76,7 @@ geom_pcp_band <- function(mapping = NULL, data = NULL,
       rugwidth = rugwidth,
       interwidth = interwidth,
       breakpoint = breakpoint,
+      merge = FALSE,
       na.rm = na.rm,
       ...
     )
