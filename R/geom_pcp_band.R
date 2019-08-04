@@ -98,7 +98,7 @@ GeomPcpband <- ggproto("GeomPcpband", Geom,
                            colour = data$colour,
                            size = data$size,
                            linetype = data$linetype,
-                           fill = data$fill, data$alpha,
+                           fill = data$fill,
                            alpha = data$alpha,
                            # is there PANEL or group? How those work...
                            PANEL = data$PANEL,

@@ -188,7 +188,8 @@ StatPcpband <- ggproto(
                                   data_final_xend_fac2fac = data_final_xend_fac2fac,
                                   data_final_yend_fac2fac = data_final_yend_fac2fac,
                                   data_final_ystart_fac2fac_bandid = data_final_ystart_fac2fac_bandid,
-                                  data_final_yend_fac2fac_bandid = data_final_yend_fac2fac_bandid)
+                                  data_final_yend_fac2fac_bandid = data_final_yend_fac2fac_bandid,
+                                  id = rep(1:nobs, times = length(data_final_xstart_fac2fac)/nobs))
 
       data_band_raw_split <- split(data_band_raw, f = rep(1:(nrow(data_band_raw)/nobs), each = nobs))
 
@@ -206,7 +207,8 @@ StatPcpband <- ggproto(
                     band_yend_max = max(data_final_yend_fac2fac),
                     band_xstart = data_final_xstart_fac2fac[1],
                     band_xend = data_final_xend_fac2fac[1],
-                    bandid = data_final_ystart_fac2fac_bandid[1]) %>%
+                    bandid = data_final_ystart_fac2fac_bandid[1],
+                    id = min(id)) %>%
           ungroup() %>%
           select(-data_final_ystart_fac2fac_bandid)
         # merge the bands when necessary, we will need a function to do this
@@ -220,7 +222,7 @@ StatPcpband <- ggproto(
 
       })
 
-      data_band_final_list <- lapply(1:6, FUN = function(x) {
+      data_band_final_list <- lapply(c(1:6, 8), FUN = function(x) {
         temp <- vector()
         for(i in 1:length(data_band_list)) {
           temp <- c(temp, data_band_list[[i]][, x])
@@ -233,7 +235,8 @@ StatPcpband <- ggproto(
                                        "band_yend_min",
                                        "band_yend_max",
                                        "band_xstart",
-                                       "band_xend")
+                                       "band_xend",
+                                       "id")
 
       data_band_final_wide <- as.data.frame(data_band_final_list)
 
@@ -245,17 +248,26 @@ StatPcpband <- ggproto(
     # interval length, boxwidth, rugwidth ajustment preparation
     width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth)
 
-
-
     # to modify and convert to long form
     data_band_final_wide[ ,5] <- width_adjusted$boxwidth_xend[data_band_final_wide[ ,5]]
     data_band_final_wide[ ,6] <- width_adjusted$boxwidth_xstart[data_band_final_wide[ ,6]]
     data_band_final_long <- data.frame(x = c(data_band_final_wide[ ,5], data_band_final_wide[ ,6]),
                                        ymin = c(data_band_final_wide[ ,1], data_band_final_wide[ ,3]) - 0.5*eachobs,
-                                       ymax = c(data_band_final_wide[ ,2], data_band_final_wide[ ,4]) + 0.5*eachobs)
+                                       ymax = c(data_band_final_wide[ ,2], data_band_final_wide[ ,4]) + 0.5*eachobs,
+                                       id = c(data_band_final_wide[ ,7], data_band_final_wide[ ,7]))
     data_band_final_long$group <- rep(1:nrow(data_band_final_wide), times = 2)
 
-    data_band_final_long
+    # To include the original data information for potential color or other mapping
+    datanames <- setdiff(names(data),c("name", "value", "level", "class", "group", "x", "y", "ymin", "ymax"))
+    # is there any problem when the original data has column x, y ymin, ymax, group, id?
+    # don't include the pcp specific variables - those are dealt with
+    output_data <- left_join(data_band_final_long, unique(data[,datanames]), by = "id")
+    if (merge) {
+      if (any(names(output_data) %in% c("color", "fill"))) {
+        message("When merge = TRUE, the additional aesthesics (color, fill...) is likely not one to one corresponding")
+      }
+    }
+    output_data
 
   }
 
@@ -265,6 +277,8 @@ StatPcpband <- ggproto(
 # A function used to merge smaller bands into a larger one if they are actually merged in the plot
 # we still need to deal with a extreme case when freespace = 0, for certain data
 band_merge <- function(data_band_unmerged, eachobs) {
+  # for R CMD check
+  id <- NULL
   if(nrow(data_band_unmerged) >= 2) {
     data_band_unmerged <- data_band_unmerged %>%
       arrange(.data$band_ystart_min) %>%
@@ -288,9 +302,10 @@ band_merge <- function(data_band_unmerged, eachobs) {
                  band_yend_max = selected_data$band_yend_max[length(x)],
                  band_xstart = selected_data$band_xstart[1],
                  band_xend = selected_data$band_xend[1],
-                 bandid = min(selected_data$bandid))
+                 bandid = min(selected_data$bandid),
+                 id = min(id))
     })
-    data_merged_band_only <- lapply(1:7, FUN = function(x) {
+    data_merged_band_only <- lapply(1:8, FUN = function(x) {
       temp <- vector()
       for (i in 1:length(merged_band_only)) {
         temp <- c(temp, merged_band_only[[i]][, x])
@@ -304,11 +319,12 @@ band_merge <- function(data_band_unmerged, eachobs) {
                                    band_yend_max = c(data_merged_band_only[[4]], data_band_unmerged_only[, 4]),
                                    band_xstart = c(data_merged_band_only[[5]], data_band_unmerged_only[, 5]),
                                    band_xend = c(data_merged_band_only[[6]], data_band_unmerged_only[, 6]),
-                                   bandid = c(data_merged_band_only[[7]], data_band_unmerged_only[, 7]))
+                                   bandid = c(data_merged_band_only[[7]], data_band_unmerged_only[, 7]),
+                                   id = c(data_merged_band_only[[8]], data_band_unmerged_only[, 8]))
 
     data_band_merged <- data_band_merged[!is.na(data_band_merged[, 1]), ]
   } else {
-    data_band_merged <- data_band_unmerged
+    data_band_merged <- as.data.frame(data_band_unmerged)
   }
   data_band_merged
 }
