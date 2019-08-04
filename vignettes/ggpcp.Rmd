@@ -164,12 +164,23 @@ mtcars %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
   geom_pcp(aes(color = vs), boxwidth = 0.2) +
   geom_pcp_box(boxwidth = 0.2) +
-  geom_pcp_band(boxwidth = 0.2, fill = "blue", alpha = 0.2)
+  geom_pcp_band(aes(fill = vs), boxwidth = 0.2, alpha = 0.2)
 ```
 
-Sometimes smaller bands are merged to a larger band, which is meaningful in showing a tidy plot, but will make it more difficult to color the bands. So we provide an argument to control this behavior.
+Sometimes smaller bands are merged to a larger band, which is meaningful in showing a tidy plot, but will make it more difficult to color the bands. So we provide an argument to control this behavior. When you turn on the `merge`, the color/fill aesthetics is not reliable because `geom_pcp_band` will use the first observation in the merged band to color the whole band.
 
-...
+```{r}
+mtcars %>% 
+  mutate(vs = factor(cyl),
+         am = factor(am),
+         gear = factor(gear),
+         carb = factor(carb)) %>%
+  gather_pcp(vs:carb) %>%
+  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
+  geom_pcp(aes(color = vs), boxwidth = 0.2) +
+  geom_pcp_box(boxwidth = 0.2) +
+  geom_pcp_band(boxwidth = 0.2, fill = "blue", alpha = 0.2, merge = TRUE)
+```
 
 ## Adjust boxwidth, rugwidth and interwidth
 
