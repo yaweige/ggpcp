@@ -96,8 +96,7 @@ titanic %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
   geom_pcp(aes(colour = Survived), alpha = 0.01) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
-  guides(colour=guide_legend(override.aes = list(alpha=1))) +
-  scale_x_continuous(breaks=1:4, labels=c(names(titanic))) 
+  guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
 By setting break points between blocks of categorical variables, we can focus on the two-dimensional relationship between variables on adjacent axes:
@@ -108,8 +107,7 @@ titanic %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
   geom_pcp(aes(colour = Class), alpha = 0.01, breakpoint=2:3) +
 #  scale_colour_manual(values=c("darkorange", "steelblue")) +
-  guides(colour=guide_legend(override.aes = list(alpha=1))) +
-  scale_x_continuous(breaks=1:4, labels=c(names(titanic)))
+  guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
 To combine the option of tracking individuals with the focus on 2d relationships between axes, we introduce a box for each axis to allow the tracking. For the thousands of people on board the Titanic individual tracking is tricky, but with good eyesight and a large screen still manageable :)
@@ -120,8 +118,7 @@ titanic %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
   geom_pcp_box(boxwidth=0.1, fill=NA) +
   geom_pcp(aes(colour = Class), alpha = 0.01, boxwidth=0.1, breakpoint=2:3) +
-  guides(colour=guide_legend(override.aes = list(alpha=1))) +
-  scale_x_continuous(breaks=1:4+ 1:4*0.1-0.05, labels=c(names(titanic)))
+  guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
 ## Mixed data: categorical and numeric variables
@@ -133,8 +130,7 @@ mtcars %>%
   group_by(name) %>%  # should go into transformation
   mutate(value = (level-min(level))/(max(level)-min(level))) %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp(aes(colour = mpg)) +
-  scale_x_continuous(breaks=1:ncol(mtcars), labels=c(names(mtcars)))
+  geom_pcp(aes(colour = mpg)) 
 ```
 
 Once the variables are coded properly as factor variables, we get a much more informative view:
@@ -151,9 +147,6 @@ mtcars %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
   geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
   geom_pcp(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
-  scale_x_continuous(breaks=1:ncol(mtcars) + 
-                       0.1*cumsum(c(0,1, 0,0,0,0,0,1,1,1,1)) -
-                       0.05*c(0,1, 0,0,0,0,0,1,1,1,1), labels=c(names(mtcars))) +
   scale_colour_gradient2("mpg", mid="grey50", midpoint = 20) +
   theme_bw()
 ```
@@ -179,8 +172,7 @@ mtcars %>%
   gather_pcp(columns = 1:3) %>%
   transform_pcp() %>%
   ggplot(aes(id = id, name= name, value=value, level = level, class=class, colour = am)) +
-  geom_pcp() +
-  scale_x_continuous(breaks=1:3, labels = names(mtcars)[1:3])
+  geom_pcp() 
 ```
 
 I need a better example for this.
