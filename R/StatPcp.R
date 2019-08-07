@@ -119,47 +119,7 @@ StatPcp <- ggproto(
     params <- params[intersect(names(params), self$parameters())]
 
     scales <- layout$get_scales(data$PANEL[1])
-
-    # p <- sum(data$id==1)
-    # # adjust breaks of x axis
-    # type <- data$class[data$id==1]
-    # breaks <- 1:p +
-    #   cumsum(params$boxwidth*(type=="factor")) -
-    #   params$boxwidth/2*(type=="factor")
-    boxwidth <- params$boxwidth
-    rugwidth <- params$rugwidth
-    interwidth <- params$interwidth
-    nobs <- nrow(data)/length(unique(data$name))
-    classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
-
-    if (length(interwidth) == 1) {
-      interwidth <- rep(interwidth, times = length(classpcp) - 1)
-    }
-    interwidth <- cumsum(c(1, interwidth))
-
-    if (length(boxwidth) == 1) {
-      boxwidth <- rep(boxwidth, times = sum(classpcp == "factor"))
-    }
-    if (length(rugwidth) == 1) {
-      rugwidth <- rep(rugwidth, times = sum(!classpcp == "factor"))
-    }
-
-    boxrugwidth <- seq_along(classpcp)
-    boxrugwidth[classpcp == "factor"] <- boxwidth
-    boxrugwidth[!classpcp == "factor"] <- rugwidth
-
-    cumboxrugwidth <- cumsum(boxrugwidth)
-
-
-    boxwidth_xend <-  interwidth + cumboxrugwidth
-    boxwidth_xstart <- boxwidth_xend - boxrugwidth
-
-    breaks <- boxwidth_xend - boxrugwidth/2
-
-    # scales$x <- scale_x_continuous(limits = c(1,p + params$boxwidth*sum(type=="factor")), breaks = breaks, labels = data$name[data$id==1])
-    scales$x <- scale_x_continuous(limits = c(min(boxwidth_xstart), max(boxwidth_xend)), breaks = breaks, labels = unique(data$name))
-    scales$x$get_breaks <- function(limits) breaks
-    layout$panel_scales_x <- list(scales$x) # only one scale overall - might need one for each panel
+    layout$panel_scales_x <- list(xscale_pcp(data, params, layout)) # only one scale overall - might need one for each panel
 
     args <- c(list(data = quote(data), scales = quote(scales)), params)
     gg <- ggplot2:::dapply(data, "PANEL", function(data) {
@@ -184,8 +144,11 @@ StatPcp <- ggproto(
     # If the input data is changed, we might need other ways to do the following part
     # but these three values/outputs are required, should be *exact* the same things
 
+
     # number of observations
     # nobs <- max(data$id)
+    obs_id <- unique(data$id)
+
     nobs <- nrow(data)/length(unique(data$name))
     # a vector to tell the class of variables
     classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
@@ -628,7 +591,7 @@ StatPcp <- ggproto(
     }
 
 
-    data_boxwidth$id <- rep(1:nobs, times = nrow(data_boxwidth)/nobs)
+    data_boxwidth$id <- rep(obs_id, times = nrow(data_boxwidth)/nobs)
     datanames <- setdiff(names(data), c("name", "value", "level", "class"))
     # don't include the pcp specific variables - those are dealt with
     output_data <- left_join(data_boxwidth, unique(data[,datanames]), by = "id")
