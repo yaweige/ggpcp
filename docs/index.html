@@ -181,39 +181,59 @@
 <p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <p>What becomes obvious in this plot, is that the miles per gallons (mpg) for each - encoded as the first variable in the plot and as color of the lines - is correlated strongly with all of the variables, not just the numeric variables. A large number of cylinders (cyl), a V-shaped engine (vs = 0), an automatic transmission (am = 0), a low number of forward gears and a high number of carburetors are related to a low value of mpg (red lines).</p>
 </div>
-<div id="aesthetics" class="section level2">
+<div id="bigger-example" class="section level2">
 <h2 class="hasAnchor">
-<a href="#aesthetics" class="anchor"></a>Aesthetics</h2>
-<p><code>gather_pcp</code> takes the specified columns of the data set and turns them into a long form, creating the new variables <code>id</code>, <code>name</code>, <code>value</code>, <code>level</code> and <code>class</code>. Additionally, the original variables are kept for a more convenient specification of aesthetics in the plot:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">mtcars <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb12-2" title="2"><span class="st">  </span><span class="kw"><a href="reference/gather_pcp.html">gather_pcp</a></span>(<span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">ncol</a></span>(mtcars)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb12-3" title="3"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>()</a></code></pre></div>
-<pre><code>##   id name value level   class  mpg cyl disp  hp drat    wt  qsec vs am
-## 1  1  mpg    21  21.0 numeric 21.0   6  160 110 3.90 2.620 16.46  0  1
-## 2  2  mpg    21  21.0 numeric 21.0   6  160 110 3.90 2.875 17.02  0  1
-## 3  3  mpg  22.8  22.8 numeric 22.8   4  108  93 3.85 2.320 18.61  1  1
-## 4  4  mpg  21.4  21.4 numeric 21.4   6  258 110 3.08 3.215 19.44  1  0
-## 5  5  mpg  18.7  18.7 numeric 18.7   8  360 175 3.15 3.440 17.02  0  0
-## 6  6  mpg  18.1  18.1 numeric 18.1   6  225 105 2.76 3.460 20.22  1  0
-##   gear carb
-## 1    4    4
-## 2    4    4
-## 3    4    1
-## 4    3    1
-## 5    3    2
-## 6    3    1</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">mtcars <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb14-2" title="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cyl =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
-<a class="sourceLine" id="cb14-3" title="3">         <span class="dt">vs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(vs),</a>
-<a class="sourceLine" id="cb14-4" title="4">         <span class="dt">am =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(am),</a>
-<a class="sourceLine" id="cb14-5" title="5">         <span class="dt">gear=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(gear),</a>
-<a class="sourceLine" id="cb14-6" title="6">         <span class="dt">carb =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(carb)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb14-7" title="7"><span class="st">  </span><span class="kw"><a href="reference/gather_pcp.html">gather_pcp</a></span>(<span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb14-8" title="8"><span class="st">  </span><span class="kw"><a href="reference/transform_pcp.html">transform_pcp</a></span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb14-9" title="9"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">id =</span> id, <span class="dt">name=</span> name, <span class="dt">value=</span>value, <span class="dt">level =</span> level, <span class="dt">class=</span>class, <span class="dt">colour =</span> am)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb14-10" title="10"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp.html">geom_pcp</a></span>() </a></code></pre></div>
-<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
-<p>I need a better example for this. See also: <a href="https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp" class="uri">https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp</a></p>
+<a href="#bigger-example" class="anchor"></a>Bigger Example</h2>
+<p>One application for parallel coordinate plots is their use for visualizing clusters.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(nasa, <span class="dt">package =</span> <span class="st">"GGally"</span>)</a></code></pre></div>
+<p>The <code>nasa</code> data, available from the <code>GGally</code> package, was used in the 2006 ASA Expo. It consists of monthly measurements of several climate variables, such as cloud coverage, temperature, pressure, and ozone values, captured on a 24x24 grid across Central America between 1995 and 2000.</p>
+<p>The results from clustering on monthly measurements can then be summarized visually. What we see is that the clusters have a very distinct geographic pattern (tile plot).</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">wide <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(id, <span class="dt">into=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="dt">remove =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">x =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/numeric">as.numeric</a></span>(x), <span class="dt">y =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/numeric">as.numeric</a></span>(y)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb13-3" title="3"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y=</span>y, <span class="dt">fill=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl7))) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-4" title="4"><span class="st">  </span><span class="kw">geom_tile</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_fill_brewer</span>(<span class="st">"Cluster"</span>, <span class="dt">palette =</span> <span class="st">"Dark2"</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-5" title="5"><span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Latitude"</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">"Longitude"</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-6" title="6"><span class="st">  </span><span class="kw">coord_equal</span>()</a></code></pre></div>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p>From the using a parallel coordinate plot we see that cloud coverage in low, medium and high altitude distinguishes quite succinctly between some of the clusters. (Relative) temperatures in January (1) and July (7) are very indicative to separate between clusters on the Southern and Northern hemisphere.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">wide <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="st">  </span><span class="kw"><a href="reference/gather_pcp.html">gather_pcp</a></span>(<span class="dv">83</span><span class="op">:</span><span class="dv">94</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-3" title="3"><span class="st">  </span><span class="kw"><a href="reference/transform_pcp.html">transform_pcp</a></span>(<span class="dt">method =</span> <span class="st">"uniminmax"</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-4" title="4"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">id=</span>id, <span class="dt">name=</span>name, <span class="dt">value=</span>value, <span class="dt">level=</span>level, <span class="dt">class=</span>class)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb14-5" title="5"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp.html">geom_pcp</a></span>(<span class="kw">aes</span>(<span class="dt">colour=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl7))) <span class="op">+</span><span class="st"> </span><span class="kw">facet_wrap</span>(<span class="op">~</span>cl7) <span class="op">+</span></a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="st">  </span><span class="kw">coord_flip</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_colour_brewer</span>(<span class="st">"Cluster"</span>, <span class="dt">palette =</span> <span class="st">"Dark2"</span>)</a></code></pre></div>
+<pre><code>## Warning: Removed 240 rows containing missing values (geom_segment).</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+<div id="visualizing-the-cluster-process" class="section level3">
+<h3 class="hasAnchor">
+<a href="#visualizing-the-cluster-process" class="anchor"></a>Visualizing the cluster process</h3>
+<p>Needs more words …</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">wide <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-2" title="2"><span class="st">  </span><span class="kw"><a href="reference/gather_pcp.html">gather_pcp</a></span>(<span class="dv">74</span><span class="op">:</span><span class="dv">82</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-3" title="3"><span class="st">  </span><span class="kw"><a href="reference/transform_pcp.html">transform_pcp</a></span>(<span class="dt">method =</span> <span class="st">"uniminmax"</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-4" title="4"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">id=</span>id, <span class="dt">name=</span>name, <span class="dt">value=</span>value, <span class="dt">level=</span>level, <span class="dt">class=</span>class)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb16-5" title="5"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp.html">geom_pcp</a></span>()</a></code></pre></div>
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">wide <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb17-2" title="2"><span class="st">  </span><span class="kw">mutate</span>(</a>
+<a class="sourceLine" id="cb17-3" title="3">    <span class="dt">cl2 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl2),</a>
+<a class="sourceLine" id="cb17-4" title="4">    <span class="dt">cl3 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl3),</a>
+<a class="sourceLine" id="cb17-5" title="5">    <span class="dt">cl4 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl4),</a>
+<a class="sourceLine" id="cb17-6" title="6">    <span class="dt">cl5 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl5),</a>
+<a class="sourceLine" id="cb17-7" title="7">    <span class="dt">cl6 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl6),</a>
+<a class="sourceLine" id="cb17-8" title="8">    <span class="dt">cl7 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl7),</a>
+<a class="sourceLine" id="cb17-9" title="9">    <span class="dt">cl8 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl8),</a>
+<a class="sourceLine" id="cb17-10" title="10">    <span class="dt">cl9 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl9),</a>
+<a class="sourceLine" id="cb17-11" title="11">    <span class="dt">cl10 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl10)</a>
+<a class="sourceLine" id="cb17-12" title="12">  ) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb17-13" title="13"><span class="st">  </span><span class="kw"><a href="reference/gather_pcp.html">gather_pcp</a></span>(<span class="dv">74</span><span class="op">:</span><span class="dv">82</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb17-14" title="14"><span class="st">  </span><span class="kw"><a href="reference/transform_pcp.html">transform_pcp</a></span>(<span class="dt">method =</span> <span class="st">"uniminmax"</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb17-15" title="15"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">id=</span>id, <span class="dt">name=</span>name, <span class="dt">value=</span>value, <span class="dt">level=</span>level, <span class="dt">class=</span>class)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb17-16" title="16"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp_box.html">geom_pcp_box</a></span>(<span class="dt">boxwidth=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb17-17" title="17"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp.html">geom_pcp</a></span>(<span class="kw">aes</span>(<span class="dt">colour =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl10)), <span class="dt">alpha =</span> <span class="fl">0.05</span>, <span class="dt">boxwidth=</span><span class="fl">0.1</span>)</a></code></pre></div>
+<p><img src="index_files/figure-html/unnamed-chunk-15-2.png" width="700"></p>
+<p>See also: <a href="https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp" class="uri">https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp</a></p>
+</div>
 </div>
 </div>
 <div id="related-work" class="section level1">

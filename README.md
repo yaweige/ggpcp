@@ -176,51 +176,90 @@ mtcars %>%
 
 What becomes obvious in this plot, is that the miles per gallons (mpg) for each - encoded as the first variable in the plot and as color of the lines - is correlated strongly with all of the variables, not just the numeric variables. A large number of cylinders (cyl), a V-shaped engine (vs = 0), an automatic transmission (am = 0), a low number of forward gears and a high number of carburetors are related to a low value of mpg (red lines).
 
-## Aesthetics
+## Bigger Example
 
-`gather_pcp` takes the specified columns of the data set and turns them into a long form, creating the new variables `id`, `name`, `value`, `level` and `class`. 
-Additionally, the original variables are kept for a more convenient specification of aesthetics in the plot: 
+One application for parallel coordinate plots is their use for visualizing clusters. 
+
+
+```r
+data(nasa, package = "GGally")
+```
+
+The `nasa` data, available from the `GGally` package, was used in the 2006 ASA Expo. It consists of monthly measurements of several climate variables, such as cloud coverage, temperature, pressure, and ozone values, captured on a 24x24 grid across Central America between 1995 and 2000.
+
+The results from clustering on monthly measurements can then be summarized visually. What we see is that the clusters have a very distinct geographic pattern (tile plot). 
+
+
 
 
 ```r
-mtcars %>% 
-  gather_pcp(columns = 1:ncol(mtcars)) %>%
-  head()
+wide %>% separate(id, into=c("x", "y"), remove = FALSE) %>%
+  mutate(x = as.numeric(x), y = as.numeric(y)) %>%
+  ggplot(aes(x = x, y=y, fill=factor(cl7))) +
+  geom_tile() + scale_fill_brewer("Cluster", palette = "Dark2") +
+  xlab("Latitude") + ylab("Longitude") +
+  coord_equal()
 ```
 
-```
-##   id name value level   class  mpg cyl disp  hp drat    wt  qsec vs am
-## 1  1  mpg    21  21.0 numeric 21.0   6  160 110 3.90 2.620 16.46  0  1
-## 2  2  mpg    21  21.0 numeric 21.0   6  160 110 3.90 2.875 17.02  0  1
-## 3  3  mpg  22.8  22.8 numeric 22.8   4  108  93 3.85 2.320 18.61  1  1
-## 4  4  mpg  21.4  21.4 numeric 21.4   6  258 110 3.08 3.215 19.44  1  0
-## 5  5  mpg  18.7  18.7 numeric 18.7   8  360 175 3.15 3.440 17.02  0  0
-## 6  6  mpg  18.1  18.1 numeric 18.1   6  225 105 2.76 3.460 20.22  1  0
-##   gear carb
-## 1    4    4
-## 2    4    4
-## 3    4    1
-## 4    3    1
-## 5    3    2
-## 6    3    1
-```
+![](README_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+
+From the using a parallel coordinate plot we see that cloud coverage in low, medium and high altitude distinguishes quite succinctly between some of the clusters. (Relative) temperatures in January (1) and July (7) are very indicative to separate between clusters on the Southern and Northern hemisphere. 
+
 
 ```r
-mtcars %>%
-  mutate(cyl = factor(cyl),
-         vs = factor(vs),
-         am = factor(am),
-         gear=factor(gear),
-         carb = factor(carb)) %>%
-  gather_pcp(columns = 1:3) %>%
-  transform_pcp() %>%
-  ggplot(aes(id = id, name= name, value=value, level = level, class=class, colour = am)) +
-  geom_pcp() 
+wide %>%
+  gather_pcp(83:94) %>%
+  transform_pcp(method = "uniminmax") %>%
+  ggplot(aes(id=id, name=name, value=value, level=level, class=class)) +
+  geom_pcp(aes(colour=factor(cl7))) + facet_wrap(~cl7) +
+  coord_flip() + scale_colour_brewer("Cluster", palette = "Dark2")
 ```
 
-![](README_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+```
+## Warning: Removed 240 rows containing missing values (geom_segment).
+```
 
-I need a better example for this.
+![](README_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+
+
+### Visualizing the cluster process
+
+Needs more words ... 
+
+
+```r
+wide %>%
+  gather_pcp(74:82) %>%
+  transform_pcp(method = "uniminmax") %>%
+  ggplot(aes(id=id, name=name, value=value, level=level, class=class)) +
+  geom_pcp()
+```
+
+![](README_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+
+```r
+wide %>%
+  mutate(
+    cl2 = factor(cl2),
+    cl3 = factor(cl3),
+    cl4 = factor(cl4),
+    cl5 = factor(cl5),
+    cl6 = factor(cl6),
+    cl7 = factor(cl7),
+    cl8 = factor(cl8),
+    cl9 = factor(cl9),
+    cl10 = factor(cl10)
+  ) %>%
+  gather_pcp(74:82) %>%
+  transform_pcp(method = "uniminmax") %>%
+  ggplot(aes(id=id, name=name, value=value, level=level, class=class)) +
+  geom_pcp_box(boxwidth=0.1) +
+  geom_pcp(aes(colour = factor(cl10)), alpha = 0.05, boxwidth=0.1)
+```
+
+![](README_files/figure-html/unnamed-chunk-15-2.png)<!-- -->
+
+
 See also: https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp
 
 # Related work
