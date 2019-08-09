@@ -133,6 +133,7 @@ StatPcpband <- ggproto(
     # Data preparation: to convert the input data to the form we can directly use
 
     # number of observations
+    obs_ids <- unique(data$id)
     nobs <- length(unique(data$id))
     # a vector to tell the class of variables
     classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
@@ -214,7 +215,7 @@ StatPcpband <- ggproto(
                                   data_final_yend_fac2fac = data_final_yend_fac2fac,
                                   data_final_ystart_fac2fac_bandid = data_final_ystart_fac2fac_bandid,
                                   data_final_yend_fac2fac_bandid = data_final_yend_fac2fac_bandid,
-                                  id = rep(1:nobs, times = length(data_final_xstart_fac2fac)/nobs))
+                                  id = rep(obs_ids, times = length(data_final_xstart_fac2fac)/nobs))
 
       data_band_raw_split <- split(data_band_raw, f = rep(1:(nrow(data_band_raw)/nobs), each = nobs))
 
@@ -281,7 +282,7 @@ StatPcpband <- ggproto(
                                        ymax = c(data_band_final_wide[ ,2], data_band_final_wide[ ,4]) + 0.5*eachobs,
                                        id = c(data_band_final_wide[ ,7], data_band_final_wide[ ,7]))
     data_band_final_long$group <- rep(1:nrow(data_band_final_wide), times = 2)
-
+browser()
     # To include the original data information for potential color or other mapping
     datanames <- setdiff(names(data),c("name", "value", "level", "class", "group", "x", "y", "ymin", "ymax"))
     # is there any problem when the original data has column x, y ymin, ymax, group, id?
