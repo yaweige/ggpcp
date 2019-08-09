@@ -99,21 +99,21 @@ GeomPcpbox <- ggproto("GeomPcpbox", Geom,
                       draw_panel = function(data, panel_params,
                                             coord,
                                             rule = "evenodd") {
-                        pcp_box <- data.frame(
-                          x = data$x,
-                          y = data$y,
-                          # And what about other parameters?
-                          colour = data$colour,
-                          size = data$size,
-                          linetype = data$linetype,
-                          fill = data$fill,
-                          alpha = data$alpha,
-                          # is there PANEL or group? How those work...
-                          PANEL = data$PANEL,
-                          group = data$group
-                        )
+                        # pcp_box <- data.frame(
+                        #   x = data$x,
+                        #   y = data$y,
+                        #   # And what about other parameters?
+                        #   colour = data$colour,
+                        #   size = data$size,
+                        #   linetype = data$linetype,
+                        #   fill = data$fill,
+                        #   alpha = data$alpha,
+                        #   # is there PANEL or group? How those work...
+                        #   PANEL = data$PANEL,
+                        #   group = data$group
+                        # )
 
-                        GeomPolygon$draw_panel(pcp_box, panel_params, coord,
+                        GeomPolygon$draw_panel(data, panel_params, coord,
                                                rule = rule)
                       }
 )

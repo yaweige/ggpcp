@@ -282,7 +282,7 @@ StatPcpband <- ggproto(
                                        ymax = c(data_band_final_wide[ ,2], data_band_final_wide[ ,4]) + 0.5*eachobs,
                                        id = c(data_band_final_wide[ ,7], data_band_final_wide[ ,7]))
     data_band_final_long$group <- rep(1:nrow(data_band_final_wide), times = 2)
-browser()
+
     # To include the original data information for potential color or other mapping
     datanames <- setdiff(names(data),c("name", "value", "level", "class", "group", "x", "y", "ymin", "ymax"))
     # is there any problem when the original data has column x, y ymin, ymax, group, id?

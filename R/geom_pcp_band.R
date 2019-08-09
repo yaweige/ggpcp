@@ -90,22 +90,22 @@ GeomPcpband <- ggproto("GeomPcpband", Geom,
 
                        draw_group = function(data, panel_params, coord,
                                              na.rm = na.rm) {
-                         pcp_band <- data.frame(
-                           x = data$x,
-                           ymin = data$ymin,
-                           ymax = data$ymax,
-                           # And what about other parameters?
-                           colour = data$colour,
-                           size = data$size,
-                           linetype = data$linetype,
-                           fill = data$fill,
-                           alpha = data$alpha,
-                           # is there PANEL or group? How those work...
-                           PANEL = data$PANEL,
-                           group = data$group
-                         )
+                         # pcp_band <- data.frame(
+                         #   x = data$x,
+                         #   ymin = data$ymin,
+                         #   ymax = data$ymax,
+                         #   # And what about other parameters?
+                         #   colour = data$colour,
+                         #   size = data$size,
+                         #   linetype = data$linetype,
+                         #   fill = data$fill,
+                         #   alpha = data$alpha,
+                         #   # is there PANEL or group? How those work...
+                         #   PANEL = data$PANEL,
+                         #   group = data$group
+                         # )
 
-                         GeomRibbon$draw_group(pcp_band, panel_params, coord,
+                         GeomRibbon$draw_group(data, panel_params, coord,
                                                na.rm = na.rm)
                        }
 )
