@@ -5,7 +5,7 @@
 \title{Parallel coordinate plot for both numeric and categorical data}
 \usage{
 stat_pcp2(mapping = NULL, data = NULL, geom = "segment",
-  position = "identity", ..., method = "uniminmax", freespace = 0.1,
+  position = "identity", ..., freespace = 0.1, method = "uniminmax",
   boxwidth = 0, rugwidth = 0, interwidth = 1, breakpoint = NULL,
   na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)
 }
@@ -39,9 +39,9 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 `colour = "red"` or `size = 3`. They may also be parameters
 to the paired geom/stat.}
 
-\item{method}{method to use for transforming values into a common y axis. See `transform_pcp` for details.}
-
 \item{freespace}{The total gap space among levels within each factor variable}
+
+\item{method}{method to use for transforming values into a common y axis. See `transform_pcp` for details.}
 
 \item{boxwidth}{The width of the box for each factor variable}
 

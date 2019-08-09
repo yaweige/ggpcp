@@ -62,14 +62,14 @@ select_helpers`
 
 ```{r}
 flea %>%
-  ggplot(aes(colour = species, vars=product(aede1, aede2, aede1, aede3))) + 
-  geom_pcp2()
+  ggplot(aes(colour = species)) + 
+  geom_pcp2(aes(vars=vars(aede1, aede2, aede1, aede3)))
 ```
 
 ```{r}
 flea %>%
   ggplot(aes(colour = species)) + 
-  geom_pcp2(aes(vars = product(starts_with("aede"), 1:4)), 
+  geom_pcp2(aes(vars = vars(starts_with("aede"), 1:4)), 
             method = "uniminmax")
 ```
 
@@ -112,6 +112,14 @@ titanic %>%
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
+```{r}
+titanic %>% 
+  ggplot(aes(vars=vars(1:4))) + 
+  geom_pcp2(aes(colour = Survived), alpha = 0.1) +
+  scale_colour_manual(values=c("darkorange", "steelblue")) +
+  guides(colour=guide_legend(override.aes = list(alpha=1))) 
+```
+
 By setting break points between blocks of categorical variables, we can focus on the two-dimensional relationship between variables on adjacent axes:
 
 ```{r}
@@ -119,6 +127,14 @@ titanic %>%
   gather_pcp(1:4) %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
   geom_pcp(aes(colour = Class), alpha = 0.01, breakpoint=2:3) +
+#  scale_colour_manual(values=c("darkorange", "steelblue")) +
+  guides(colour=guide_legend(override.aes = list(alpha=1))) 
+```
+
+```{r}
+titanic %>% 
+  ggplot(aes(vars = vars(1:4))) + 
+  geom_pcp2(aes(colour = Class), alpha = 0.1, breakpoint=2:3) +
 #  scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```

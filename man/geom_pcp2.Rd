@@ -97,9 +97,6 @@ mutate(cyl = factor(cyl),
  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
  geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
  geom_pcp(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
- scale_x_continuous(breaks=1:ncol(mtcars) +
-                      0.1*cumsum(c(0,1, 0,0,0,0,0,1,1,1,1)) -
-                      0.05*c(0,1, 0,0,0,0,0,1,1,1,1), labels=c(names(mtcars))) +
  scale_colour_gradient2("mpg", mid="grey50", midpoint = 20) +
  theme_bw()
 }

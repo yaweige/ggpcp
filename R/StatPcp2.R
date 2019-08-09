@@ -97,7 +97,7 @@ StatPcp2 <- ggproto(
     linewidth=.1, weight = 1, method = "uniminmax"),
 
   setup_data = function (data, params) {
-    browser()
+ #   browser()
     idx <- grep("x__", names(data))
     names(data) <- gsub("x__[0-9]+__", "", names(data))
     data <- data.frame(data, stringsAsFactors = TRUE)
