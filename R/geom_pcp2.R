@@ -199,16 +199,18 @@ geom_pcp2 <- function(
 
     if (!is.null(aes_vars)) {
       if (!is.null(self$mapping$vars))
-        aes_vars <- rlang::eval_tidy(self$mapping$vars, data = data)
+        aes_vars <- tidyselect::vars_select(tbl_vars(data), !!!rlang::eval_tidy(self$mapping$vars))
       if (!is.null(plot$mapping$vars))
-        aes_vars <- rlang::eval_tidy(plot$mapping$vars, data = data)
+        aes_vars <- tidyselect::vars_select(tbl_vars(data), !!!rlang::eval_tidy(plot$mapping$vars))
       var_x <- paste0("x__", 1:length(aes_vars), "__", as.character(aes_vars))
     }
+
+
 
     # move the new aesthetics into self, that way they will be preserved
     if (is.null(self$mapping)) self$mapping <- aes()
     for (i in seq_along(var_x)) {
-      self$mapping[[var_x[i]]] <- aes_vars[[i]]
+      self$mapping[[var_x[i]]] <- as.symbol(eval(aes_vars[[i]]))
     }
     if (!is.null(self$mapping$vars))
       self$mapping <- self$mapping[-grep("vars", names(self$mapping))]

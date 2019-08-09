@@ -66,10 +66,11 @@ flea %>%
   geom_pcp2()
 ```
 
-```{r eval=FALSE}
+```{r}
 flea %>%
   ggplot(aes(colour = species)) + 
-  geom_pcp2(aes(vars = product(starts_with("aede"), 1:4)), method = "uniminmax")
+  geom_pcp2(aes(vars = product(starts_with("aede"), 1:4)), 
+            method = "uniminmax")
 ```
 
 ```{r}
