@@ -62,7 +62,7 @@ select_helpers`
 
 ```{r}
 flea %>%
-  ggplot(aes(colour = species, vars=product(aede1, aede2, aede3))) + 
+  ggplot(aes(colour = species, vars=product(aede1, aede2, aede1, aede3))) + 
   geom_pcp2()
 ```
 

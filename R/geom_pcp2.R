@@ -98,8 +98,6 @@ geom_pcp2 <- function(
   show.legend = NA,
   inherit.aes = TRUE) {
 
-  browser()
-
   ll <- layer(
     data = data,
     mapping = mapping,
@@ -204,7 +202,7 @@ geom_pcp2 <- function(
         aes_vars <- rlang::eval_tidy(self$mapping$vars, data = data)
       if (!is.null(plot$mapping$vars))
         aes_vars <- rlang::eval_tidy(plot$mapping$vars, data = data)
-      var_x <- paste0("x__", as.character(aes_vars))
+      var_x <- paste0("x__", 1:length(aes_vars), "__", as.character(aes_vars))
     }
 
     # move the new aesthetics into self, that way they will be preserved
