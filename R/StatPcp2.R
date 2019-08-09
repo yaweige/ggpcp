@@ -65,7 +65,7 @@ stat_pcp2 <- function(mapping = NULL, data = NULL,
                      show.legend = NA,
                      inherit.aes = TRUE) {
 
-browser()
+#browser()
   layer(
     data = data,
     mapping = mapping,

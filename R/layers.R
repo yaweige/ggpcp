@@ -82,7 +82,7 @@ compute_aesthetics_pcp <- function(self, data, plot) {
 #' @importFrom dplyr tbl_vars
 #' @importFrom rlang eval_tidy
 setup_layer_pcp <- function(self, data, plot) {
-#  browser()
+  #browser()
   # the vars have to be defined in either self$mapping or in plot$mapping
   aes_vars <- plot$mapping$vars
   if (is.null(aes_vars))
@@ -90,9 +90,12 @@ setup_layer_pcp <- function(self, data, plot) {
 
   if (!is.null(aes_vars)) {
     if (!is.null(self$mapping$vars))
-      aes_vars <- tidyselect::vars_select(tbl_vars(data), !!!rlang::eval_tidy(self$mapping$vars))
+      aes_vars <- rlang::eval_tidy(self$mapping$vars)
     if (!is.null(plot$mapping$vars))
-      aes_vars <- tidyselect::vars_select(tbl_vars(data), !!!rlang::eval_tidy(plot$mapping$vars))
+      aes_vars <- rlang::eval_tidy(plot$mapping$vars)
+    idx <- getFromNamespace("vars_select_eval","tidyselect")(names(data), aes_vars)
+    aes_vars <- names(data)[unlist(idx)]
+
     var_x <- paste0("x__", 1:length(aes_vars), "__", as.character(aes_vars))
   }
 
