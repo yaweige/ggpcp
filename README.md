@@ -64,6 +64,191 @@ select_helpers`
 
 
 ```r
+flea %>%
+  ggplot(aes(colour = species, vars=product(aede1, aede2, aede3))) + 
+  geom_pcp2()
+```
+
+```
+## Called from: geom_pcp2()
+## debug: ll <- layer(data = data, mapping = mapping, stat = stat, geom = GeomPcp2, 
+##     position = position, show.legend = show.legend, inherit.aes = inherit.aes, 
+##     params = list(method = method, freespace = freespace, boxwidth = boxwidth, 
+##         rugwidth = rugwidth, interwidth = interwidth, breakpoint = breakpoint, 
+##         arrow = arrow, arrow.fill = arrow.fill, lineend = lineend, 
+##         linejoin = linejoin, na.rm = na.rm, ...))
+## debug: defaults <- function(x, y) c(x, y[setdiff(names(y), names(x))])
+## debug: ll$compute_aesthetics = function(self, data, plot) {
+##     browser()
+##     if (!is.null(plot$mapping$vars)) 
+##         plot$mapping <- plot$mapping[-grep("vars", names(plot$mapping))]
+##     if (self$inherit.aes) {
+##         aesthetics <- defaults(self$mapping, plot$mapping)
+##     }
+##     else {
+##         aesthetics <- self$mapping
+##     }
+##     set <- names(aesthetics) %in% names(self$aes_params)
+##     calculated <- ggplot2:::is_calculated_aes(aesthetics)
+##     aesthetics <- aesthetics[!set & !calculated]
+##     if (!is.null(self$geom_params$group)) {
+##         aesthetics[["group"]] <- self$aes_params$group
+##     }
+##     ggplot2:::scales_add_defaults(plot$scales, data, aesthetics, 
+##         plot$plot_env)
+##     evaled <- lapply(aesthetics, rlang::eval_tidy, data = data)
+##     evaled <- compact(evaled)
+##     ggplot2:::warn_for_aes_extract_usage(aesthetics, data[setdiff(names(data), 
+##         "PANEL")])
+##     nondata_cols <- ggplot2:::check_nondata_cols(evaled)
+##     if (length(nondata_cols) > 0) {
+##         msg <- paste0("Aesthetics must be valid data columns. Problematic aesthetic(s): ", 
+##             paste0(vapply(nondata_cols, function(x) {
+##                 paste0(x, " = ", as_label(aesthetics[[x]]))
+##             }, character(1)), collapse = ", "), ". \nDid you mistype the name of a data column or forget to add stat()?")
+##         stop(msg, call. = FALSE)
+##     }
+##     n <- nrow(data)
+##     if (n == 0) {
+##         if (length(evaled) == 0) {
+##             n <- 0
+##         }
+##         else {
+##             n <- max(vapply(evaled, length, integer(1)))
+##         }
+##     }
+##     ggplot2:::check_aesthetics(evaled, n)
+##     if (ggplot2:::empty(data) && n > 0) {
+##         evaled$PANEL <- 1
+##     }
+##     else {
+##         evaled$PANEL <- data$PANEL
+##     }
+##     evaled <- lapply(evaled, unname)
+##     evaled <- ggplot2:::as_gg_data_frame(evaled)
+##     evaled <- ggplot2:::add_group(evaled)
+##     evaled
+## }
+## debug: ll$setup_layer <- function(self, data, plot) {
+##     browser()
+##     aes_vars <- plot$mapping$vars
+##     if (is.null(aes_vars)) 
+##         aes_vars <- self$mapping$vars
+##     if (!is.null(aes_vars)) {
+##         if (!is.null(self$mapping$vars)) 
+##             aes_vars <- rlang::eval_tidy(self$mapping$vars, data = data)
+##         if (!is.null(plot$mapping$vars)) 
+##             aes_vars <- rlang::eval_tidy(plot$mapping$vars, data = data)
+##         var_x <- paste0("x__", as.character(aes_vars))
+##     }
+##     if (is.null(self$mapping)) 
+##         self$mapping <- aes()
+##     for (i in seq_along(var_x)) {
+##         self$mapping[[var_x[i]]] <- aes_vars[[i]]
+##     }
+##     if (!is.null(self$mapping$vars)) 
+##         self$mapping <- self$mapping[-grep("vars", names(self$mapping))]
+##     data
+## }
+## debug: ll
+```
+
+![](README_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```
+## Called from: f(..., self = self)
+## debug: aes_vars <- plot$mapping$vars
+## debug: if (is.null(aes_vars)) aes_vars <- self$mapping$vars
+## debug: if (!is.null(aes_vars)) {
+##     if (!is.null(self$mapping$vars)) 
+##         aes_vars <- rlang::eval_tidy(self$mapping$vars, data = data)
+##     if (!is.null(plot$mapping$vars)) 
+##         aes_vars <- rlang::eval_tidy(plot$mapping$vars, data = data)
+##     var_x <- paste0("x__", as.character(aes_vars))
+## }
+## debug: if (!is.null(self$mapping$vars)) aes_vars <- rlang::eval_tidy(self$mapping$vars, 
+##     data = data)
+## debug: if (!is.null(plot$mapping$vars)) aes_vars <- rlang::eval_tidy(plot$mapping$vars, 
+##     data = data)
+## debug: aes_vars <- rlang::eval_tidy(plot$mapping$vars, data = data)
+## debug: var_x <- paste0("x__", as.character(aes_vars))
+## debug: if (is.null(self$mapping)) self$mapping <- aes()
+## debug: self$mapping <- aes()
+## debug: for (i in seq_along(var_x)) {
+##     self$mapping[[var_x[i]]] <- aes_vars[[i]]
+## }
+## debug: self$mapping[[var_x[i]]] <- aes_vars[[i]]
+## debug: self$mapping[[var_x[i]]] <- aes_vars[[i]]
+## debug: self$mapping[[var_x[i]]] <- aes_vars[[i]]
+## debug: if (!is.null(self$mapping$vars)) self$mapping <- self$mapping[-grep("vars", 
+##     names(self$mapping))]
+## debug: data
+## Called from: f(..., self = self)
+## debug: if (!is.null(plot$mapping$vars)) plot$mapping <- plot$mapping[-grep("vars", 
+##     names(plot$mapping))]
+## debug: plot$mapping <- plot$mapping[-grep("vars", names(plot$mapping))]
+## debug: if (self$inherit.aes) {
+##     aesthetics <- defaults(self$mapping, plot$mapping)
+## } else {
+##     aesthetics <- self$mapping
+## }
+## debug: aesthetics <- defaults(self$mapping, plot$mapping)
+## debug: set <- names(aesthetics) %in% names(self$aes_params)
+## debug: calculated <- ggplot2:::is_calculated_aes(aesthetics)
+## debug: aesthetics <- aesthetics[!set & !calculated]
+## debug: if (!is.null(self$geom_params$group)) {
+##     aesthetics[["group"]] <- self$aes_params$group
+## }
+## debug: ggplot2:::scales_add_defaults(plot$scales, data, aesthetics, 
+##     plot$plot_env)
+## debug: evaled <- lapply(aesthetics, rlang::eval_tidy, data = data)
+## debug: evaled <- compact(evaled)
+## debug: ggplot2:::warn_for_aes_extract_usage(aesthetics, data[setdiff(names(data), 
+##     "PANEL")])
+## debug: nondata_cols <- ggplot2:::check_nondata_cols(evaled)
+## debug: if (length(nondata_cols) > 0) {
+##     msg <- paste0("Aesthetics must be valid data columns. Problematic aesthetic(s): ", 
+##         paste0(vapply(nondata_cols, function(x) {
+##             paste0(x, " = ", as_label(aesthetics[[x]]))
+##         }, character(1)), collapse = ", "), ". \nDid you mistype the name of a data column or forget to add stat()?")
+##     stop(msg, call. = FALSE)
+## }
+## debug: n <- nrow(data)
+## debug: if (n == 0) {
+##     if (length(evaled) == 0) {
+##         n <- 0
+##     }
+##     else {
+##         n <- max(vapply(evaled, length, integer(1)))
+##     }
+## }
+## debug: ggplot2:::check_aesthetics(evaled, n)
+## debug: if (ggplot2:::empty(data) && n > 0) {
+##     evaled$PANEL <- 1
+## } else {
+##     evaled$PANEL <- data$PANEL
+## }
+## debug: evaled$PANEL <- data$PANEL
+## debug: evaled <- lapply(evaled, unname)
+## debug: evaled <- ggplot2:::as_gg_data_frame(evaled)
+## debug: evaled <- ggplot2:::add_group(evaled)
+## debug: evaled
+## Called from: f(...)
+## debug: cat("setup data in geom\n params$method: ")
+## setup data in geom
+##  params$method: debug: cat(params$method)
+## uniminmaxdebug: data
+```
+
+
+```r
+flea %>%
+  ggplot(aes(colour = species)) + 
+  geom_pcp2(aes(vars = product(starts_with("aede"), 1:4)), method = "uniminmax")
+```
+
+
+```r
 flea %>% 
   gather_pcp(1:7, 6, 3) %>%
   transform_pcp(method="uniminmax") %>%
@@ -72,7 +257,7 @@ flea %>%
   scale_size_manual(values=c(0.5, 0.65, 0.8))
 ```
 
-![](README_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 
 ```r
@@ -85,7 +270,7 @@ flea %>%
   geom_pcp(aes(colour=species), boxwidth = 0.1) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 `ggpcp` deals with categorical variables by using the space on the y axis of a categorical variable to spread points out evenly. This allows us to track individual points through the parallel coordinate plot even in the presence of categorical variables. 
 
@@ -108,7 +293,7 @@ titanic %>%
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 By setting break points between blocks of categorical variables, we can focus on the two-dimensional relationship between variables on adjacent axes:
 
@@ -122,7 +307,7 @@ titanic %>%
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
 To combine the option of tracking individuals with the focus on 2d relationships between axes, we introduce a box for each axis to allow the tracking. For the thousands of people on board the Titanic individual tracking is tricky, but with good eyesight and a large screen still manageable :)
 
@@ -136,7 +321,7 @@ titanic %>%
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
 ## Mixed data: categorical and numeric variables
 
@@ -151,7 +336,7 @@ mtcars %>%
   geom_pcp(aes(colour = mpg)) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 Once the variables are coded properly as factor variables, we get a much more informative view:
 
@@ -172,7 +357,7 @@ mtcars %>%
   theme_bw()
 ```
 
-![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 What becomes obvious in this plot, is that the miles per gallons (mpg) for each - encoded as the first variable in the plot and as color of the lines - is correlated strongly with all of the variables, not just the numeric variables. A large number of cylinders (cyl), a V-shaped engine (vs = 0), an automatic transmission (am = 0), a low number of forward gears and a high number of carburetors are related to a low value of mpg (red lines).
 
@@ -201,7 +386,7 @@ wide %>% separate(id, into=c("x", "y"), remove = FALSE) %>%
   coord_equal()
 ```
 
-![](README_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
 From the using a parallel coordinate plot we see that cloud coverage in low, medium and high altitude distinguishes quite succinctly between some of the clusters. (Relative) temperatures in January (1) and July (7) are very indicative to separate between clusters on the Southern and Northern hemisphere. 
 
@@ -219,7 +404,7 @@ wide %>%
 ## Warning: Removed 240 rows containing missing values (geom_segment).
 ```
 
-![](README_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 
 ### Visualizing the cluster process
@@ -235,7 +420,7 @@ wide %>%
   geom_pcp()
 ```
 
-![](README_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 ```r
 wide %>%
@@ -257,7 +442,7 @@ wide %>%
   geom_pcp(aes(colour = factor(cl10)), alpha = 0.05, boxwidth=0.1)
 ```
 
-![](README_files/figure-html/unnamed-chunk-15-2.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-17-2.png)<!-- -->
 
 
 See also: https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp

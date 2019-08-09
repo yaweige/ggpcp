@@ -61,6 +61,18 @@ select_helpers`
 - Third, we are ready to plot: `geom_pcp` is a layer that draws lines for each observation of a parallel coordinate plot. We can use additional mappings such as colour, linetype or size of the lines.
 
 ```{r}
+flea %>%
+  ggplot(aes(colour = species, vars=product(aede1, aede2, aede3))) + 
+  geom_pcp2()
+```
+
+```{r eval=FALSE}
+flea %>%
+  ggplot(aes(colour = species)) + 
+  geom_pcp2(aes(vars = product(starts_with("aede"), 1:4)), method = "uniminmax")
+```
+
+```{r}
 flea %>% 
   gather_pcp(1:7, 6, 3) %>%
   transform_pcp(method="uniminmax") %>%
