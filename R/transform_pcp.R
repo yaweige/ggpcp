@@ -24,6 +24,7 @@ transform_pcp <- function(data, method = "uniminmax") {
   assert_that(has_name(data, "level"))
   assert_that(has_name(data, "value"))
 
+  assert_that(!is.null(method))
   assert_that(method %in% c("uniminmax", "robust", "std", "globalminmax"))
 
   # any of the transformations work only in case level is a numeric value.

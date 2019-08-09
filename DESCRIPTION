@@ -13,11 +13,12 @@ Description: Modern Parallel Coordinate Plots have been introduced in the 1980s 
 License: GPL-3
 Imports: 
     ggplot2 (>= 3.2.0),
-    dplyr,
-    tidyr,
+    dplyr (>= 0.8.3),
+    tidyselect (>= 0.2.5), 
+    tidyr (>= 0.8.3),
     assertthat,
-    rlang,
-    stringr
+    rlang (>= 0.4.0),
+    stringr (>= 1.4.0)
 Depends: 
     R (>= 3.4)
 Remotes: 

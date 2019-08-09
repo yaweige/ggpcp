@@ -61,6 +61,19 @@ select_helpers`
 - Third, we are ready to plot: `geom_pcp` is a layer that draws lines for each observation of a parallel coordinate plot. We can use additional mappings such as colour, linetype or size of the lines.
 
 ```{r}
+flea %>%
+  ggplot(aes(colour = species)) + 
+  geom_pcp2(aes(vars=vars(aede1, aede2, aede1, aede3)))
+```
+
+```{r}
+flea %>%
+  ggplot(aes(colour = species)) + 
+  geom_pcp2(aes(vars = vars(starts_with("aede"), 1:4, 6)), 
+            method = "uniminmax")
+```
+
+```{r}
 flea %>% 
   gather_pcp(1:7, 6, 3) %>%
   transform_pcp(method="uniminmax") %>%
@@ -99,6 +112,14 @@ titanic %>%
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
+```{r}
+titanic %>% 
+  ggplot(aes(vars=vars(1:4))) + 
+  geom_pcp2(aes(colour = Survived), alpha = 0.1) +
+  scale_colour_manual(values=c("darkorange", "steelblue")) +
+  guides(colour=guide_legend(override.aes = list(alpha=1))) 
+```
+
 By setting break points between blocks of categorical variables, we can focus on the two-dimensional relationship between variables on adjacent axes:
 
 ```{r}
@@ -106,6 +127,14 @@ titanic %>%
   gather_pcp(1:4) %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
   geom_pcp(aes(colour = Class), alpha = 0.01, breakpoint=2:3) +
+#  scale_colour_manual(values=c("darkorange", "steelblue")) +
+  guides(colour=guide_legend(override.aes = list(alpha=1))) 
+```
+
+```{r}
+titanic %>% 
+  ggplot(aes(vars = vars(1:4))) + 
+  geom_pcp2(aes(colour = Class), alpha = 0.1, breakpoint=2:3) +
 #  scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
@@ -176,11 +205,7 @@ d <- dist(wide[,-1])
 cl <- hclust(d, method = "ward.D")
 
 wide$cl2 <- cutree(cl, k = 2)
-nasa <- left_join(nasa, wide[,c("id", "cl2")], by="id")
-
 wide$cl3 <- cutree(cl, k = 3)
-nasa <- left_join(nasa, wide[,c("id", "cl3")], by="id")
-
 wide$cl4 <- cutree(cl, k = 4)
 wide$cl5 <- cutree(cl, k = 5)
 wide$cl6 <- cutree(cl, k = 6)
@@ -188,8 +213,6 @@ wide$cl7 <- cutree(cl, k = 7)
 wide$cl8 <- cutree(cl, k = 8)
 wide$cl9 <- cutree(cl, k = 9)
 wide$cl10 <- cutree(cl, k = 10)
-
-
 
 wide.sum <- nasa %>% select(id, month, year, starts_with("cloud"), ozone, pressure, surftemp) %>%
   gather(key = variable, value = value, -id, -month, -year) %>%
