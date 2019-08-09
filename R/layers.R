@@ -1,8 +1,13 @@
-# just a helper function
+# helper function
 defaults <- function(x, y) c(x, y[setdiff(names(y), names(x))])
 
-# straight copy from layer-.r in ggplot2, except for the first block
-# to remove the vars mapping from the plot
+#' Custom function for pcp layer
+#'
+#' straight copy from layer-.r in ggplot2, except for the first block
+#' to remove the vars mapping from the plot
+#' @importFrom utils getFromNamespace
+#' @importFrom rlang as_label
+#' @noRd
 compute_aesthetics_pcp <- function(self, data, plot) {
   # move the vars aesthetics out of the mapping
   if (!is.null(plot$mapping$vars))
@@ -17,7 +22,7 @@ compute_aesthetics_pcp <- function(self, data, plot) {
 
   # Drop aesthetics that are set or calculated
   set <- names(aesthetics) %in% names(self$aes_params)
-  calculated <- ggplot2:::is_calculated_aes(aesthetics)
+  calculated <- getFromNamespace("is_calculated_aes", asNamespace("ggplot2"))(aesthetics)
   aesthetics <- aesthetics[!set & !calculated]
 
   # Override grouping if set in layer
@@ -25,17 +30,18 @@ compute_aesthetics_pcp <- function(self, data, plot) {
     aesthetics[["group"]] <- self$aes_params$group
   }
 
-  ggplot2:::scales_add_defaults(plot$scales, data, aesthetics, plot$plot_env)
+  getFromNamespace("scales_add_defaults", asNamespace("ggplot2"))(plot$scales, data, aesthetics, plot$plot_env)
 
   # Evaluate aesthetics
   evaled <- lapply(aesthetics, rlang::eval_tidy, data = data)
-  evaled <- compact(evaled)
+
+#  evaled <- compact(evaled) ## HH: not sure that we need that
 
   # Check for discouraged usage in mapping
-  ggplot2:::warn_for_aes_extract_usage(aesthetics, data[setdiff(names(data), "PANEL")])
+  getFromNamespace("warn_for_aes_extract_usage", asNamespace("ggplot2"))(aesthetics, data[setdiff(names(data), "PANEL")])
 
   # Check aesthetic values
-  nondata_cols <- ggplot2:::check_nondata_cols(evaled)
+  nondata_cols <- getFromNamespace("check_nondata_cols", asNamespace("ggplot2"))(evaled)
   if (length(nondata_cols) > 0) {
     msg <- paste0(
       "Aesthetics must be valid data columns. Problematic aesthetic(s): ",
@@ -54,21 +60,27 @@ compute_aesthetics_pcp <- function(self, data, plot) {
       n <- max(vapply(evaled, length, integer(1)))
     }
   }
-  ggplot2:::check_aesthetics(evaled, n)
+  getFromNamespace("check_aesthetics", asNamespace("ggplot2"))(evaled, n)
 
+  empty <- getFromNamespace("empty", asNamespace("ggplot2"))
   # Set special group and panel vars
-  if (ggplot2:::empty(data) && n > 0) {
+  if (empty(data) && n > 0) {
     evaled$PANEL <- 1
   } else {
     evaled$PANEL <- data$PANEL
   }
   evaled <- lapply(evaled, unname)
-  evaled <- ggplot2:::as_gg_data_frame(evaled)
-  evaled <- ggplot2:::add_group(evaled)
+
+  evaled <- getFromNamespace("as_gg_data_frame", asNamespace("ggplot2"))(evaled)
+  evaled <- getFromNamespace("add_group", asNamespace("ggplot2"))(evaled)
   evaled
 }
 
-# function to setup the vars mapping in pcps
+#' function to setup the vars mapping in pcps
+#' @noRd
+#' @importFrom tidyselect vars_select
+#' @importFrom dplyr tbl_vars
+#' @importFrom rlang eval_tidy
 setup_layer_pcp <- function(self, data, plot) {
 #  browser()
   # the vars have to be defined in either self$mapping or in plot$mapping

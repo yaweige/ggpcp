@@ -9,9 +9,9 @@
 #' @importFrom dplyr left_join %>% select
 #' @importFrom rlang enquos !!!
 #' @importFrom stringr str_detect
-
+#' @importFrom tidyr gather
 gather_pcp2 <- function(data, ...) {
-
+  name <- value <- NULL # make R CMD CHECK happy
   subdata <- data[,eval(...)]
 
   data$id <- 1:nrow(data)
