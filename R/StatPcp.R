@@ -145,7 +145,6 @@ StatPcp <- ggproto(
       # but these three values/outputs are required, should be *exact* the same things
 
       # number of observations
-      nobs <- max(data$id) # HH: it's not max, it's the number of different ids
       obs_ids <- unique(data$id)
       nobs <- length(unique(data$id))
       # a vector to tell the class of variables

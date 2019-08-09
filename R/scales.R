@@ -11,7 +11,7 @@ xscale_pcp <- function(data, params, layout) {
   boxwidth <- params$boxwidth
   rugwidth <- params$rugwidth
   interwidth <- params$interwidth
-  nobs <- nrow(data)/length(unique(data$name))
+  nobs <- length(unique(data$id))
   classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
 
   if (length(interwidth) == 1) {
