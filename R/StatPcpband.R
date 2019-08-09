@@ -133,7 +133,7 @@ StatPcpband <- ggproto(
     # Data preparation: to convert the input data to the form we can directly use
 
     # number of observations
-    nobs <- max(data$id)
+    nobs <- length(unique(data$id))
     # a vector to tell the class of variables
     classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
     data_spread <- prepare_data(data, classpcp, nobs)
