@@ -84,6 +84,31 @@ StatPcpbox <- ggproto(
     size = .1, fill = NA, alpha = .8, stroke = 0.1,
     linewidth=.1, weight = 1),
 
+  compute_layer = function(self, data, params, layout) {
+    # adjust function to avoid deleting all data
+    ggplot2:::check_required_aesthetics(
+      self$required_aes,
+      c(names(data), names(params)),
+      ggplot2:::snake_class(self)
+    )
+
+    # Trim off extra parameters
+    params <- params[intersect(names(params), self$parameters())]
+
+    scales <- layout$get_scales(data$PANEL[1])
+    layout$panel_scales_x <- list(xscale_pcp(data, params, layout)) # only one scale overall - might need one for each panel
+
+    args <- c(list(data = quote(data), scales = quote(scales)), params)
+    gg <- ggplot2:::dapply(data, "PANEL", function(data) {
+      tryCatch(do.call(self$compute_panel, args), error = function(e) {
+        warning("Computation failed in `", ggplot2:::snake_class(self), "()`:\n",
+                e$message, call. = FALSE)
+        ggplot2:::new_data_frame()
+      })
+    })
+    gg
+  },
+
   compute_panel = function(data, scales,
                            freespace = 0.1,
                            boxwidth = 0.1,
