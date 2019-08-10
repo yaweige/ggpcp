@@ -45,6 +45,8 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 `colour = "red"` or `size = 3`. They may also be parameters
 to the paired geom/stat.}
 
+\item{method}{which method should be used to transform the values of each variable into acommon y axis? See `transform_pcp` for details.}
+
 \item{freespace}{The total gap space among levels within each factor variable}
 
 \item{boxwidth}{The width of the box for each factor variable}

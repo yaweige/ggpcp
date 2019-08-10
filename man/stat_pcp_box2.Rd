@@ -5,9 +5,9 @@
 \title{Boxes for the levels in each factor variable in parallel coordinate plot}
 \usage{
 stat_pcp_box2(mapping = NULL, data = NULL, geom = "polygon",
-  position = "identity", ..., freespace = 0.1, boxwidth = 0,
-  rugwidth = 0, interwidth = 1, na.rm = FALSE, show.legend = NA,
-  inherit.aes = TRUE)
+  position = "identity", ..., method = "uniminmax", freespace = 0.1,
+  boxwidth = 0, rugwidth = 0, interwidth = 1, na.rm = FALSE,
+  show.legend = NA, inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by [aes()] or
@@ -39,6 +39,8 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 `colour = "red"` or `size = 3`. They may also be parameters
 to the paired geom/stat.}
 
+\item{method}{which method should be used to transform the values of each variable into acommon y axis? See `transform_pcp` for details.}
+
 \item{freespace}{The total gap space among levels within each factor variable}
 
 \item{boxwidth}{The width of the box for each factor variable}
@@ -61,8 +63,6 @@ display.}
 rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. [borders()].}
-
-\item{method}{method to use for transforming values into a common y axis. See `transform_pcp` for details.}
 }
 \description{
 To add boxes showing the levels in each factor variable

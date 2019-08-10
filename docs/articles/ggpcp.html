@@ -179,7 +179,7 @@
 <p><img src="ggpcp_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>This is an extremely powerful functionality when it is used to deal with a sequence of factor variables. (When there is no numeric variable, we don’t need to scale anything with transform_pcp().)</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">mtcars <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">vs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">cyl =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
 <a class="sourceLine" id="cb7-3" title="3">         <span class="dt">am =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(am),</a>
 <a class="sourceLine" id="cb7-4" title="4">         <span class="dt">gear =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(gear),</a>
 <a class="sourceLine" id="cb7-5" title="5">         <span class="dt">carb =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(carb)) <span class="op">%&gt;%</span></a>
@@ -193,7 +193,7 @@
 <a href="#draw-boxes-with-geom_pcp_box" class="anchor"></a>Draw boxes with geom_pcp_box()</h2>
 <p>To show the levels of factor variables clearer, you can use geom_pcp_box(), which is used to draw boxes for the levels. We can see from the following example.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">mtcars <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">vs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">cyl =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
 <a class="sourceLine" id="cb8-3" title="3">         <span class="dt">am =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(am),</a>
 <a class="sourceLine" id="cb8-4" title="4">         <span class="dt">gear =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(gear),</a>
 <a class="sourceLine" id="cb8-5" title="5">         <span class="dt">carb =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(carb)) <span class="op">%&gt;%</span></a>
@@ -204,7 +204,7 @@
 <p><img src="ggpcp_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>If you want to see the boxes not black segments, you need to provide another argument: boxwidth to, unfortunately, both layer functions.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">mtcars <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">vs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">cyl =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
 <a class="sourceLine" id="cb9-3" title="3">         <span class="dt">am =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(am),</a>
 <a class="sourceLine" id="cb9-4" title="4">         <span class="dt">gear =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(gear),</a>
 <a class="sourceLine" id="cb9-5" title="5">         <span class="dt">carb =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(carb)) <span class="op">%&gt;%</span></a>
@@ -219,7 +219,7 @@
 <a href="#draw-bands-with-geom_pcp_band" class="anchor"></a>Draw bands with geom_pcp_band()</h2>
 <p>You can also draw bands with geom_pcp_band(). This can adds a layer to lines or boxes to compose a more meaningful plot.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">mtcars <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">vs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">cyl =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
 <a class="sourceLine" id="cb10-3" title="3">         <span class="dt">am =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(am),</a>
 <a class="sourceLine" id="cb10-4" title="4">         <span class="dt">gear =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(gear),</a>
 <a class="sourceLine" id="cb10-5" title="5">         <span class="dt">carb =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(carb)) <span class="op">%&gt;%</span></a>
@@ -231,7 +231,7 @@
 <p><img src="ggpcp_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <p>Sometimes smaller bands are merged to a larger band, which is meaningful in showing a tidy plot, but will make it more difficult to color the bands. So we provide an argument to control this behavior. When you turn on the <code>merge</code>, the color/fill aesthetics is not reliable because <code>geom_pcp_band</code> will use the first observation in the merged band to color the whole band.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">mtcars <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">vs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">cyl =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
 <a class="sourceLine" id="cb11-3" title="3">         <span class="dt">am =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(am),</a>
 <a class="sourceLine" id="cb11-4" title="4">         <span class="dt">gear =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(gear),</a>
 <a class="sourceLine" id="cb11-5" title="5">         <span class="dt">carb =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(carb)) <span class="op">%&gt;%</span></a>
@@ -253,7 +253,7 @@
 </ul>
 <p>These arguments accept a scalar or a vector with equal length of the object they control.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">mtcars <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb12-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">vs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">cyl =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
 <a class="sourceLine" id="cb12-3" title="3">         <span class="dt">am =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(am),</a>
 <a class="sourceLine" id="cb12-4" title="4">         <span class="dt">gear =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(gear),</a>
 <a class="sourceLine" id="cb12-5" title="5">         <span class="dt">carb =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(carb)) <span class="op">%&gt;%</span></a>
@@ -269,7 +269,7 @@
 <a href="#break-the-factor-block" class="anchor"></a>Break the factor block</h2>
 <p>Our default method works great for a sequence of factor variables, but as the number variables increases, it becomes messier at the right side of the factor block, because the number of combinations of levels of variables increases. This is a conceptual problem which makes it hard to show the pattern of the data in these cases.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">mtcars <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb13-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">vs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">cyl =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
 <a class="sourceLine" id="cb13-3" title="3">         <span class="dt">am =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(am),</a>
 <a class="sourceLine" id="cb13-4" title="4">         <span class="dt">gear =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(gear)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb13-5" title="5"><span class="st">  </span><span class="kw"><a href="../reference/gather_pcp.html">gather_pcp</a></span>(vs<span class="op">:</span>gear) <span class="op">%&gt;%</span></a>
@@ -279,13 +279,15 @@
 <p><img src="ggpcp_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 <p>We provide a argument to partly sovle this problem. By making use of <code>breakpoint</code> in geom_pcp(), we can actually break a factor block to two or more smaller parts, which will better show the relations between the adjacent variables while keep tracking of individual observations.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">mtcars <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">vs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">cyl =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cyl),</a>
 <a class="sourceLine" id="cb14-3" title="3">         <span class="dt">am =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(am),</a>
 <a class="sourceLine" id="cb14-4" title="4">         <span class="dt">gear =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(gear)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb14-5" title="5"><span class="st">  </span><span class="kw"><a href="../reference/gather_pcp.html">gather_pcp</a></span>(vs<span class="op">:</span>gear) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb14-6" title="6"><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">id =</span> id, <span class="dt">name =</span> name, <span class="dt">value =</span> value, <span class="dt">level =</span> level, <span class="dt">class =</span> class)) <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb14-7" title="7"><span class="st">  </span><span class="kw"><a href="../reference/geom_pcp.html">geom_pcp</a></span>(<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">color =</span> vs), <span class="dt">boxwidth =</span> <span class="fl">0.5</span>, <span class="dt">breakpoint =</span> <span class="dv">2</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-8" title="8"><span class="st">  </span><span class="kw"><a href="../reference/geom_pcp_box.html">geom_pcp_box</a></span>(<span class="dt">boxwidth =</span> <span class="fl">0.5</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb14-8" title="8"><span class="st">  </span><span class="kw"><a href="../reference/geom_pcp_box.html">geom_pcp_box</a></span>(<span class="dt">boxwidth =</span> <span class="fl">0.5</span>)</a>
+<a class="sourceLine" id="cb14-9" title="9"><span class="co">#&gt; Warning: Computation failed in `stat_pcp()`:</span></a>
+<a class="sourceLine" id="cb14-10" title="10"><span class="co">#&gt; undefined columns selected</span></a></code></pre></div>
 <p><img src="ggpcp_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
 </div>
   </div>
@@ -311,7 +313,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Yawei Ge.</p>
+  <p>Developed by Yawei Ge, Heike Hofmann.</p>
 </div>
 
 <div class="pkgdown">
