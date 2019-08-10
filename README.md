@@ -1,7 +1,7 @@
 ---
 title: "ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "August 09, 2019"
+date: "August 10, 2019"
 output: 
   html_document:
     keep_md: true
@@ -106,6 +106,17 @@ flea %>%
 
 ![](README_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
+
+
+```r
+flea %>% 
+  mutate(species = factor(species, levels = c("Heptapot.",  "Concinna", "Heikert."))) %>%
+  ggplot(aes(vars = vars(1:7))) +
+  geom_pcp_box2(boxwidth = 0.1, fill="grey80") +
+  geom_pcp2(aes(colour=species), boxwidth = 0.1) 
+```
+
+![](README_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 `ggpcp` deals with categorical variables by using the space on the y axis of a categorical variable to spread points out evenly. This allows us to track individual points through the parallel coordinate plot even in the presence of categorical variables. 
 
 ## Another look at the Titanic Data
@@ -127,7 +138,7 @@ titanic %>%
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
 
 ```r
@@ -138,7 +149,7 @@ titanic %>%
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
 By setting break points between blocks of categorical variables, we can focus on the two-dimensional relationship between variables on adjacent axes:
 
@@ -152,7 +163,7 @@ titanic %>%
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 
 ```r
@@ -163,7 +174,7 @@ titanic %>%
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 To combine the option of tracking individuals with the focus on 2d relationships between axes, we introduce a box for each axis to allow the tracking. For the thousands of people on board the Titanic individual tracking is tricky, but with good eyesight and a large screen still manageable :)
 
@@ -177,7 +188,7 @@ titanic %>%
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 ## Mixed data: categorical and numeric variables
 
@@ -192,7 +203,7 @@ mtcars %>%
   geom_pcp(aes(colour = mpg)) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 Once the variables are coded properly as factor variables, we get a much more informative view:
 
@@ -213,7 +224,7 @@ mtcars %>%
   theme_bw()
 ```
 
-![](README_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
 What becomes obvious in this plot, is that the miles per gallons (mpg) for each - encoded as the first variable in the plot and as color of the lines - is correlated strongly with all of the variables, not just the numeric variables. A large number of cylinders (cyl), a V-shaped engine (vs = 0), an automatic transmission (am = 0), a low number of forward gears and a high number of carburetors are related to a low value of mpg (red lines).
 
@@ -242,7 +253,7 @@ wide %>% separate(id, into=c("x", "y"), remove = FALSE) %>%
   coord_equal()
 ```
 
-![](README_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
 
 From the using a parallel coordinate plot we see that cloud coverage in low, medium and high altitude distinguishes quite succinctly between some of the clusters. (Relative) temperatures in January (1) and July (7) are very indicative to separate between clusters on the Southern and Northern hemisphere. 
 
@@ -260,7 +271,7 @@ wide %>%
 ## Warning: Removed 240 rows containing missing values (geom_segment).
 ```
 
-![](README_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
 
 
 ### Visualizing the cluster process
@@ -276,7 +287,7 @@ wide %>%
   geom_pcp()
 ```
 
-![](README_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
 
 ```r
 wide %>%
@@ -298,7 +309,7 @@ wide %>%
   geom_pcp(aes(colour = factor(cl10)), alpha = 0.05, boxwidth=0.1)
 ```
 
-![](README_files/figure-html/unnamed-chunk-19-2.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-20-2.png)<!-- -->
 
 
 See also: https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp

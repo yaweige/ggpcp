@@ -92,6 +92,14 @@ flea %>%
   geom_pcp(aes(colour=species), boxwidth = 0.1) 
 ```
 
+
+```{r}
+flea %>% 
+  mutate(species = factor(species, levels = c("Heptapot.",  "Concinna", "Heikert."))) %>%
+  ggplot(aes(vars = vars(1:7))) +
+  geom_pcp_box2(boxwidth = 0.1, fill="grey80") +
+  geom_pcp2(aes(colour=species), boxwidth = 0.1) 
+```
 `ggpcp` deals with categorical variables by using the space on the y axis of a categorical variable to spread points out evenly. This allows us to track individual points through the parallel coordinate plot even in the presence of categorical variables. 
 
 ## Another look at the Titanic Data
@@ -124,15 +132,6 @@ By setting break points between blocks of categorical variables, we can focus on
 
 ```{r}
 titanic %>% 
-  gather_pcp(1:4) %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
-  geom_pcp(aes(colour = Class), alpha = 0.01, breakpoint=2:3) +
-#  scale_colour_manual(values=c("darkorange", "steelblue")) +
-  guides(colour=guide_legend(override.aes = list(alpha=1))) 
-```
-
-```{r}
-titanic %>% 
   ggplot(aes(vars = vars(1:4))) + 
   geom_pcp2(aes(colour = Class), alpha = 0.1, breakpoint=2:3) +
 #  scale_colour_manual(values=c("darkorange", "steelblue")) +
@@ -143,10 +142,10 @@ To combine the option of tracking individuals with the focus on 2d relationships
 
 ```{r}
 titanic %>% 
-  gather_pcp(1:4) %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
-  geom_pcp_box(boxwidth=0.1, fill=NA) +
-  geom_pcp(aes(colour = Class), alpha = 0.01, boxwidth=0.1, breakpoint=2:3) +
+  ggplot(aes(vars=vars(1:4))) + 
+  geom_pcp_box2(boxwidth=0.1, fill=NA) +
+  geom_pcp2(aes(colour = Class), alpha = 0.08, 
+            boxwidth=0.1, breakpoint=2:3) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
@@ -155,11 +154,8 @@ titanic %>%
 The `mtcars` data is terribly old, but serves a good purpose here. All of the variables are coded as numeric variables, even when they should, in fact, be factor variables. In a standard parallel coordinate plot we get the usual uninformative fishnet between categorical variables such as `vs`, `am`, and `gear`, but also visible for variable `cyl`: 
 ```{r}
 mtcars %>% 
-  gather_pcp(1:ncol(mtcars)) %>%
-  group_by(name) %>%  # should go into transformation
-  mutate(value = (level-min(level))/(max(level)-min(level))) %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp(aes(colour = mpg)) 
+  ggplot(aes(vars = vars(1:ncol(mtcars)))) +
+  geom_pcp2(aes(colour = mpg)) 
 ```
 
 Once the variables are coded properly as factor variables, we get a much more informative view:
@@ -171,11 +167,9 @@ mtcars %>%
          am = factor(am),
          gear=factor(gear),
          carb = factor(carb)) %>%
-  gather_pcp(1:ncol(mtcars)) %>%
-  transform_pcp(method = "uniminmax") %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
-  geom_pcp(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
+  ggplot(aes(vars = vars(1:ncol(mtcars)))) +
+  geom_pcp_box2(boxwidth=0.1, fill=NA, colour="grey70") +
+  geom_pcp2(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
   scale_colour_gradient2("mpg", mid="grey50", midpoint = 20) +
   theme_bw()
 ```
