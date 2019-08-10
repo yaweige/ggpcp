@@ -154,9 +154,14 @@ StatPcpbox <- ggproto(
     data_box_x <- unlist(data_box_x)
     data_box_group <- rep(1:(length(data_box_y)/4), each = 4)
 
+    # keep those labels
+    data_labels <- unlist(lapply(nlevels_list, function(x) {
+      names(x$table)
+    }))
     data_box <- data.frame(x = data_box_x,
                            y = data_box_y,
-                           group = data_box_group)
+                           group = data_box_group,
+                           label = rep(data_labels, each = 4))
     data_box
   }
 )

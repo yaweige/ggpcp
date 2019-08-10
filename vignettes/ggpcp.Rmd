@@ -111,7 +111,7 @@ This is an extremely powerful functionality when it is used to deal with a seque
 
 ```{r}
 mtcars %>% 
-  mutate(vs = factor(cyl),
+  mutate(cyl = factor(cyl),
          am = factor(am),
          gear = factor(gear),
          carb = factor(carb)) %>%
@@ -126,7 +126,7 @@ To show the levels of factor variables clearer, you can use geom_pcp_box(), whic
 
 ```{r}
 mtcars %>% 
-  mutate(vs = factor(cyl),
+  mutate(cyl = factor(cyl),
          am = factor(am),
          gear = factor(gear),
          carb = factor(carb)) %>%
@@ -140,7 +140,7 @@ If you want to see the boxes not black segments, you need to provide another arg
 
 ```{r}
 mtcars %>% 
-  mutate(vs = factor(cyl),
+  mutate(cyl = factor(cyl),
          am = factor(am),
          gear = factor(gear),
          carb = factor(carb)) %>%
@@ -156,7 +156,7 @@ You can also draw bands with geom_pcp_band(). This can adds a layer to lines or 
 
 ```{r}
 mtcars %>% 
-  mutate(vs = factor(cyl),
+  mutate(cyl = factor(cyl),
          am = factor(am),
          gear = factor(gear),
          carb = factor(carb)) %>%
@@ -171,7 +171,7 @@ Sometimes smaller bands are merged to a larger band, which is meaningful in show
 
 ```{r}
 mtcars %>% 
-  mutate(vs = factor(cyl),
+  mutate(cyl = factor(cyl),
          am = factor(am),
          gear = factor(gear),
          carb = factor(carb)) %>%
@@ -194,7 +194,7 @@ These arguments accept a scalar or a vector with equal length of the object they
 
 ```{r}
 mtcars %>% 
-  mutate(vs = factor(cyl),
+  mutate(cyl = factor(cyl),
          am = factor(am),
          gear = factor(gear),
          carb = factor(carb)) %>%
@@ -211,7 +211,7 @@ Our default method works great for a sequence of factor variables, but as the nu
 
 ```{r}
 mtcars %>% 
-  mutate(vs = factor(cyl),
+  mutate(cyl = factor(cyl),
          am = factor(am),
          gear = factor(gear)) %>%
   gather_pcp(vs:gear) %>%
@@ -224,7 +224,7 @@ We provide a argument to partly sovle this problem. By making use of `breakpoint
 
 ```{r}
 mtcars %>% 
-  mutate(vs = factor(cyl),
+  mutate(cyl = factor(cyl),
          am = factor(am),
          gear = factor(gear)) %>%
   gather_pcp(vs:gear) %>%
