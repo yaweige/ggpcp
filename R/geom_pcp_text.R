@@ -1,6 +1,6 @@
-#' Boxes for the levels in each factor variable in parallel coordinate plot
+#' Texts and labels for the categories of factor variables in parallel coordinate plot
 #'
-#' To add boxes showing the levels in each factor variable
+#' To add texts and labels in boxes showing the levels in each factor variable
 #'
 #' @param mapping Set of aesthetic mappings created by [aes()] or
 #'   [aes_()]. If specified and `inherit.aes = TRUE` (the
@@ -116,7 +116,7 @@ GeomPcptext <- ggproto("GeomPcptext", Geom,
                       ),
 
                       draw_panel = function(data, panel_params,
-                                            coord,parse = FALSE,
+                                            coord, parse = FALSE,
                                             na.rm = FALSE, check_overlap = FALSE) {
 
 
