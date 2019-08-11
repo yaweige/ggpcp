@@ -15,7 +15,7 @@ gather_pcp2 <- function(data, ...) {
   subdata <- data[,eval(...)]
 
   data$id <- 1:nrow(data)
-  data[, eval(...)] <- lapply(subdata, FUN = as.numeric)
+  data[, eval(...)] <- lapply(subdata, FUN = as.character)
   gather_data <- gather(data, name, value, eval(...))
   gather_data$level <- unlist(lapply(subdata, FUN = as.numeric))
   gather_data$class <- rep(unlist(lapply(subdata, FUN = class)), each = nrow(data))

@@ -88,7 +88,6 @@ StatPcpbox2 <- ggproto(
     linewidth=.1, weight = 1),
 
   setup_data = function (data, params) {
-    #   browser()
     idx <- grep("x__", names(data))
     names(data) <- gsub("x__[0-9]+__", "", names(data))
     data <- data.frame(data, stringsAsFactors = TRUE)
@@ -131,13 +130,17 @@ StatPcpbox2 <- ggproto(
                            method = "uniminmax"
   ) {
     # the following code are some of the internal part of StatPcp
-
+#browser()
     # Data preparation: to convert the input data to the form we can directly use
     # number of observations
     nobs <- length(unique(data$id))
     # a vector to tell the class of variables
-    classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
+    classpcp <- data$class[data$id==min(data$id)]
+    namepcp <- data$name[data$id==min(data$id)]
+    data$name <- factor(data$name, levels = namepcp)
     data_spread <- prepare_data(data, classpcp, nobs)
+    text_spread <- spread(data[, c("id", "name", "value_text")], key=name, value = value_text)
+    level_spread <- spread(data[, c("id", "name", "level")], key=name, value = level)
 
     # boxwidth
     # interval length, boxwidth, rugwidth
@@ -145,10 +148,18 @@ StatPcpbox2 <- ggproto(
     width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth)
 
     # box
+    # make sure all of the levels in text_spread are in the right order
+    lapply(2:ncol(text_spread), FUN = function(i) {
+      if (classpcp[i-1] == "factor") {
+        levels <- unique(text_spread[,i])[order(unique(level_spread[,i]))]
+        text_spread[,i] <<- factor(text_spread[,i], levels=levels)
+      }
+    })
     # fac coming from the classpcp == "factor"
-    nlevels_list <- lapply(data_spread[, c(FALSE, classpcp == "factor"), drop = FALSE],
-                           FUN = function(x) list(nlevels = nlevels(x),
-                                                  table = table(x)))
+    nlevels_list <- lapply(text_spread[, c(FALSE, classpcp == "factor"), drop = FALSE],
+                           FUN = function(x) {
+                             list(nlevels = length(unique(x)),
+                                  table = table(x))})
     eachobs <- (1 - freespace)/nobs
     level_range <- lapply(nlevels_list,
                           FUN = function(x) {
@@ -169,9 +180,16 @@ StatPcpbox2 <- ggproto(
     data_box_x <- unlist(data_box_x)
     data_box_group <- rep(1:(length(data_box_y)/4), each = 4)
 
+    # keep those labels
+    data_labels <- unlist(lapply(nlevels_list, function(x) {
+      names(x$table)
+    }))
     data_box <- data.frame(x = data_box_x,
                            y = data_box_y,
-                           group = data_box_group)
+                           label = rep(data_labels, each = 4),
+                           group = data_box_group,
+                           PANEL = data$PANEL[1] # are all the same in compute_panel
+    )
     data_box
   }
 )

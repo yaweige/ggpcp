@@ -160,8 +160,10 @@ StatPcpbox <- ggproto(
     }))
     data_box <- data.frame(x = data_box_x,
                            y = data_box_y,
+                           label = rep(data_labels, each = 4),
                            group = data_box_group,
-                           label = rep(data_labels, each = 4))
+                           PANEL = data$PANEL[1] # are all the same in compute_panel
+                           )
     data_box
   }
 )

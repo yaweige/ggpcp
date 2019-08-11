@@ -27,6 +27,7 @@ transform_pcp <- function(data, method = "uniminmax") {
   assert_that(!is.null(method))
   assert_that(method %in% c("uniminmax", "robust", "std", "globalminmax"))
 
+  data$value_text <- data$value
   # any of the transformations work only in case level is a numeric value.
   # in case it is not (character variables) this probably goes wrong. Should check on it.
   if (method == "std") {

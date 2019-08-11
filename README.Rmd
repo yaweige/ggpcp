@@ -85,11 +85,10 @@ flea %>%
 ```{r}
 flea %>% 
   mutate(species = factor(species, levels = c("Heptapot.",  "Concinna", "Heikert."))) %>%
-  gather_pcp(1:7) %>%
-  transform_pcp(method="uniminmax") %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp_box(boxwidth = 0.1, fill="grey50") +
-  geom_pcp(aes(colour=species), boxwidth = 0.1) 
+  ggplot(aes(vars = vars(1:7))) +
+  geom_pcp_box2(boxwidth = 0.1, fill="grey70", colour="grey50") +
+  geom_pcp2(aes(colour=species), boxwidth = 0.1) +
+  geom_pcp_text2(aes(colour = species), boxwidth = 0.1)
 ```
 
 
@@ -115,10 +114,23 @@ titanic <- titanic %>%
 titanic %>% 
   gather_pcp(1:4) %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
-  geom_pcp(aes(colour = Survived), alpha = 0.01) +
+  geom_pcp_box(boxwidth=0.1) +
+  geom_pcp(aes(colour = Survived), alpha = 0.01, boxwidth=0.1) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
-  guides(colour=guide_legend(override.aes = list(alpha=1))) 
+  guides(colour=guide_legend(override.aes = list(alpha=1))) +
+  geom_pcp_text(boxwidth=0.1)
 ```
+
+```{r}
+titanic %>% 
+  ggplot(aes(vars=vars(1:4))) + 
+  geom_pcp_box2(boxwidth=0.1) +
+  geom_pcp2(aes(colour = Survived), alpha = 0.01, boxwidth=0.1) +
+  scale_colour_manual(values=c("darkorange", "steelblue")) +
+  guides(colour=guide_legend(override.aes = list(alpha=1))) +
+  geom_pcp_text2(boxwidth=0.1)
+```
+
 
 ```{r}
 titanic %>% 
