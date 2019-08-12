@@ -1,7 +1,7 @@
 ---
 title: "ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "August 10, 2019"
+date: "August 11, 2019"
 output: 
   html_document:
     keep_md: true
@@ -97,11 +97,10 @@ flea %>%
 ```r
 flea %>% 
   mutate(species = factor(species, levels = c("Heptapot.",  "Concinna", "Heikert."))) %>%
-  gather_pcp(1:7) %>%
-  transform_pcp(method="uniminmax") %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp_box(boxwidth = 0.1, fill="grey50") +
-  geom_pcp(aes(colour=species), boxwidth = 0.1) 
+  ggplot(aes(vars = vars(1:7))) +
+  geom_pcp_box2(boxwidth = 0.1, fill="grey70", colour="grey50") +
+  geom_pcp2(aes(colour=species), boxwidth = 0.1) +
+  geom_pcp_text2(aes(colour = species), boxwidth = 0.1)
 ```
 
 ![](README_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
@@ -133,12 +132,28 @@ titanic <- titanic %>%
 titanic %>% 
   gather_pcp(1:4) %>%
   ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
-  geom_pcp(aes(colour = Survived), alpha = 0.01) +
+  geom_pcp_box(boxwidth=0.1) +
+  geom_pcp(aes(colour = Survived), alpha = 0.01, boxwidth=0.1) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
-  guides(colour=guide_legend(override.aes = list(alpha=1))) 
+  guides(colour=guide_legend(override.aes = list(alpha=1))) +
+  geom_pcp_text(boxwidth=0.1)
 ```
 
 ![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+
+
+```r
+titanic %>% 
+  ggplot(aes(vars=vars(1:4))) + 
+  geom_pcp_box2(boxwidth=0.1) +
+  geom_pcp2(aes(colour = Survived), alpha = 0.01, boxwidth=0.1) +
+  scale_colour_manual(values=c("darkorange", "steelblue")) +
+  guides(colour=guide_legend(override.aes = list(alpha=1))) +
+  geom_pcp_text2(boxwidth=0.1)
+```
+
+![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
 
 
 ```r
@@ -149,21 +164,9 @@ titanic %>%
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 By setting break points between blocks of categorical variables, we can focus on the two-dimensional relationship between variables on adjacent axes:
-
-
-```r
-titanic %>% 
-  gather_pcp(1:4) %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
-  geom_pcp(aes(colour = Class), alpha = 0.01, breakpoint=2:3) +
-#  scale_colour_manual(values=c("darkorange", "steelblue")) +
-  guides(colour=guide_legend(override.aes = list(alpha=1))) 
-```
-
-![](README_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 
 ```r
@@ -181,10 +184,10 @@ To combine the option of tracking individuals with the focus on 2d relationships
 
 ```r
 titanic %>% 
-  gather_pcp(1:4) %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
-  geom_pcp_box(boxwidth=0.1, fill=NA) +
-  geom_pcp(aes(colour = Class), alpha = 0.01, boxwidth=0.1, breakpoint=2:3) +
+  ggplot(aes(vars=vars(1:4))) + 
+  geom_pcp_box2(boxwidth=0.1, fill=NA) +
+  geom_pcp2(aes(colour = Class), alpha = 0.08, 
+            boxwidth=0.1, breakpoint=2:3) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
@@ -196,11 +199,8 @@ The `mtcars` data is terribly old, but serves a good purpose here. All of the va
 
 ```r
 mtcars %>% 
-  gather_pcp(1:ncol(mtcars)) %>%
-  group_by(name) %>%  # should go into transformation
-  mutate(value = (level-min(level))/(max(level)-min(level))) %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp(aes(colour = mpg)) 
+  ggplot(aes(vars = vars(1:ncol(mtcars)))) +
+  geom_pcp2(aes(colour = mpg)) 
 ```
 
 ![](README_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
@@ -215,11 +215,9 @@ mtcars %>%
          am = factor(am),
          gear=factor(gear),
          carb = factor(carb)) %>%
-  gather_pcp(1:ncol(mtcars)) %>%
-  transform_pcp(method = "uniminmax") %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
-  geom_pcp(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
+  ggplot(aes(vars = vars(1:ncol(mtcars)))) +
+  geom_pcp_box2(boxwidth=0.1, fill=NA, colour="grey70") +
+  geom_pcp2(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
   scale_colour_gradient2("mpg", mid="grey50", midpoint = 20) +
   theme_bw()
 ```
