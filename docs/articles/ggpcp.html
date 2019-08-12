@@ -146,7 +146,7 @@
 </ul>
 <p>To continue the work flow:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">mtcars <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/gather_pcp.html">gather_pcp</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/transform_pcp.html">transform_pcp</a></span>(<span class="dt">method =</span> <span class="st">"uniminmax"</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>()</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="co">#&gt; # A tibble: 6 x 16</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="co">#&gt; # A tibble: 6 x 17</span></a>
 <a class="sourceLine" id="cb4-3" title="3"><span class="co">#&gt; # Groups:   name [1]</span></a>
 <a class="sourceLine" id="cb4-4" title="4"><span class="co">#&gt;      id name  value level class     mpg   cyl  disp    hp  drat    wt  qsec</span></a>
 <a class="sourceLine" id="cb4-5" title="5"><span class="co">#&gt;   &lt;int&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></a>
@@ -156,7 +156,8 @@
 <a class="sourceLine" id="cb4-9" title="9"><span class="co">#&gt; 4     4 mpg   0.468  21.4 numeric  21.4     6   258   110  3.08  3.22  19.4</span></a>
 <a class="sourceLine" id="cb4-10" title="10"><span class="co">#&gt; 5     5 mpg   0.353  18.7 numeric  18.7     8   360   175  3.15  3.44  17.0</span></a>
 <a class="sourceLine" id="cb4-11" title="11"><span class="co">#&gt; 6     6 mpg   0.328  18.1 numeric  18.1     6   225   105  2.76  3.46  20.2</span></a>
-<a class="sourceLine" id="cb4-12" title="12"><span class="co">#&gt; # … with 4 more variables: vs &lt;dbl&gt;, am &lt;dbl&gt;, gear &lt;dbl&gt;, carb &lt;dbl&gt;</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-12" title="12"><span class="co">#&gt; # … with 5 more variables: vs &lt;dbl&gt;, am &lt;dbl&gt;, gear &lt;dbl&gt;, carb &lt;dbl&gt;,</span></a>
+<a class="sourceLine" id="cb4-13" title="13"><span class="co">#&gt; #   value_text &lt;chr&gt;</span></a></code></pre></div>
 </div>
 <div id="draw-lines-with-geom_pcp" class="section level2">
 <h2 class="hasAnchor">

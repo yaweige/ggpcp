@@ -1,7 +1,7 @@
 ---
-title: "ggpcp"
+title: "Generalized parallel coordinate plots with ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "August 11, 2019"
+date: "August 12, 2019"
 output: 
   html_document:
     keep_md: true
@@ -9,7 +9,7 @@ output:
 
 
 
-R package for creating parallel coordinate plots in the ggplot2 framework
+R package for creating generalized parallel coordinate plots in the ggplot2 framework
 
 
 ```r
@@ -48,75 +48,57 @@ data(flea, package = "GGally")
 
 ## A first parallel coordinate plot
 
-Drawing a parallel coordinate plot in `ggpcp` consists of a three-step process:
+The two main arguments for drawing a parallel coordinate plot are the aesthetic `vars` and the parameter `method`. 
 
-- First we need to collect all of the variables from the data set that should go into the parallel coordinate plot. We use the function `gather_pcp` for it.
-`gather_pcp` has two main arguments: the first one is the data, the second is a specification of all of the variables you want to include in the parallel coordinate plot. You can specify variables by 
+With the aesthetic `vars` all variables are specified that are supposed to go into the parallel coordinate plot. The specification uses the `dplyr` function `vars` with the corresponding selectors.
 
-    - position, e.g. `1:4, 7, 5, 4`, 
-    - name, e.g. `class`, `age`, `sex`, `aede1:aede3` or 
-    - selector, e.g. `starts_with("aede")`, see `?tidyselect::
-select_helpers`
+You can specify variables by 
 
-- Second, we choose a transformation. This ...
+- position, e.g. `1:4, 7, 5, 4`, 
+- name, e.g. `class`, `age`, `sex`, `aede1:aede3` or 
+- selector, e.g. `starts_with("aede")`, see `?tidyselect::select_helpers`
 
-- Third, we are ready to plot: `geom_pcp` is a layer that draws lines for each observation of a parallel coordinate plot. We can use additional mappings such as colour, linetype or size of the lines.
+or any combination thereof. Variables can be selected multiple times and will then show up multiple times in the plot. 
+
+`method` is a character string that determines the method to be used when transforming the values of each variable into a common y axis. By default, the method `uniminmax` is chosen, which univariately scales each variable into a range of [0,1] with a minimum at 0 and the maximum at 1. '?transform_pcp' gives more details.
+
 
 
 ```r
 flea %>%
   ggplot(aes(colour = species)) + 
-  geom_pcp2(aes(vars=vars(aede1, aede2, aede1, aede3)))
+  geom_pcp2(aes(vars=vars(species, 2:7, species)))
 ```
 
 ![](README_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
+Note that the variable `species` shows up twice in the plot - once as the rightmost variables, once as the leftmost one. 
+`species` is a categorical variable. `ggpcp` deals with categorical variables by using the space on the y axis of a categorical variable to spread points out evenly. This allows us to  (a) estimate the frequency of each level, and (b) 
+ track individual points through the parallel coordinate plot even in the presence of categorical variables. 
+
+## The layer approach
+
+`ggpcp` implements several geoms to work in a parallel coordinate plot setting
+
+- `geom_pcp` is a wrapper for the standard layer of drawing  line segments for each observation across the specified variables
+- `geom_pcp_box` draws rectangles framing each level of a categorical variable. The parameter `boxwidth` specifies the width of these rectangles (1 is the width between successive variables). `boxwidth` is set to 0 by default. 
+- `geom_pcp_text` places a label center on each rectangle of a categorical variable. The familiar parameters `nudge_x` and `nudge_y` work as usual to move labels. 
+- ... add as more geoms become available
+
 
 ```r
-flea %>%
-  ggplot(aes(colour = species)) + 
-  geom_pcp2(aes(vars = vars(starts_with("aede"), 1:4, 6)), 
-            method = "uniminmax")
+flea %>% 
+  mutate(species = factor(species, levels = c("Heptapot.",  "Concinna", "Heikert."))) %>%
+  ggplot(aes(vars = vars(1:7))) +
+  geom_pcp_box2(boxwidth = 0.1, fill="grey70") +
+  geom_pcp2(aes(colour=species), boxwidth = 0.1) +
+  geom_pcp_text2(boxwidth = 0.1)
 ```
 
 ![](README_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
 
-```r
-flea %>% 
-  gather_pcp(1:7, 6, 3) %>%
-  transform_pcp(method="uniminmax") %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-  geom_pcp(aes(colour=species, size = species), alpha = 0.5) +
-  scale_size_manual(values=c(0.5, 0.65, 0.8))
-```
 
-![](README_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
-
-
-```r
-flea %>% 
-  mutate(species = factor(species, levels = c("Heptapot.",  "Concinna", "Heikert."))) %>%
-  ggplot(aes(vars = vars(1:7))) +
-  geom_pcp_box2(boxwidth = 0.1, fill="grey70", colour="grey50") +
-  geom_pcp2(aes(colour=species), boxwidth = 0.1) +
-  geom_pcp_text2(aes(colour = species), boxwidth = 0.1)
-```
-
-![](README_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
-
-
-
-```r
-flea %>% 
-  mutate(species = factor(species, levels = c("Heptapot.",  "Concinna", "Heikert."))) %>%
-  ggplot(aes(vars = vars(1:7))) +
-  geom_pcp_box2(boxwidth = 0.1, fill="grey80") +
-  geom_pcp2(aes(colour=species), boxwidth = 0.1) 
-```
-
-![](README_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
-`ggpcp` deals with categorical variables by using the space on the y axis of a categorical variable to spread points out evenly. This allows us to track individual points through the parallel coordinate plot even in the presence of categorical variables. 
 
 ## Another look at the Titanic Data
 
@@ -130,41 +112,17 @@ titanic <- titanic %>%
   as.data.frame() %>% select(-Freq)
 
 titanic %>% 
-  gather_pcp(1:4) %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
-  geom_pcp_box(boxwidth=0.1) +
-  geom_pcp(aes(colour = Survived), alpha = 0.01, boxwidth=0.1) +
-  scale_colour_manual(values=c("darkorange", "steelblue")) +
-  guides(colour=guide_legend(override.aes = list(alpha=1))) +
-  geom_pcp_text(boxwidth=0.1)
-```
-
-![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
-
-
-```r
-titanic %>% 
   ggplot(aes(vars=vars(1:4))) + 
   geom_pcp_box2(boxwidth=0.1) +
   geom_pcp2(aes(colour = Survived), alpha = 0.01, boxwidth=0.1) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) +
-  geom_pcp_text2(boxwidth=0.1)
+  geom_pcp_text2(boxwidth=0.1) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 
-
-```r
-titanic %>% 
-  ggplot(aes(vars=vars(1:4))) + 
-  geom_pcp2(aes(colour = Survived), alpha = 0.1) +
-  scale_colour_manual(values=c("darkorange", "steelblue")) +
-  guides(colour=guide_legend(override.aes = list(alpha=1))) 
-```
-
-![](README_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 By setting break points between blocks of categorical variables, we can focus on the two-dimensional relationship between variables on adjacent axes:
 
@@ -172,12 +130,12 @@ By setting break points between blocks of categorical variables, we can focus on
 ```r
 titanic %>% 
   ggplot(aes(vars = vars(1:4))) + 
-  geom_pcp2(aes(colour = Class), alpha = 0.1, breakpoint=2:3) +
-#  scale_colour_manual(values=c("darkorange", "steelblue")) +
+  geom_pcp2(aes(colour = Survived), alpha = 0.01, breakpoint=2:3) +
+  scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 To combine the option of tracking individuals with the focus on 2d relationships between axes, we introduce a box for each axis to allow the tracking. For the thousands of people on board the Titanic individual tracking is tricky, but with good eyesight and a large screen still manageable :)
 
@@ -186,16 +144,18 @@ To combine the option of tracking individuals with the focus on 2d relationships
 titanic %>% 
   ggplot(aes(vars=vars(1:4))) + 
   geom_pcp_box2(boxwidth=0.1, fill=NA) +
-  geom_pcp2(aes(colour = Class), alpha = 0.08, 
+  geom_pcp2(aes(colour = Survived), alpha = 0.01, 
             boxwidth=0.1, breakpoint=2:3) +
+  scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 ## Mixed data: categorical and numeric variables
 
-The `mtcars` data is terribly old, but serves a good purpose here. All of the variables are coded as numeric variables, even when they should, in fact, be factor variables. In a standard parallel coordinate plot we get the usual uninformative fishnet between categorical variables such as `vs`, `am`, and `gear`, but also visible for variable `cyl`: 
+The `mtcars` data is terribly old, but serves a good purpose here. All of the variables are coded as numeric variables, even when they should, in fact, be factor variables. In a standard parallel coordinate plot we get the usual uninformative fishnet between categorical variables such as `vs`, `am`, and `gear`, also visible for variable `cyl`: 
+
 
 ```r
 mtcars %>% 
@@ -203,9 +163,9 @@ mtcars %>%
   geom_pcp2(aes(colour = mpg)) 
 ```
 
-![](README_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
-Once the variables are coded properly as factor variables, we get a much more informative view:
+Once the variables are coded properly as factor variables, we get a much more informative view with a generalized parallel coordinate plot:
 
 
 ```r
@@ -218,17 +178,18 @@ mtcars %>%
   ggplot(aes(vars = vars(1:ncol(mtcars)))) +
   geom_pcp_box2(boxwidth=0.1, fill=NA, colour="grey70") +
   geom_pcp2(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
+  geom_pcp_text2(boxwidth=0.1) +
   scale_colour_gradient2("mpg", mid="grey50", midpoint = 20) +
   theme_bw()
 ```
 
-![](README_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
-What becomes obvious in this plot, is that the miles per gallons (mpg) for each - encoded as the first variable in the plot and as color of the lines - is correlated strongly with all of the variables, not just the numeric variables. A large number of cylinders (cyl), a V-shaped engine (vs = 0), an automatic transmission (am = 0), a low number of forward gears and a high number of carburetors are related to a low value of mpg (red lines).
+What becomes obvious in this plot, is that fule consumption of each car measured in miles per gallons (mpg), encoded as the first variable in the plot and as color of the lines - is correlated strongly with all of the variables, not just the numeric variables. A large number of cylinders (cyl), a V-shaped engine (vs = 0), an automatic transmission (am = 0), a low number of forward gears and a high number of carburetors are related to a low value of mpg (red lines).
 
 ## Bigger Example
 
-One application for parallel coordinate plots is their use for visualizing clusters. 
+One application for generalized parallel coordinate plots is their use for visualizing clusters. 
 
 
 ```r
@@ -251,7 +212,7 @@ wide %>% separate(id, into=c("x", "y"), remove = FALSE) %>%
   coord_equal()
 ```
 
-![](README_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 From the using a parallel coordinate plot we see that cloud coverage in low, medium and high altitude distinguishes quite succinctly between some of the clusters. (Relative) temperatures in January (1) and July (7) are very indicative to separate between clusters on the Southern and Northern hemisphere. 
 
@@ -269,7 +230,7 @@ wide %>%
 ## Warning: Removed 240 rows containing missing values (geom_segment).
 ```
 
-![](README_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 
 ### Visualizing the cluster process
@@ -285,7 +246,7 @@ wide %>%
   geom_pcp()
 ```
 
-![](README_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
 ```r
 wide %>%
@@ -307,7 +268,7 @@ wide %>%
   geom_pcp(aes(colour = factor(cl10)), alpha = 0.05, boxwidth=0.1)
 ```
 
-![](README_files/figure-html/unnamed-chunk-20-2.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-15-2.png)<!-- -->
 
 
 See also: https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp

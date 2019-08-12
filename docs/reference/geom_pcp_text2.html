@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Texts and labels for the categories of factor variables in parallel coordinate plot — geom_pcp_label • ggpcp</title>
+<title>Boxes for the levels in each factor variable in parallel coordinate plot — geom_pcp_text2 • ggpcp</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Texts and labels for the categories of factor variables in parallel coordinate plot — geom_pcp_label" />
+<meta property="og:title" content="Boxes for the levels in each factor variable in parallel coordinate plot — geom_pcp_text2" />
 
-<meta property="og:description" content="To add texts and labels in boxes showing the levels in each factor variable" />
+<meta property="og:description" content="To add boxes showing the levels in each factor variable" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -97,28 +97,21 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Texts and labels for the categories of factor variables in parallel coordinate plot</h1>
+    <h1>Boxes for the levels in each factor variable in parallel coordinate plot</h1>
     
-    <div class="hidden name"><code>geom_pcp_text.Rd</code></div>
+    <div class="hidden name"><code>geom_pcp_text2.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>To add texts and labels in boxes showing the levels in each factor variable</p>
+    <p>To add boxes showing the levels in each factor variable</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>geom_pcp_label</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"pcpbox"</span>,
-  <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='no'>...</span>, <span class='kw'>freespace</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>rugwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>interwidth</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>parse</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>nudge_x</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>nudge_y</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>label.padding</span> <span class='kw'>=</span> <span class='fu'>unit</span>(<span class='fl'>0.25</span>, <span class='st'>"lines"</span>),
-  <span class='kw'>label.r</span> <span class='kw'>=</span> <span class='fu'>unit</span>(<span class='fl'>0.15</span>, <span class='st'>"lines"</span>), <span class='kw'>label.size</span> <span class='kw'>=</span> <span class='fl'>0.25</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-
-<span class='fu'>geom_pcp_text</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"pcpbox"</span>,
-  <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='no'>...</span>, <span class='kw'>freespace</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>rugwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>interwidth</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>parse</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>nudge_x</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>nudge_y</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>check_overlap</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+    <pre class="usage"><span class='fu'>geom_pcp_text2</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"pcpbox2"</span>,
+  <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='no'>...</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"uniminmax"</span>, <span class='kw'>freespace</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
+  <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>rugwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>interwidth</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>parse</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>nudge_x</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>nudge_y</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>check_overlap</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -162,6 +155,10 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 to the paired geom/stat.</p></td>
     </tr>
     <tr>
+      <th>method</th>
+      <td><p>which method should be used to transform the values of each variable into acommon y axis? See `transform_pcp` for details.</p></td>
+    </tr>
+    <tr>
       <th>freespace</th>
       <td><p>The total gap space among levels within each factor variable</p></td>
     </tr>
@@ -189,16 +186,9 @@ displayed as described in `?plotmath`.</p></td>
 Useful for offsetting text from points, particularly on discrete scales.</p></td>
     </tr>
     <tr>
-      <th>label.padding</th>
-      <td><p>Amount of padding around label. Defaults to 0.25 lines.</p></td>
-    </tr>
-    <tr>
-      <th>label.r</th>
-      <td><p>Radius of rounded corners. Defaults to 0.15 lines.</p></td>
-    </tr>
-    <tr>
-      <th>label.size</th>
-      <td><p>Size of label border, in mm.</p></td>
+      <th>check_overlap</th>
+      <td><p>If `TRUE`, text that overlaps previous text in the
+same layer will not be plotted.</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
@@ -219,11 +209,6 @@ display.</p></td>
 rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. [borders()].</p></td>
-    </tr>
-    <tr>
-      <th>check_overlap</th>
-      <td><p>If `TRUE`, text that overlaps previous text in the
-same layer will not be plotted.</p></td>
     </tr>
     </table>
     
