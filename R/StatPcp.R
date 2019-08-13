@@ -501,6 +501,7 @@ StatPcp <- ggproto(
 
 
       # put everything together
+      # DO NOT change the order for num2num, num2fac, fac2num, fac2fac
 
       data_final_xstart <- c(data_final_xstart_num2num,
                              data_final_xstart_num2fac,
@@ -575,21 +576,91 @@ StatPcp <- ggproto(
         }))
       }
 
-      if (!is.null(breakpoint)) {
-        data_boxwidth <- data.frame(x = c(data_boxwidth$x, data_segment_xstart, data_break_xstart),
-                                    y = c(data_boxwidth$y, data_segment_ystart, data_break_ystart),
-                                    xend = c(data_boxwidth$xend, data_segment_xend, data_break_xend),
-                                    yend = c(data_boxwidth$yend, data_segment_yend, data_break_yend))
+      # !!!Notice: the following reorder part, only ajusts the order of drawing(geom_segment draws according to the order in the data), and doesn't mean to affect anything else.
+
+      # To reorder the observations for factor blocks(seperate for each block) to address undesired overlap
+      # We need to work here, because the some parts(most parts to do modifications between different sections) rely on the orginal order
+      # We will reorder the main part first, and then the part inside breakpoint, which used different line arrangement method.
+      # We are benefited from:
+      # 1. the work of keeping bandid(cluster id) for factor blocks
+      # 2. the fact that bandid is hiearchically assigned (some magic is used inside bandid() helper function)
+      # The breakpoints make the case more complex, we will see how it will finally work out.(how bandid is carried over breakpoint?)
+      # we need to reorder the obs_id for those parts too later.
+      # parallel segments inside boxes are created very late! (after we have data_final, and is based on that)
+
+      if (!length(classification$fac2fac) == 0) {
+        # data_final_ystart_fac2fac_bandid and data_final_yend_fac2fac_bandid are actually same
+        data_final_ystart_fac2fac_split <- split(data_final_ystart_fac2fac, f = rep(1:(length(data_final_ystart_fac2fac)/nobs), each = nobs))
+        data_final_yend_fac2fac_split <- split(data_final_yend_fac2fac, f = rep(1:(length(data_final_ystart_fac2fac)/nobs), each = nobs))
+        data_final_ystart_fac2fac_bandid_split <- split(data_final_ystart_fac2fac_bandid, f = rep(1:(length(data_final_ystart_fac2fac)/nobs), each = nobs))
+
+        data_final_ystart_fac2fac <- unlist(Map(f = function(x, y) {
+          # order() is used here, potetial problem of dealing with ties, it seems to use a method like rank(ties.method = "first"), which we used before
+          # maybe we can use a rank based method to be consistent: order(rank(,ties.method = "first"))
+          # This should not be a problem anyway, since the order now is only for drawing segments
+          x <- x[order(y)]
+        },
+        data_final_ystart_fac2fac_split,
+        data_final_ystart_fac2fac_bandid_split
+        ))
+
+        data_final_yend_fac2fac <- unlist(Map(f = function(x, y) {
+          # order() is used here, potetial problem of dealing with ties, it seems to use a method like rank(ties.method = "first"), which we used before
+          # maybe we can use a rank based method to be consistent: order(rank(,ties.method = "first"))
+          x <- x[order(y)]
+        },
+        data_final_yend_fac2fac_split,
+        data_final_ystart_fac2fac_bandid_split
+        ))
+
+        # To adjust the id orders accordingly
+
+        # a little different calculation but same idea as above
+        obs_ids_fac2fac_split <- lapply(data_final_ystart_fac2fac_split, FUN = function(x) obs_ids)
+
+        obs_ids_fac2fac <- unlist(Map(f = function(x, y) {
+          # order() is used here, potetial problem of dealing with ties, it seems to use a method like rank(ties.method = "first"), which we used before
+          # maybe we can use a rank based method to be consistent: order(rank(,ties.method = "first"))
+          x <- x[order(y)]
+        },
+        obs_ids_fac2fac_split,
+        data_final_ystart_fac2fac_bandid_split
+        ))
+
+        # NEXT: to replace those values in data_boxwidth, because of the segment part, we have to make this detour now
+
+        # following calculation relies on the order we created data_final
+        # number of rows in fac2fac parts
+        n_fac2fac <- length(data_final_ystart_fac2fac)
+
+        data_boxwidth$y[(nrow(data_boxwidth) - n_fac2fac + 1):nrow(data_boxwidth)] <- data_final_ystart_fac2fac
+        data_boxwidth$yend[(nrow(data_boxwidth) - n_fac2fac + 1):nrow(data_boxwidth)] <- data_final_yend_fac2fac
+
       } else {
-        data_boxwidth <- data.frame(x = c(data_boxwidth$x, data_segment_xstart),
-                                    y = c(data_boxwidth$y, data_segment_ystart),
-                                    xend = c(data_boxwidth$xend, data_segment_xend),
-                                    yend = c(data_boxwidth$yend, data_segment_yend))
+        # number of rows in fac2fac parts
+        n_fac2fac <- 0
+        obs_ids_fac2fac <- NULL
       }
 
-      # nope, here it is going wrong. We need to keep track of a list of ids
-      #    data_boxwidth$id <- rep(1:nobs, times = nrow(data_boxwidth)/nobs)
-      data_boxwidth$id <- rep(obs_ids, times = nrow(data_boxwidth)/nobs)
+
+      # To combine main part, breakpoint, ordinary segments in boxes
+      if (!is.null(breakpoint)) {
+        data_boxwidth <- data.frame(x = c(data_break_xstart, data_segment_xstart, data_boxwidth$x),
+                                    y = c(data_break_ystart, data_segment_ystart, data_boxwidth$y),
+                                    xend = c(data_break_xend, data_segment_xend, data_boxwidth$xend),
+                                    yend = c(data_break_yend, data_segment_yend, data_boxwidth$yend))
+      } else {
+        data_boxwidth <- data.frame(x = c(data_segment_xstart, data_boxwidth$x),
+                                    y = c(data_segment_ystart, data_boxwidth$y),
+                                    xend = c(data_segment_xend, data_boxwidth$xend),
+                                    yend = c(data_segment_yend, data_boxwidth$yend))
+      }
+
+
+      # data_boxwidth$id <- rep(obs_ids, times = nrow(data_boxwidth)/nobs)
+
+      # we have put fac2fac section to the very last of the data set
+      data_boxwidth$id <- c(rep(obs_ids, times = (nrow(data_boxwidth) - n_fac2fac)/nobs), obs_ids_fac2fac)
 
       datanames <- setdiff(names(data), c("name", "value", "level", "class"))
       # don't include the pcp specific variables - those are dealt with
