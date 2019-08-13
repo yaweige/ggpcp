@@ -47,11 +47,12 @@
 #' @param rugwidth The width of the rugs for numeric variable
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
-#' @param breakpoint To break three or more factors into peices
+#' @param breakpoint To break three or more factors into pieces
 #' @param arrow specification for arrow heads, as created by arrow()
 #' @param arrow.fill fill colour to use for the arrow head (if closed). NULL means use colour aesthetic
 #' @param lineend Line end style (round, butt, square)
 #' @param linejoin Line join style (round, mitre, bevel)
+#' @param arrange should overplotting be resolved by placing small (groups) of lines on top?
 #' @import ggplot2
 #' @export geom_pcp2
 #' @examples
@@ -85,6 +86,7 @@ geom_pcp2 <- function(
   arrow.fill = NULL,
   lineend = "butt",
   linejoin = "round",
+  arrange = FALSE,
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE) {
@@ -108,6 +110,7 @@ geom_pcp2 <- function(
       arrow.fill = arrow.fill,
       lineend = lineend,
       linejoin = linejoin,
+      arrange = arrange,
       na.rm = na.rm,
       ...
     )
@@ -137,7 +140,8 @@ GeomPcp2 <- ggproto(
 
   default_aes = aes(
     colour = "grey30", size = 0.5, linetype = "solid", alpha = 1,
-    linewidth=.1, stroke = 2, method = "uniminmax", vars = NULL
+    linewidth=.1, stroke = 2, method = "uniminmax", vars = NULL,
+    arrange = FALSE
   ),
 
   draw_panel = function(data, panel_params, coord,
@@ -145,7 +149,10 @@ GeomPcp2 <- ggproto(
                         arrow.fill = NULL,
                         lineend = "butt",
                         linejoin = "round",
-                        na.rm = na.rm) {
+                        na.rm = na.rm,
+                        arrange = arrange) {
+    if (arrange)
+    data <- data %>% group_by(group) %>% mutate(n = n()) %>% arrange(desc(n))
 
     GeomSegment$draw_panel(data, panel_params, coord,
                            arrow = arrow,

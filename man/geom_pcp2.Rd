@@ -8,8 +8,8 @@ geom_pcp2(mapping = NULL, data = NULL, stat = "pcp2",
   position = "identity", ..., method = "uniminmax", freespace = 0.1,
   boxwidth = 0, rugwidth = 0, interwidth = 1, breakpoint = NULL,
   arrow = NULL, arrow.fill = NULL, lineend = "butt",
-  linejoin = "round", na.rm = FALSE, show.legend = NA,
-  inherit.aes = TRUE)
+  linejoin = "round", arrange = FALSE, na.rm = FALSE,
+  show.legend = NA, inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by [aes()] or
@@ -54,7 +54,7 @@ to the paired geom/stat.
 \item{interwidth}{The width for the lines between every neighboring variables, either
 a scalar or a vector.}
 
-\item{breakpoint}{To break three or more factors into peices}
+\item{breakpoint}{To break three or more factors into pieces}
 
 \item{arrow}{specification for arrow heads, as created by arrow()}
 
@@ -63,6 +63,8 @@ a scalar or a vector.}
 \item{lineend}{Line end style (round, butt, square)}
 
 \item{linejoin}{Line join style (round, mitre, bevel)}
+
+\item{arrange}{should overplotting be resolved by placing small (groups) of lines on top?}
 
 \item{na.rm}{If `FALSE`, the default, missing values are removed with
 a warning. If `TRUE`, missing values are silently removed.}

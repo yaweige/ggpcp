@@ -104,7 +104,7 @@ titanic <- titanic %>%
 
 titanic %>% 
   ggplot(aes(vars=vars(1:4))) + 
-  geom_pcp_box2(boxwidth=0.1) +
+  geom_pcp_box2(boxwidth=0.1) + 
   geom_pcp2(aes(colour = Survived), alpha = 0.01, boxwidth=0.1) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) +
@@ -293,6 +293,8 @@ The main idea of `ggpcp` is that we separate the data transformations from the v
 + Kosara R., Bendix F., Hauser H., Parallel Sets: Interactive Exploration and Visual Analysis of Categorical Data, IEEE Transactions on Visualization and Computer Graphics, 12(4), 558-568, 2006.
 + Schloerke B., Crowley J., Cook D., Briatte F., Marbach M., Thoen E., Elberg ., Larmarange J.: GGally: Extension to 'ggplot2', R package version 1.4.0.
 + Schonlau M.: Visualizing Categorical Data Arising in the Health Sciences Using Hammock Plots, Proc. of Section on Statistical Graphics ASA, 2003.
++ Schonlau M. The clustergram: a graph for visualizing hierarchical and non-hierarchical cluster analyses. The Stata Journal, 2002; 2 (4):391-402. 
++ Schonlau M. Visualizing Hierarchical and Non-Hierarchical Cluster Analyses with Clustergrams. Computational Statistics: 2004; 19(1):95-111. 
 + Venables W.N., Ripley B.D.: Modern Applied Statistics with S (4th ed), Springer, 2002.
 + Wegman, E., Hyperdimensional Data Analysis Using Parallel Coordinates, JASA, 85(411), 664-675, 1990.
 + Wickham H., ggplot2: Elegant graphics for data analysis (2nd ed), Springer, 2016
