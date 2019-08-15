@@ -599,7 +599,7 @@ StatPcp <- ggproto(
     # we need to reorder the obs_id for those parts too later.
     # parallel segments inside boxes are created very late! (after we have data_final, and is based on that)
 
-    trunoff <- FALSE
+    turnoff <- FALSE
 
     if ((!length(classification$fac2fac) == 0) & turnoff) {
       # data_final_ystart_fac2fac_bandid and data_final_yend_fac2fac_bandid are actually same
