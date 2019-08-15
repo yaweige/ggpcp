@@ -38,6 +38,7 @@
 #'    often aesthetics, used to set an aesthetic to a fixed value, like
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
+#' @param method which method should be used to transform the values of each variable into acommon y axis? See `transform_pcp` for details.
 #' @param freespace The total gap space among levels within each factor variable
 #' @param boxwidth The width of the box for each factor variable
 #' @param rugwidth The width of the rugs for numeric variable
@@ -50,21 +51,22 @@
 #' @param check_overlap If `TRUE`, text that overlaps previous text in the
 #'   same layer will not be plotted.
 #' @import ggplot2
-#' @export geom_pcp_text
+#' @export
 geom_pcp_text <- function(mapping = NULL, data = NULL,
-                         stat = "pcpbox", position = "identity",
-                         ...,
-                         freespace = 0.1,
-                         boxwidth = 0,
-                         rugwidth = 0,
-                         interwidth = 1,
-                         parse = FALSE,
-                         nudge_x = 0,
-                         nudge_y = 0,
-                         check_overlap = FALSE,
-                         na.rm = FALSE,
-                         show.legend = NA,
-                         inherit.aes = TRUE) {
+                          stat = "pcpbox", position = "identity",
+                          ...,
+                          method = "uniminmax",
+                          freespace = 0.1,
+                          boxwidth = 0,
+                          rugwidth = 0,
+                          interwidth = 1,
+                          parse = FALSE,
+                          nudge_x = 0,
+                          nudge_y = 0,
+                          check_overlap = FALSE,
+                          na.rm = FALSE,
+                          show.legend = NA,
+                          inherit.aes = TRUE) {
 
   if (!missing(nudge_x) || !missing(nudge_y)) {
     if (!missing(position)) {
@@ -75,7 +77,7 @@ geom_pcp_text <- function(mapping = NULL, data = NULL,
     position <- position_nudge(nudge_x, nudge_y)
   }
 
-  layer(
+  ll <- layer(
     data = data,
     mapping = mapping,
     stat = stat,
@@ -84,6 +86,7 @@ geom_pcp_text <- function(mapping = NULL, data = NULL,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
     params = list(
+      method = method,
       freespace = freespace,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
@@ -94,33 +97,37 @@ geom_pcp_text <- function(mapping = NULL, data = NULL,
       ...
     )
   )
+
+  ll$compute_aesthetics <- compute_aesthetics_pcp
+  ll$setup_layer <- setup_layer_pcp
+
+  ll
 }
 
 
-GeomPcptext <- ggproto("GeomPcptext", Geom,
-                      setup_data = function(data, params) {
-                        data_text <- data[seq(from = 1, to = nrow(data) - 3, by = 4), , drop = FALSE]
-                        data_text$x <- (data[seq(from = 2, to = nrow(data) -2, by = 4), "x", drop = TRUE] + data_text$x)/2
-                        data_text$y <- (data[seq(from = 4, to = nrow(data), by = 4), "y", drop = TRUE] + data_text$y)/2
-                        #data_text$group <- NULL
-                        data <- data_text
+GeomPcptext <- ggproto(
+  "GeomPcptext", Geom,
+  setup_data = function(data, params) {
+    #    browser()
+    data_text <- data[seq(from = 1, to = nrow(data) - 3, by = 4), , drop = FALSE]
+    data_text$x <- (data[seq(from = 2, to = nrow(data) -2, by = 4), "x", drop = TRUE] + data_text$x)/2
+    data_text$y <- (data[seq(from = 4, to = nrow(data), by = 4), "y", drop = TRUE] + data_text$y)/2
+    #data_text$group <- NULL
+    data <- data_text
 
-                        data
-                      },
+    data
+  },
 
-                      # default_aes = aes(colour = "grey30", fill = NA, size = 0.5, linetype = 1,
-                      #                   alpha = NA, subgroup = NULL),
-                      default_aes = aes(
-                        colour = "black", size = 3.88, angle = 90, hjust = 0.5,
-                        vjust = 0.5, alpha = NA, family = "", fontface = 1, lineheight = 1.2
-                      ),
+  default_aes = aes(
+    colour = "black", size = 3.88, angle = 90, hjust = 0.5,
+    vjust = 0.5, alpha = NA, family = "", fontface = 1, lineheight = 1.2
+  ),
 
-                      draw_panel = function(data, panel_params,
-                                            coord, parse = FALSE,
-                                            na.rm = FALSE, check_overlap = FALSE) {
+  draw_panel = function(data, panel_params,
+                        coord,parse = FALSE,
+                        na.rm = FALSE, check_overlap = FALSE) {
 
-
-                        GeomText$draw_panel(data, panel_params, coord, parse = FALSE,
-                                            na.rm = FALSE, check_overlap = FALSE)
-                      }
+    GeomText$draw_panel(data, panel_params, coord, parse = FALSE,
+                        na.rm = FALSE, check_overlap = FALSE)
+  }
 )
