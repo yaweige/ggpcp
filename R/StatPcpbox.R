@@ -37,6 +37,7 @@
 #'    often aesthetics, used to set an aesthetic to a fixed value, like
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
+#' @param method which method should be used to transform the values of each variable into acommon y axis? See `transform_pcp` for details.
 #' @param freespace The total gap space among levels within each factor variable
 #' @param boxwidth The width of the box for each factor variable
 #' @param rugwidth The width of the rugs for numeric variable
@@ -45,10 +46,11 @@
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange
 #' @importFrom tidyr spread
-#' @export stat_pcp_box
+#' @export
 stat_pcp_box <- function(mapping = NULL, data = NULL,
                          geom = "polygon", position = "identity",
                          ...,
+                         method = "uniminmax",
                          freespace = 0.1,
                          boxwidth = 0,
                          rugwidth = 0,
@@ -78,11 +80,22 @@ stat_pcp_box <- function(mapping = NULL, data = NULL,
 StatPcpbox <- ggproto(
   "StatPcpbox", Stat,
   default_aes = ggplot2::aes(
-    id = id, name = name, value = value, level = level, class = class,
+    #id = id, name = name, value = value, level = level, class = class,
+    vars = NULL,
     width = 0.75, linetype = "solid", fontsize=5,
     shape = 19, colour = "grey30",
     size = .1, fill = NA, alpha = .8, stroke = 0.1,
     linewidth=.1, weight = 1),
+
+  setup_data = function (data, params) {
+    idx <- grep("x__", names(data))
+    names(data) <- gsub("x__[0-9]+__", "", names(data))
+    data <- data.frame(data, stringsAsFactors = TRUE)
+    data <- gather_pcp2(data, idx)
+    data <- transform_pcp(data, method = params$method)
+
+    data
+  },
 
   compute_layer = function(self, data, params, layout) {
     # adjust function to avoid deleting all data
@@ -113,16 +126,21 @@ StatPcpbox <- ggproto(
                            freespace = 0.1,
                            boxwidth = 0.1,
                            rugwidth = 0.05,
-                           interwidth = 1
+                           interwidth = 1,
+                           method = "uniminmax"
   ) {
     # the following code are some of the internal part of StatPcp
-
+    #browser()
     # Data preparation: to convert the input data to the form we can directly use
     # number of observations
     nobs <- length(unique(data$id))
     # a vector to tell the class of variables
-    classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
+    classpcp <- data$class[data$id==min(data$id)]
+    namepcp <- data$name[data$id==min(data$id)]
+    data$name <- factor(data$name, levels = namepcp)
     data_spread <- prepare_data(data, classpcp, nobs)
+    text_spread <- spread(data[, c("id", "name", "value_text")], key=name, value = value_text)
+    level_spread <- spread(data[, c("id", "name", "level")], key=name, value = level)
 
     # boxwidth
     # interval length, boxwidth, rugwidth
@@ -130,10 +148,18 @@ StatPcpbox <- ggproto(
     width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth)
 
     # box
+    # make sure all of the levels in text_spread are in the right order
+    lapply(2:ncol(text_spread), FUN = function(i) {
+      if (classpcp[i-1] == "factor") {
+        levels <- unique(text_spread[,i])[order(unique(level_spread[,i]))]
+        text_spread[,i] <<- factor(text_spread[,i], levels=levels)
+      }
+    })
     # fac coming from the classpcp == "factor"
-    nlevels_list <- lapply(data_spread[, c(FALSE, classpcp == "factor"), drop = FALSE],
-                           FUN = function(x) list(nlevels = nlevels(x),
-                                                  table = table(x)))
+    nlevels_list <- lapply(text_spread[, c(FALSE, classpcp == "factor"), drop = FALSE],
+                           FUN = function(x) {
+                             list(nlevels = length(unique(x)),
+                                  table = table(x))})
     eachobs <- (1 - freespace)/nobs
     level_range <- lapply(nlevels_list,
                           FUN = function(x) {
@@ -163,7 +189,8 @@ StatPcpbox <- ggproto(
                            label = rep(data_labels, each = 4),
                            group = data_box_group,
                            PANEL = data$PANEL[1] # are all the same in compute_panel
-                           )
+    )
     data_box
   }
 )
+

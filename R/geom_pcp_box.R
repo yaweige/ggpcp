@@ -38,6 +38,8 @@
 #'    often aesthetics, used to set an aesthetic to a fixed value, like
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
+#'
+#' @param method which method should be used to transform the values of each variable into acommon y axis? See `transform_pcp` for details.
 #' @param freespace The total gap space among levels within each factor variable
 #' @param boxwidth The width of the box for each factor variable
 #' @param rugwidth The width of the rugs for numeric variable
@@ -48,19 +50,22 @@
 #'    hole coordinates are interpreted. See the examples in [grid::pathGrob()] for
 #'    an explanation.
 #' @import ggplot2
-#' @export geom_pcp_box
-geom_pcp_box <- function(mapping = NULL, data = NULL,
-                         stat = "pcpbox", position = "identity",
-                         rule = "evenodd",
-                         ...,
-                         freespace = 0.1,
-                         boxwidth = 0,
-                         rugwidth = 0,
-                         interwidth = 1,
-                         na.rm = FALSE,
-                         show.legend = NA,
-                         inherit.aes = TRUE) {
-  layer(
+#' @export
+geom_pcp_box <- function(
+  mapping = NULL, data = NULL,
+  stat = "pcpbox", position = "identity",
+  rule = "evenodd",
+  ...,
+  method = "uniminmax",
+  freespace = 0.1,
+  boxwidth = 0,
+  rugwidth = 0,
+  interwidth = 1,
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE) {
+
+  ll <- layer(
     data = data,
     mapping = mapping,
     stat = stat,
@@ -69,6 +74,7 @@ geom_pcp_box <- function(mapping = NULL, data = NULL,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
     params = list(
+      method = "uniminmax",
       freespace = freespace,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
@@ -78,42 +84,35 @@ geom_pcp_box <- function(mapping = NULL, data = NULL,
       ...
     )
   )
+
+  ll$compute_aesthetics <- compute_aesthetics_pcp
+  ll$setup_layer <- setup_layer_pcp
+
+  ll
 }
 
 
-GeomPcpbox <- ggproto("GeomPcpbox", Geom,
-                      # setup_data = function(data, params) {
-                      #   we adjust the box width here?
-                      # }
-                      # required_aes = c("id", "name", "value", "level", "class"),
-                      # default_aes = ggplot2::aes(
-                      #   id = id, name = name, value = value, level = level, class = class,
-                      #   width = 0.75, linetype = "solid", fontsize=5,
-                      #   shape = 19, colour = "grey30",
-                      #   size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
-                      #   linewidth=.1, weight = 1),
+GeomPcpbox <- ggproto(
+  "GeomPcpbox", Geom,
+  # setup_data = function(data, params) {
+  #   we adjust the box width here?
+  # }
+  # required_aes = c("id", "name", "value", "level", "class"),
+  # default_aes = ggplot2::aes(
+  #   id = id, name = name, value = value, level = level, class = class,
+  #   width = 0.75, linetype = "solid", fontsize=5,
+  #   shape = 19, colour = "grey30",
+  #   size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
+  #   linewidth=.1, weight = 1),
 
-                      default_aes = aes(colour = "grey30", fill = NA, size = 0.5, linetype = 1,
-                                        alpha = NA, subgroup = NULL),
+  default_aes = aes(colour = "grey30", fill = NA, size = 0.5, linetype = 1,
+                    alpha = NA, subgroup = NULL),
 
-                      draw_panel = function(data, panel_params,
-                                            coord,
-                                            rule = "evenodd") {
-                        # pcp_box <- data.frame(
-                        #   x = data$x,
-                        #   y = data$y,
-                        #   # And what about other parameters?
-                        #   colour = data$colour,
-                        #   size = data$size,
-                        #   linetype = data$linetype,
-                        #   fill = data$fill,
-                        #   alpha = data$alpha,
-                        #   # is there PANEL or group? How those work...
-                        #   PANEL = data$PANEL,
-                        #   group = data$group
-                        # )
+  draw_panel = function(data, panel_params,
+                        coord,
+                        rule = "evenodd") {
 
-                        GeomPolygon$draw_panel(data, panel_params, coord,
-                                               rule = rule)
-                      }
+    GeomPolygon$draw_panel(data, panel_params, coord,
+                           rule = rule)
+  }
 )
