@@ -5,9 +5,9 @@
 \title{Parallel coordinate plot for both numeric and categorical data}
 \usage{
 stat_pcp(mapping = NULL, data = NULL, geom = "segment",
-  position = "identity", ..., freespace = 0.1, boxwidth = 0,
-  rugwidth = 0, interwidth = 1, breakpoint = NULL, na.rm = FALSE,
-  show.legend = NA, inherit.aes = TRUE)
+  position = "identity", ..., freespace = 0.1, method = "uniminmax",
+  boxwidth = 0, rugwidth = 0, interwidth = 1, breakpoint = NULL,
+  na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by [aes()] or
@@ -40,6 +40,8 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 to the paired geom/stat.}
 
 \item{freespace}{The total gap space among levels within each factor variable}
+
+\item{method}{method to use for transforming values into a common y axis. See `transform_pcp` for details.}
 
 \item{boxwidth}{The width of the box for each factor variable}
 

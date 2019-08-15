@@ -8,7 +8,7 @@
 #' @export
 #' @importFrom dplyr left_join
 #' @importFrom tidyr gather
-gather_pcp2 <- function(data, ...) {
+gather_pcp <- function(data, ...) {
   name <- value <- NULL # make R CMD CHECK happy
   subdata <- data[,eval(...)]
 

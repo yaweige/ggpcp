@@ -85,20 +85,3 @@ The parallel coordinate plot displays multiple y-axes, and shows the observation
 several dimensions as ploi-lines. This function work well with both numeric and categorical
 variables at the same time after proper scaling.
 }
-\examples{
-library(ggplot2)
-library(dplyr)
-mtcars \%>\%
-mutate(cyl = factor(cyl),
-      vs = factor(vs),
-      am = factor(am),
-      gear=factor(gear),
-      carb = factor(carb)) \%>\%
- gather_pcp(1:ncol(mtcars)) \%>\%
- transform_pcp(method = "uniminmax") \%>\%
- ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
- geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
- geom_pcp(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
- scale_colour_gradient2("mpg", mid="grey50", midpoint = 20) +
- theme_bw()
-}

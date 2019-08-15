@@ -55,22 +55,6 @@
 #' @param arrange should overplotting be resolved by placing small (groups) of lines on top?
 #' @import ggplot2
 #' @export geom_pcp2
-#' @examples
-#' library(ggplot2)
-#' library(dplyr)
-#' mtcars %>%
-#' mutate(cyl = factor(cyl),
-#'       vs = factor(vs),
-#'       am = factor(am),
-#'       gear=factor(gear),
-#'       carb = factor(carb)) %>%
-#'  gather_pcp(1:ncol(mtcars)) %>%
-#'  transform_pcp(method = "uniminmax") %>%
-#'  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-#'  geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
-#'  geom_pcp(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
-#'  scale_colour_gradient2("mpg", mid="grey50", midpoint = 20) +
-#'  theme_bw()
 
 geom_pcp2 <- function(
   mapping = NULL, data = NULL,

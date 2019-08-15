@@ -11,6 +11,9 @@ gather_pcp(data, ...)
 
 \item{...}{choose the columns to be used}
 }
+\value{
+dataframe with gathered data and some extra columns
+}
 \description{
 It should be used before using other drawing functions
 }

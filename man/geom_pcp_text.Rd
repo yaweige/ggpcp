@@ -13,9 +13,9 @@ geom_pcp_label(mapping = NULL, data = NULL, stat = "pcpbox",
   show.legend = NA, inherit.aes = TRUE)
 
 geom_pcp_text(mapping = NULL, data = NULL, stat = "pcpbox",
-  position = "identity", ..., freespace = 0.1, boxwidth = 0,
-  rugwidth = 0, interwidth = 1, parse = FALSE, nudge_x = 0,
-  nudge_y = 0, check_overlap = FALSE, na.rm = FALSE,
+  position = "identity", ..., method = "uniminmax", freespace = 0.1,
+  boxwidth = 0, rugwidth = 0, interwidth = 1, parse = FALSE,
+  nudge_x = 0, nudge_y = 0, check_overlap = FALSE, na.rm = FALSE,
   show.legend = NA, inherit.aes = TRUE)
 }
 \arguments{
@@ -83,6 +83,8 @@ display.}
 rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. [borders()].}
+
+\item{method}{which method should be used to transform the values of each variable into acommon y axis? See `transform_pcp` for details.}
 
 \item{check_overlap}{If `TRUE`, text that overlaps previous text in the
 same layer will not be plotted.}
