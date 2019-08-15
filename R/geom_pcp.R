@@ -41,56 +41,41 @@
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
 #'    #'
+#' @param method which method should be used to transform the values of each variable into acommon y axis? See `transform_pcp` for details.
 #' @param freespace The total gap space among levels within each factor variable
 #' @param boxwidth The width of the box for each factor variable
 #' @param rugwidth The width of the rugs for numeric variable
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
-#' @param breakpoint To break three or more factors into peices
+#' @param breakpoint To break three or more factors into pieces
 #' @param arrow specification for arrow heads, as created by arrow()
 #' @param arrow.fill fill colour to use for the arrow head (if closed). NULL means use colour aesthetic
 #' @param lineend Line end style (round, butt, square)
 #' @param linejoin Line join style (round, mitre, bevel)
+#' @param arrange should overplotting be resolved by placing small (groups) of lines on top?
 #' @import ggplot2
 #' @export geom_pcp
-#' @examples
-#' library(ggplot2)
-#' library(dplyr)
-#' mtcars %>%
-#' mutate(cyl = factor(cyl),
-#'       vs = factor(vs),
-#'       am = factor(am),
-#'       gear=factor(gear),
-#'       carb = factor(carb)) %>%
-#'  gather_pcp(1:ncol(mtcars)) %>%
-#'  transform_pcp(method = "uniminmax") %>%
-#'  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) +
-#'  geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
-#'  geom_pcp(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
-#'  scale_x_continuous(breaks=1:ncol(mtcars) +
-#'                       0.1*cumsum(c(0,1, 0,0,0,0,0,1,1,1,1)) -
-#'                       0.05*c(0,1, 0,0,0,0,0,1,1,1,1), labels=c(names(mtcars))) +
-#'  scale_colour_gradient2("mpg", mid="grey50", midpoint = 20) +
-#'  theme_bw()
 
-geom_pcp <- function(mapping = NULL, data = NULL,
-                     # where was "boxplot" created, does the following work?
-                     stat = "pcp", position = "identity",
-                     ...,
-                     freespace = 0.1,
-                     boxwidth = 0,
-                     rugwidth = 0,
-                     interwidth = 1,
-                     breakpoint = NULL,
-                     arrow = NULL,
-                     arrow.fill = NULL,
-                     lineend = "butt",
-                     linejoin = "round",
-                     na.rm = FALSE,
-                     show.legend = NA,
-                     inherit.aes = TRUE) {
+geom_pcp <- function(
+  mapping = NULL, data = NULL,
+  stat = "pcp", position = "identity",
+  ...,
+  method = "uniminmax",
+  freespace = 0.1,
+  boxwidth = 0,
+  rugwidth = 0,
+  interwidth = 1,
+  breakpoint = NULL,
+  arrow = NULL,
+  arrow.fill = NULL,
+  lineend = "butt",
+  linejoin = "round",
+  arrange = FALSE,
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE) {
 
-  layer(
+  ll <- layer(
     data = data,
     mapping = mapping,
     stat = stat,
@@ -99,6 +84,7 @@ geom_pcp <- function(mapping = NULL, data = NULL,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
     params = list(
+      method = method,
       freespace = freespace,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
@@ -108,34 +94,38 @@ geom_pcp <- function(mapping = NULL, data = NULL,
       arrow.fill = arrow.fill,
       lineend = lineend,
       linejoin = linejoin,
+      arrange = arrange,
       na.rm = na.rm,
       ...
     )
   )
+
+  ll$compute_aesthetics <- compute_aesthetics_pcp
+  ll$setup_layer <- setup_layer_pcp
+
+  ll
 }
+
+
 
 
 GeomPcp <- ggproto(
   "GeomPcp", Geom,
-  # setup_data = function(data, params) {
-  #   we adjust the box width here?
-  # }
+  setup_data = function(data, params) {
+    #   we adjust the box width here?
+    data
+  },
 
   # it seems that we can't have id = id, name = name, value = value,
   # level = level, class = class, in default_aes
   # neither does required_aes
 
   # required_aes = c("id", "name", "value", "level", "class"),
-  # default_aes = ggplot2::aes(
-  #   id = id, name = name, value = value, level = level, class = class,
-  #   width = 0.75, linetype = "solid", fontsize=5,
-  #   shape = 19, colour = "grey30",
-  #   size = .1, fill = "grey30", alpha = .8, stroke = 0.1,
-  #   linewidth=.1, weight = 1),
 
   default_aes = aes(
     colour = "grey30", size = 0.5, linetype = "solid", alpha = 1,
-    linewidth=.1, stroke = 2
+    linewidth=.1, stroke = 2, method = "uniminmax", vars = NULL,
+    arrange = FALSE
   ),
 
   draw_panel = function(data, panel_params, coord,
@@ -143,25 +133,10 @@ GeomPcp <- ggproto(
                         arrow.fill = NULL,
                         lineend = "butt",
                         linejoin = "round",
-                        na.rm = na.rm) {
-## HH: the following piece of code does not look like it is doing anything
-    # except deleting existing columns. I am commenting it out and use data
-    # in the call directly
-    # pcp_segment <- data.frame(
-    #   x = data$x,
-    #   xend = data$xend,
-    #   y = data$y,
-    #   yend = data$yend,
-    #   # And what about other parameters?
-    #   colour = data$colour,
-    #   size = data$size,
-    #   linetype = data$linetype,
-    #   #fill = alpha(data$fill, data$alpha),
-    #   alpha = data$alpha,
-    #   # is there PANEL or group? How those work...
-    #   PANEL = data$PANEL
-    #   #group = data$group
-    # )
+                        na.rm = na.rm,
+                        arrange = arrange) {
+    if (arrange)
+      data <- data %>% group_by(group) %>% mutate(n = n()) %>% arrange(desc(n))
 
     GeomSegment$draw_panel(data, panel_params, coord,
                            arrow = arrow,
