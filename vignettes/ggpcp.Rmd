@@ -50,7 +50,7 @@ mtcars %>%
 
 Notice that we used the new interface: an new aesthetics which is called `vars` and accepts the selection expression wrapped by function `vars()`. And the above three calls are exactly the same.
 
-## The basic plot with geom_pcp()
+## The basic plot with `geom_pcp()`
 
 The basic function or the main function of `ggpcp` is `geom_pcp()`, which will draw lines for parallel coordinate plot and deal with factor variables automatically by spreading them evenly on y-axis, in which case you can easily track the observations in these plot. And it is very powerful when there are a sequence of factor variables.
 
@@ -86,9 +86,9 @@ mtcars %>%
   geom_pcp(aes(color = vs))
 ```
 
-## Decorate the plot with geom_pcp_box(), geom_pcp_text()
+## Decorate the plot with `geom_pcp_box()`, `geom_pcp_text()`
 
-To show the levels of factor variables better, you can use geom_pcp_box(), which is used to draw boxes for the levels. We can see from the following example.
+To show the levels of factor variables better, you can use `geom_pcp_box()`, which is used to draw boxes for the levels. We can see from the following example.
 
 ```{r}
 mtcars %>% 
@@ -101,7 +101,7 @@ mtcars %>%
   geom_pcp_box()
 ```
 
-If you want to see the boxes not black segments, you need to provide another argument: boxwidth to, unfortunately, both layer functions.
+If you want to see the boxes not black segments, you need to provide another argument: `boxwidth` to, unfortunately, both layer functions.
 
 ```{r}
 mtcars %>% 
@@ -114,7 +114,7 @@ mtcars %>%
   geom_pcp_box(boxwidth = 0.2)
 ```
 
-Add labels on top of boxes with geom_pcp_text() or geom_pcp_label().
+Add labels on top of boxes with `geom_pcp_text()` or `geom_pcp_label()`.
 
 ```{r}
 mtcars %>% 
@@ -128,9 +128,9 @@ mtcars %>%
   geom_pcp_text(boxwidth = 0.2)
 ```
 
-## Draw bands with geom_pcp_band()
+## Draw bands with `geom_pcp_band()`
 
-You can also draw bands with geom_pcp_band(). This can adds a layer to lines or boxes to compose a more meaningful plot. 
+You can also draw bands with `geom_pcp_band()`. This can adds a layer to lines or boxes to compose a more meaningful plot. 
 
 ```{r, eval=FALSE}
 mtcars %>% 
@@ -162,55 +162,76 @@ mtcars %>%
 
 ## Methods with data transformation
 
+In most cases, you will need to scale your data in a proper way to best show them in a parallel coordinate plot. `ggpcp` provides several ways to do scaling as listed below. Note that factor variables are drawn in the range from 0 to 1, so you will want to scale the numeric variables to that magnitude when showing them with factor variables. By setting the `method` argument, you can call different methods:
+
+* "raw": no scaling
+* "std": univariately, subtract mean and divide by standard deviation
+* "robust": univariately, subtract median and divide by median absolute deviation
+* "uniminmax": univariately, scale so the minimum of the variable is zero, and the maximum is one
+* "globalminmax": gobal scaling, the global maximum is mapped to one, global minimum across the variables is mapped to zero
+
+```{r}
+mtcars %>% 
+  ggplot(aes(vars = vars(1:4))) + 
+  geom_pcp(aes(color = mpg), method = "std")
+```
+
+
 ## Adjust boxwidth, rugwidth and interwidth
 
-ggpcp also provides a way to modify the parallel coordinate plot according to your need:
+`ggpcp` also provides ways to modify the parallel coordinate plot according to your need:
 
-* boxwidth: adjust the width of boxes (for factor variable)
-* rugwidth: adjust the width of rugs (for numeric variable)
-* interwidth: adjust the distance between every two adjacent variables
+* `boxwidth`: adjust the width of boxes (for factor variables)
+* `rugwidth`: adjust the width of rugs (for numeric variables)
+* `interwidth`: adjust the distance between every two adjacent variables
 
-These arguments accept a scalar or a vector with equal length of the object they control.
+These arguments accept a scalar or a vector with equal length of the objects they control. Just be careful that in most cases, you will need to provide those arguments multiple times, if you use multiple layer functions.
 
-```{r, eval=FALSE}
+```{r}
 mtcars %>% 
-  mutate(cyl = factor(cyl),
-         am = factor(am),
+  mutate(am = factor(am),
          gear = factor(gear),
-         carb = factor(carb)) %>%
-  gather_pcp(mpg, vs:carb) %>%
-  transform_pcp(method = "uniminmax") %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
-  geom_pcp(aes(color = vs), boxwidth = 0.2, rugwidth = 0.2,  interwidth = c(1, 1, 1.5, 2)) + 
-  geom_pcp_box(boxwidth = 0.2, rugwidth = 0.2, interwidth = c(1, 1, 1.5, 2))
+         carb = factor(carb)) %>% 
+  ggplot(aes(vars = vars(mpg, am:carb))) + 
+  geom_pcp(aes(color = mpg), boxwidth = 0.2, rugwidth = 0.2, interwidth = c(1, 1.5, 1)) +
+  geom_pcp_box(boxwidth = 0.2, rugwidth = 0.2, interwidth = c(1, 1.5, 1))
 ```
 
 ## Break the factor block
 
-Our default method works great for a sequence of factor variables, but as the number variables increases, it becomes messier at the right side of the factor block, because the number of combinations of levels of variables increases. This is a conceptual problem which makes it hard to show the pattern of the data in these cases.
+Our default method works great for a sequence of factor variables, but as the number of factor variables increases, it becomes messier at the right side of the factor block, because the number of combinations of levels of variables increases. This is a conceptual difficulty which makes it hard to show the pattern of the data in these cases.
 
-```{r, eval=FALSE}
+```{r}
 mtcars %>% 
   mutate(cyl = factor(cyl),
+         vs = factor(vs),
          am = factor(am),
-         gear = factor(gear)) %>%
-  gather_pcp(vs:gear) %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
-  geom_pcp(aes(color = vs), boxwidth = 0.5) + 
-  geom_pcp_box(boxwidth = 0.5)
+         gear = factor(gear)) %>% 
+  ggplot(aes(vars = vars(cyl, vs:gear))) + 
+  geom_pcp(aes(color = vs), boxwidth = 0.2) +
+  geom_pcp_box(boxwidth = 0.2)
 ```
 
-We provide a argument to partly sovle this problem. By making use of `breakpoint` in geom_pcp(), we can actually break a factor block to two or more smaller parts, which will better show the relations between the adjacent variables while keep tracking of individual observations.
+We provide a argument to partly sovle this problem. By making use of `breakpoint` in `geom_pcp()`, we can actually break a factor block to two or more smaller parts, which will better show the relations between the adjacent variables while keeping tracking of individual observations. And notice that the adjustments happen in boxes and the main parts are kept tidy. This is a powerful tool, which deserves more investigations and deeper understandings.
 
-```{r, eval=FALSE}
+```{r}
 mtcars %>% 
   mutate(cyl = factor(cyl),
+         vs = factor(vs),
          am = factor(am),
-         gear = factor(gear)) %>%
-  gather_pcp(vs:gear) %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
-  geom_pcp(aes(color = vs), boxwidth = 0.5, breakpoint = 2) + 
-  geom_pcp_box(boxwidth = 0.5)
+         gear = factor(gear)) %>% 
+  ggplot(aes(vars = vars(cyl, vs:gear))) + 
+  geom_pcp(aes(color = vs), boxwidth = 0.2, breakpoint = 2:3) +
+  geom_pcp_box(boxwidth = 0.2)
 ```
 
 ## Methods with overdrawing
+
+When you are dealing with a relatively large data set, the overdrawing of lines from `geom_pcp` can be a problem. Note that the lines from `geom_pcp` are drawn according to the order they shown in your data set. So when the order changes in your data set the overdrawing pattern will also change. It can be messy and really annoying. We provided some overdrawing methods to solve that, by set the argument `arrange`:
+
+* "original":
+* "hierarchical":
+* "smallfirst":
+* "largefirst":
+
+
