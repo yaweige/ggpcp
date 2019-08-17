@@ -674,7 +674,7 @@ StatPcp <- ggproto(
     # we have put fac2fac section to the very last of the data set
     data_boxwidth$id <- c(rep(obs_ids, times = (nrow(data_boxwidth) - n_fac2fac)/nobs), obs_ids_fac2fac)
 
-    datanames <- setdiff(names(data), c("name", "value", "level", "class"))
+    datanames <- setdiff(names(data), c("name", "value", "level", "class", "value_text"))
     # don't include the pcp specific variables - those are dealt with
     output_data <- left_join(data_boxwidth, unique(data[,datanames]), by = "id")
     output_data
