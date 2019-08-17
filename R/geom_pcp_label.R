@@ -34,7 +34,7 @@ geom_pcp_label <- function(mapping = NULL, data = NULL,
     data = data,
     mapping = mapping,
     stat = stat,
-    geom = GeomPcptext,
+    geom = GeomPcplabel,
     position = position,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
@@ -83,10 +83,10 @@ GeomPcplabel <- ggproto("GeomPcplabel", Geom,
                                              label.r = unit(0.15, "lines"),
                                              label.size = 0.25) {
 
-                         GeomLabel$draw_panel(data, panel_params, coord, parse = FALSE,
-                                              na.rm = FALSE,
-                                              label.padding = unit(0.25, "lines"),
-                                              label.r = unit(0.15, "lines"),
-                                              label.size = 0.25)
+                         GeomLabel$draw_panel(data, panel_params, coord, parse = parse,
+                                              na.rm = na.rm,
+                                              label.padding = label.padding,
+                                              label.r = label.r,
+                                              label.size = label.size)
                        }
 )

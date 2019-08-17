@@ -121,10 +121,10 @@ GeomPcptext <- ggproto(
   ),
 
   draw_panel = function(data, panel_params,
-                        coord,parse = FALSE,
+                        coord, parse = FALSE,
                         na.rm = FALSE, check_overlap = FALSE) {
 
-    GeomText$draw_panel(data, panel_params, coord, parse = FALSE,
-                        na.rm = FALSE, check_overlap = FALSE)
+    GeomText$draw_panel(data, panel_params, coord, parse = parse,
+                        na.rm = na.rm, check_overlap = check_overlap)
   }
 )
