@@ -50,7 +50,6 @@
 #' @export geom_pcp_band
 
 geom_pcp_band <- function(mapping = NULL, data = NULL,
-                          # where was "boxplot" created, does the following work?
                           stat = "pcpband", position = "identity",
                           ...,
                           freespace = 0.1,
@@ -62,7 +61,8 @@ geom_pcp_band <- function(mapping = NULL, data = NULL,
                           na.rm = FALSE,
                           show.legend = NA,
                           inherit.aes = TRUE) {
-  layer(
+
+  ll <- layer(
     data = data,
     mapping = mapping,
     stat = stat,
@@ -76,11 +76,16 @@ geom_pcp_band <- function(mapping = NULL, data = NULL,
       rugwidth = rugwidth,
       interwidth = interwidth,
       breakpoint = breakpoint,
-      merge = FALSE,
+      merge = merge,
       na.rm = na.rm,
       ...
     )
   )
+
+  ll$compute_aesthetics <- compute_aesthetics_pcp
+  ll$setup_layer <- setup_layer_pcp
+
+  ll
 }
 
 
@@ -90,20 +95,6 @@ GeomPcpband <- ggproto("GeomPcpband", Geom,
 
                        draw_group = function(data, panel_params, coord,
                                              na.rm = na.rm) {
-                         # pcp_band <- data.frame(
-                         #   x = data$x,
-                         #   ymin = data$ymin,
-                         #   ymax = data$ymax,
-                         #   # And what about other parameters?
-                         #   colour = data$colour,
-                         #   size = data$size,
-                         #   linetype = data$linetype,
-                         #   fill = data$fill,
-                         #   alpha = data$alpha,
-                         #   # is there PANEL or group? How those work...
-                         #   PANEL = data$PANEL,
-                         #   group = data$group
-                         # )
 
                          GeomRibbon$draw_group(data, panel_params, coord,
                                                na.rm = na.rm)
