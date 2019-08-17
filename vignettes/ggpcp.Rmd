@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This document shows how to make use of `ggpcp` functionalities with ggplot2 to draw an ideal parallel coordinate plot with numeric variables, categorical vairables or both. It provides a set of tools to deal with various cases and provides a good solution to draw factor variables.
+This document shows how to make use of `ggpcp` functionalities with `ggplot2` to draw an ideal parallel coordinate plot with numeric variables, categorical vairables or both. It provides a set of tools to deal with various cases and provides a good solution to draw factor variables.
 
 ```{r setup, message = FALSE}
 library(ggplot2)
@@ -177,7 +177,7 @@ mtcars %>%
 ```
 
 
-## Adjust boxwidth, rugwidth and interwidth
+## Adjust `boxwidth`, `rugwidth` and `interwidth`
 
 `ggpcp` also provides ways to modify the parallel coordinate plot according to your need:
 
@@ -227,7 +227,7 @@ mtcars %>%
 
 ## Methods with overdrawing
 
-When you are dealing with a relatively large data set, the overdrawing of lines from `geom_pcp` can be a problem. Note that the lines from `geom_pcp` are drawn according to the order they shown in your data set. So when the order changes in your data set the overdrawing pattern will also change. It can be messy and really annoying. We provided some overdrawing methods to solve that, by set the argument `arrange`:
+When you are dealing with a relatively large data set, the overdrawing of lines from `geom_pcp` can be a problem. Note that the lines from `geom_pcp` are drawn according to the order they shown in your data set. So when the order changes in your data set the overdrawing pattern will also change. It can be messy and really annoying. We provided some overdrawing methods to solve that, by setting the argument `arrange` to:
 
 * "original":
 * "hierarchical":
