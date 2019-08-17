@@ -45,7 +45,6 @@
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange
 #' @importFrom tidyr spread
-#' @export
 stat_pcp_box <- function(mapping = NULL, data = NULL,
                          geom = "polygon", position = "identity",
                          ...,
