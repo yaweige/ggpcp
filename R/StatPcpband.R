@@ -95,6 +95,17 @@ StatPcpband <- ggproto(
     size = .1, fill = NA, alpha = .8, stroke = 0.1,
     linewidth=.1, weight = 1),
 
+  setup_data = function (data, params) {
+    #   browser()
+    idx <- grep("x__", names(data))
+    names(data) <- gsub("x__[0-9]+__", "", names(data))
+    data <- data.frame(data, stringsAsFactors = TRUE)
+    data <- gather_pcp(data, idx)
+    data <- transform_pcp(data, method = "uniminmax")
+
+    data
+  },
+
   compute_layer = function(self, data, params, layout) {
     # adjust function to avoid deleting all data
     ggplot2:::check_required_aesthetics(

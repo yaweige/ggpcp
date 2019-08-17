@@ -128,36 +128,48 @@ mtcars %>%
   geom_pcp_text(boxwidth = 0.2)
 ```
 
-## Draw bands with `geom_pcp_band()`
-
-You can also draw bands with `geom_pcp_band()`. This can adds a layer to lines or boxes to compose a more meaningful plot. 
-
-```{r, eval=FALSE}
+```{r}
 mtcars %>% 
-  mutate(cyl = factor(cyl),
+  mutate(vs = factor(vs),
          am = factor(am),
          gear = factor(gear),
-         carb = factor(carb)) %>%
-  gather_pcp(vs:carb) %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
+         carb = factor(carb)) %>% 
+  ggplot(aes(vars = vars(vs:carb))) + 
   geom_pcp(aes(color = vs), boxwidth = 0.2) +
-  geom_pcp_box(boxwidth = 0.2) +
-  geom_pcp_band(aes(fill = vs), boxwidth = 0.2, alpha = 0.2)
+  geom_pcp_box(boxwidth = 0.2) + 
+  geom_pcp_label(boxwidth = 0.2)
+```
+
+## Draw bands with `geom_pcp_band()`
+
+You can also draw bands with `geom_pcp_band()`. This can adds a layer to lines or boxes to compose a more meaningful plot sometimes. It's also interesting to see how bands are overdrawn.
+
+```{r}
+mtcars %>% 
+  mutate(vs = factor(vs),
+         am = factor(am),
+         gear = factor(gear),
+         carb = factor(carb)) %>% 
+  ggplot(aes(vars = vars(vs:carb))) + 
+  geom_pcp(aes(color = vs), boxwidth = 0.2) +
+  geom_pcp_box(boxwidth = 0.2) + 
+  geom_pcp_label(boxwidth = 0.2) + 
+  geom_pcp_band(aes(fill = vs), boxwidth = 0.2, alpha = 0.3)
 ```
 
 Sometimes smaller bands are merged to a larger band, which is meaningful in showing a tidy plot, but will make it more difficult to color the bands. So we provide an argument to control this behavior. When you turn on the `merge`, the color/fill aesthetics is not reliable because `geom_pcp_band` will use the first observation in the merged band to color the whole band.
 
 ```{r, eval=FALSE}
 mtcars %>% 
-  mutate(cyl = factor(cyl),
+  mutate(vs = factor(vs),
          am = factor(am),
          gear = factor(gear),
-         carb = factor(carb)) %>%
-  gather_pcp(vs:carb) %>%
-  ggplot(aes(id = id, name = name, value = value, level = level, class = class)) + 
+         carb = factor(carb)) %>% 
+  ggplot(aes(vars = vars(vs:carb))) + 
   geom_pcp(aes(color = vs), boxwidth = 0.2) +
-  geom_pcp_box(boxwidth = 0.2) +
-  geom_pcp_band(boxwidth = 0.2, fill = "blue", alpha = 0.2, merge = TRUE)
+  geom_pcp_box(boxwidth = 0.2) + 
+  geom_pcp_label(boxwidth = 0.2) + 
+  geom_pcp_band(fill = "blue", boxwidth = 0.2, alpha = 0.3, merge = TRUE)
 ```
 
 ## Methods with data transformation
