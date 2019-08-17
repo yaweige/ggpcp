@@ -1,7 +1,7 @@
 #' Parallel coordinate plot for both numeric and categorical data
 #'
 #' The parallel coordinate plot displays multiple y-axes, and shows the observations across
-#' several dimensions as ploi-lines. This function work well with both numeric and categorical
+#' several dimensions as lines. This function work well with both numeric and categorical
 #' variables at the same time after proper scaling.
 #'
 #' @param mapping Set of aesthetic mappings created by [aes()] or
@@ -42,17 +42,19 @@
 #'    to the paired geom/stat.
 #'    #'
 #' @param method which method should be used to transform the values of each variable into acommon y axis? See `transform_pcp` for details.
-#' @param freespace The total gap space among levels within each factor variable
-#' @param boxwidth The width of the box for each factor variable
-#' @param rugwidth The width of the rugs for numeric variable
+#' @param freespace The total gap space among levels within each factor variable.
+#' @param boxwidth The width of the boxes for factor variables, either a scalar or a vector with length equal to the number of factor variables.
+#' @param rugwidth The width of the rugs for numeric variables,either a scalar or a vector with length equal to the number of numeric variables.
 #' @param interwidth The width for the lines between every neighboring variables, either
-#'  a scalar or a vector.
-#' @param breakpoint To break three or more factors into pieces
+#'  a scalar or a vector with length equal to the total number of variables subtracting one.
+#' @param breakpoint Positions indicating where to break, can be a vector.
+#' To break three or more factor variables to better show the relations between adjacent factor variables.
+#' Can't be used when there is only one or two factor vairbles.
+#' @param arrange should overplotting be resolved by placing small (groups) of lines on top?
 #' @param arrow specification for arrow heads, as created by arrow()
 #' @param arrow.fill fill colour to use for the arrow head (if closed). NULL means use colour aesthetic
 #' @param lineend Line end style (round, butt, square)
 #' @param linejoin Line join style (round, mitre, bevel)
-#' @param arrange should overplotting be resolved by placing small (groups) of lines on top?
 #' @import ggplot2
 #' @export geom_pcp
 

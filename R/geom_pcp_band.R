@@ -39,12 +39,14 @@
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
 #'    #'
-#' @param freespace The total gap space among levels within each factor variable
-#' @param boxwidth The width of the box for each factor variable
-#' @param rugwidth The width of the rugs for numeric variable
+#' @param freespace The total gap space among levels within each factor variable.
+#' @param boxwidth The width of the boxes for factor variables, either a scalar or a vector with length equal to the number of factor variables.
+#' @param rugwidth The width of the rugs for numeric variables,either a scalar or a vector with length equal to the number of numeric variables.
 #' @param interwidth The width for the lines between every neighboring variables, either
-#'  a scalar or a vector.
-#' @param breakpoint To break three or more factors into peices
+#'  a scalar or a vector with length equal to the total number of variables subtracting one.
+#' @param breakpoint Positions indicating where to break, can be a vector.
+#' To break three or more factor variables to better show the relations between adjacent factor variables.
+#' Can't be used when there is only one or two factor vairbles.
 #' @param merge To merge the bands or not
 #' @import ggplot2
 #' @export geom_pcp_band

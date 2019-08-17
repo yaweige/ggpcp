@@ -5,9 +5,9 @@
 #' @param  data The data set used
 #' @param ... choose the columns to be used
 #' @return dataframe with gathered data and some extra columns
-#' @export
 #' @importFrom dplyr left_join
 #' @importFrom tidyr gather
+#' @noRd
 gather_pcp <- function(data, ...) {
   name <- value <- NULL # make R CMD CHECK happy
   subdata <- data[,eval(...)]

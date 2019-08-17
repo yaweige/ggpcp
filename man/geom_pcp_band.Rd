@@ -41,16 +41,18 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 to the paired geom/stat.
 #'}
 
-\item{freespace}{The total gap space among levels within each factor variable}
+\item{freespace}{The total gap space among levels within each factor variable.}
 
-\item{boxwidth}{The width of the box for each factor variable}
+\item{boxwidth}{The width of the boxes for factor variables, either a scalar or a vector with length equal to the number of factor variables.}
 
-\item{rugwidth}{The width of the rugs for numeric variable}
+\item{rugwidth}{The width of the rugs for numeric variables,either a scalar or a vector with length equal to the number of numeric variables.}
 
 \item{interwidth}{The width for the lines between every neighboring variables, either
-a scalar or a vector.}
+a scalar or a vector with length equal to the total number of variables subtracting one.}
 
-\item{breakpoint}{To break three or more factors into peices}
+\item{breakpoint}{Positions indicating where to break, can be a vector.
+To break three or more factor variables to better show the relations between adjacent factor variables.
+Can't be used when there is only one or two factor vairbles.}
 
 \item{merge}{To merge the bands or not}
 

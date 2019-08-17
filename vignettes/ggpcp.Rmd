@@ -153,13 +153,13 @@ mtcars %>%
   ggplot(aes(vars = vars(vs:carb))) + 
   geom_pcp(aes(color = vs), boxwidth = 0.2) +
   geom_pcp_box(boxwidth = 0.2) + 
-  geom_pcp_label(boxwidth = 0.2) + 
-  geom_pcp_band(aes(fill = vs), boxwidth = 0.2, alpha = 0.3)
+  geom_pcp_band(aes(fill = vs), boxwidth = 0.2, alpha = 0.3) +
+  geom_pcp_label(boxwidth = 0.2)
 ```
 
 Sometimes smaller bands are merged to a larger band, which is meaningful in showing a tidy plot, but will make it more difficult to color the bands. So we provide an argument to control this behavior. When you turn on the `merge`, the color/fill aesthetics is not reliable because `geom_pcp_band` will use the first observation in the merged band to color the whole band.
 
-```{r, eval=FALSE}
+```{r}
 mtcars %>% 
   mutate(vs = factor(vs),
          am = factor(am),
@@ -167,9 +167,9 @@ mtcars %>%
          carb = factor(carb)) %>% 
   ggplot(aes(vars = vars(vs:carb))) + 
   geom_pcp(aes(color = vs), boxwidth = 0.2) +
-  geom_pcp_box(boxwidth = 0.2) + 
-  geom_pcp_label(boxwidth = 0.2) + 
-  geom_pcp_band(fill = "blue", boxwidth = 0.2, alpha = 0.3, merge = TRUE)
+  geom_pcp_box(boxwidth = 0.2) +
+  geom_pcp_band(fill = "blue", boxwidth = 0.2, alpha = 0.3, merge = TRUE) +
+  geom_pcp_label(boxwidth = 0.2) 
 ```
 
 ## Methods with data transformation

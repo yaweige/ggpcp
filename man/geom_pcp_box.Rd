@@ -45,14 +45,14 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 `colour = "red"` or `size = 3`. They may also be parameters
 to the paired geom/stat.}
 
-\item{freespace}{The total gap space among levels within each factor variable}
+\item{freespace}{The total gap space among levels within each factor variable.}
 
-\item{boxwidth}{The width of the box for each factor variable}
+\item{boxwidth}{The width of the boxes for factor variables, either a scalar or a vector with length equal to the number of factor variables.}
 
-\item{rugwidth}{The width of the rugs for numeric variable}
+\item{rugwidth}{The width of the rugs for numeric variables,either a scalar or a vector with length equal to the number of numeric variables.}
 
 \item{interwidth}{The width for the lines between every neighboring variables, either
-a scalar or a vector.}
+a scalar or a vector with length equal to the total number of variables subtracting one.}
 
 \item{na.rm}{If `FALSE`, the default, missing values are removed with
 a warning. If `TRUE`, missing values are silently removed.}
