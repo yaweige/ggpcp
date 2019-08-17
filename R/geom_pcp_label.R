@@ -30,11 +30,11 @@ geom_pcp_label <- function(mapping = NULL, data = NULL,
     position <- position_nudge(nudge_x, nudge_y)
   }
 
-  layer(
+  ll <- layer(
     data = data,
     mapping = mapping,
     stat = stat,
-    geom = GeomPcplabel,
+    geom = GeomPcptext,
     position = position,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
@@ -51,6 +51,11 @@ geom_pcp_label <- function(mapping = NULL, data = NULL,
       ...
     )
   )
+
+  ll$compute_aesthetics <- compute_aesthetics_pcp
+  ll$setup_layer <- setup_layer_pcp
+
+  ll
 }
 
 

@@ -37,7 +37,6 @@
 #'    often aesthetics, used to set an aesthetic to a fixed value, like
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
-#' @param method which method should be used to transform the values of each variable into acommon y axis? See `transform_pcp` for details.
 #' @param freespace The total gap space among levels within each factor variable
 #' @param boxwidth The width of the box for each factor variable
 #' @param rugwidth The width of the rugs for numeric variable
@@ -50,7 +49,6 @@
 stat_pcp_box <- function(mapping = NULL, data = NULL,
                          geom = "polygon", position = "identity",
                          ...,
-                         method = "uniminmax",
                          freespace = 0.1,
                          boxwidth = 0,
                          rugwidth = 0,
@@ -92,7 +90,7 @@ StatPcpbox <- ggproto(
     names(data) <- gsub("x__[0-9]+__", "", names(data))
     data <- data.frame(data, stringsAsFactors = TRUE)
     data <- gather_pcp(data, idx)
-    data <- transform_pcp(data, method = params$method)
+    data <- transform_pcp(data, method = "uniminmax")
 
     data
   },

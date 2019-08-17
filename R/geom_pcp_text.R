@@ -38,7 +38,6 @@
 #'    often aesthetics, used to set an aesthetic to a fixed value, like
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
-#' @param method which method should be used to transform the values of each variable into acommon y axis? See `transform_pcp` for details.
 #' @param freespace The total gap space among levels within each factor variable
 #' @param boxwidth The width of the box for each factor variable
 #' @param rugwidth The width of the rugs for numeric variable
@@ -55,7 +54,6 @@
 geom_pcp_text <- function(mapping = NULL, data = NULL,
                           stat = "pcpbox", position = "identity",
                           ...,
-                          method = "uniminmax",
                           freespace = 0.1,
                           boxwidth = 0,
                           rugwidth = 0,
@@ -86,7 +84,6 @@ geom_pcp_text <- function(mapping = NULL, data = NULL,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
     params = list(
-      method = method,
       freespace = freespace,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
