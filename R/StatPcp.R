@@ -50,6 +50,7 @@
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange
 #' @importFrom tidyr spread
+#' @noRd
 
 stat_pcp <- function(mapping = NULL, data = NULL,
                      geom = "segment", position = "identity",

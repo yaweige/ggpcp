@@ -48,6 +48,7 @@
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange select mutate summarise
 #' @importFrom tidyr spread
+#' @noRd
 
 
 stat_pcp_band <- function(mapping = NULL, data = NULL,
