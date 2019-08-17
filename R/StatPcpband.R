@@ -340,7 +340,7 @@ band_merge <- function(data_band_unmerged, eachobs) {
                  band_xstart = selected_data$band_xstart[1],
                  band_xend = selected_data$band_xend[1],
                  bandid = min(selected_data$bandid),
-                 id = min(id))
+                 id = min(selected_data$id))
     })
     data_merged_band_only <- lapply(1:8, FUN = function(x) {
       temp <- vector()
