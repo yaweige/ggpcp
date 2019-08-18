@@ -20,6 +20,7 @@ This document shows how to make use of `ggpcp` functionalities with `ggplot2` to
 library(ggplot2)
 library(dplyr)
 library(ggpcp)
+library(purrr)
 ```
 
 ## Start from the new interface
@@ -237,13 +238,46 @@ mtcars %>%
   geom_pcp_box(boxwidth = 0.2)
 ```
 
-## Methods with overdrawing
+## Methods with overplotting
 
-When you are dealing with a relatively large data set, the overdrawing of lines from `geom_pcp` can be a problem. Note that the lines from `geom_pcp` are drawn according to the order they shown in your data set. So when the order changes in your data set the overdrawing pattern will also change. It can be messy and really annoying. We provided some overdrawing methods to solve that, by setting the argument `arrange` to:
+When you are dealing with a relatively large data set, the overplotting of lines from `geom_pcp` can be a problem. Note that the lines from `geom_pcp` are drawn according to the order they shown in your data set. So when the order changes in your data set the overdrawing pattern will also change. It can be messy and really annoying. We provided some overplotting methods to solve that, by setting the argument `overplot` to:
 
-* "original":
-* "hierarchical":
-* "smallfirst":
-* "largefirst":
+* "original": use the original order, first shown first drawn.
 
+* "hierarchical": hierarchically drawn according to the combinations of levels of factor variables, which will change according to different level structures of factor variables you provided. This was done separately for each factor block. The right most factor variables have the largest weight across a sequence of factor variables, the last level of a factor variable has the largest weight within a factor variable. Groups of lines with larger weight will be drawn on top.
+
+* "smallfirst": smaller groups of lines are drawn first, placing large groups of lines on top.
+
+* "largefirst": larger groups of lines are drawn first, placing small groups of lines on top.
+
+And you should also make use of transparency to show the overplotting better.
+
+Examples from Titanic, look closely to the overplotting:
+
+```{r}
+titanic <- as.data.frame(Titanic)
+titanic <- titanic %>% 
+  purrr::map(.f = function(x) rep(x, titanic$Freq)) %>% 
+  as.data.frame() %>% select(-Freq)
+
+set.seed(20190818)
+titanic[c(sample(1:1000, 1000), 1001:2000), ] %>%
+  ggplot(aes(vars = vars(1:4))) + 
+  geom_pcp(aes(colour = Class), breakpoint=2:3, boxwidth = 0.5, overplot = "original") + 
+  geom_pcp_box(boxwidth = 0.5)
+```
+
+```{r}
+titanic %>%
+  ggplot(aes(vars = vars(1:4))) + 
+  geom_pcp(aes(colour = Class), alpha = 0.1, breakpoint=2:3, boxwidth = 0.5, overplot = "largefirst") + 
+  geom_pcp_box(boxwidth = 0.5)
+```
+
+```{r}
+titanic %>%
+  ggplot(aes(vars = vars(1:4))) + 
+  geom_pcp(aes(colour = Class), alpha = 0.1, breakpoint=2:3, boxwidth = 0.5, overplot = "hierarchical") + 
+  geom_pcp_box(boxwidth = 0.5)
+```
 
