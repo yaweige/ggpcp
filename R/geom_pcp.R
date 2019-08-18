@@ -50,7 +50,7 @@
 #' @param breakpoint Positions indicating where to break, can be a vector.
 #' To break three or more factor variables to better show the relations between adjacent factor variables.
 #' Can't be used when there is only one or two factor vairbles.
-#' @param arrange should overplotting be resolved by placing small (groups) of lines on top?
+#' @param overplot methods used to conduct overplotting when overplotting becomes an issue.
 #' @param arrow specification for arrow heads, as created by arrow()
 #' @param arrow.fill fill colour to use for the arrow head (if closed). NULL means use colour aesthetic
 #' @param lineend Line end style (round, butt, square)
@@ -68,11 +68,11 @@ geom_pcp <- function(
   rugwidth = 0,
   interwidth = 1,
   breakpoint = NULL,
+  overplot = "original",
   arrow = NULL,
   arrow.fill = NULL,
   lineend = "butt",
   linejoin = "round",
-  arrange = FALSE,
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE) {
@@ -92,11 +92,11 @@ geom_pcp <- function(
       rugwidth = rugwidth,
       interwidth = interwidth,
       breakpoint = breakpoint,
+      overplot = overplot,
       arrow = arrow,
       arrow.fill = arrow.fill,
       lineend = lineend,
       linejoin = linejoin,
-      arrange = arrange,
       na.rm = na.rm,
       ...
     )
@@ -113,21 +113,10 @@ geom_pcp <- function(
 
 GeomPcp <- ggproto(
   "GeomPcp", Geom,
-  setup_data = function(data, params) {
-    #   we adjust the box width here?
-    data
-  },
-
-  # it seems that we can't have id = id, name = name, value = value,
-  # level = level, class = class, in default_aes
-  # neither does required_aes
-
-  # required_aes = c("id", "name", "value", "level", "class"),
 
   default_aes = aes(
     colour = "grey30", size = 0.5, linetype = "solid", alpha = 1,
-    linewidth=.1, stroke = 2, method = "uniminmax", vars = NULL,
-    arrange = FALSE
+    linewidth=.1, stroke = 2, method = "uniminmax", vars = NULL
   ),
 
   draw_panel = function(data, panel_params, coord,
@@ -135,10 +124,9 @@ GeomPcp <- ggproto(
                         arrow.fill = NULL,
                         lineend = "butt",
                         linejoin = "round",
-                        na.rm = na.rm,
-                        arrange = arrange) {
-    if (arrange)
-      data <- data %>% group_by(group) %>% mutate(n = n()) %>% arrange(desc(n))
+                        na.rm = na.rm) {
+    # if (arrange)
+    #   data <- data %>% group_by(group) %>% mutate(n = n()) %>% arrange(desc(n))
 
     GeomSegment$draw_panel(data, panel_params, coord,
                            arrow = arrow,

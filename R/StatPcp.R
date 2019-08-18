@@ -46,10 +46,11 @@
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
 #' @param breakpoint To break three or more factors into peices
-#'
+#' @param overplot methods used to conduct overplotting when overplotting becomes an issue.
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange
 #' @importFrom tidyr spread
+#' @importFrom assertthat assert_that has_name
 #' @noRd
 
 stat_pcp <- function(mapping = NULL, data = NULL,
@@ -61,6 +62,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
                      rugwidth = 0,
                      interwidth = 1,
                      breakpoint = NULL,
+                     overplot = "original",
                      na.rm = FALSE,
                      show.legend = NA,
                      inherit.aes = TRUE) {
@@ -82,6 +84,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
       rugwidth = rugwidth,
       interwidth = interwidth,
       breakpoint = breakpoint,
+      overplot = overplot,
       ...
     )
   )
@@ -147,7 +150,7 @@ StatPcp <- ggproto(
   # or we can put the attribute in the function prarameters?
   compute_panel = function(data, scales, method = "uniminmax", freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
-                           breakpoint = NULL) {
+                           breakpoint = NULL, overplot = "original") {
     # Data preparation: to convert the input data to the form we can directly use
     # nobs, classpcp will also be used in other places, so they are kept
 
@@ -599,9 +602,16 @@ StatPcp <- ggproto(
     # we need to reorder the obs_id for those parts too later.
     # parallel segments inside boxes are created very late! (after we have data_final, and is based on that)
 
-    turnoff <- FALSE
+    assert_that(!is.null(overplot))
+    assert_that(overplot %in% c("original", "hierarchical", "smallfirst", "largefirst"))
 
-    if ((!length(classification$fac2fac) == 0) & turnoff) {
+    if (overplot == "hierarchical") {
+      turn_on_off <- TRUE
+    } else {
+      turn_on_off <- FALSE
+    }
+
+    if ((!length(classification$fac2fac) == 0) & turn_on_off) {
       # data_final_ystart_fac2fac_bandid and data_final_yend_fac2fac_bandid are actually same
       data_final_ystart_fac2fac_split <- split(data_final_ystart_fac2fac, f = rep(1:(length(data_final_ystart_fac2fac)/nobs), each = nobs))
       data_final_yend_fac2fac_split <- split(data_final_yend_fac2fac, f = rep(1:(length(data_final_ystart_fac2fac)/nobs), each = nobs))
@@ -676,7 +686,22 @@ StatPcp <- ggproto(
 
     datanames <- setdiff(names(data), c("name", "value", "level", "class", "value_text"))
     # don't include the pcp specific variables - those are dealt with
-    output_data <- left_join(data_boxwidth, unique(data[,datanames]), by = "id")
+    data_boxwidth <- left_join(data_boxwidth, unique(data[,datanames]), by = "id")
+
+
+    # some of the reorder/arrange
+    if (overplot == "smallfirst") {
+      output_data <- data_boxwidth %>% group_by(group) %>% mutate(n = n()) %>% arrange(n)
+    }
+
+    if (overplot == "largefirst") {
+      output_data <- data_boxwidth %>% group_by(group) %>% mutate(n = n()) %>% arrange(desc(n))
+    }
+
+    if (overplot %in% c("original", "hierarchical")) {
+      output_data <- data_boxwidth
+    }
+
     output_data
   }
 )

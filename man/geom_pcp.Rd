@@ -7,8 +7,8 @@
 geom_pcp(mapping = NULL, data = NULL, stat = "pcp",
   position = "identity", ..., method = "uniminmax", freespace = 0.1,
   boxwidth = 0, rugwidth = 0, interwidth = 1, breakpoint = NULL,
-  arrow = NULL, arrow.fill = NULL, lineend = "butt",
-  linejoin = "round", arrange = FALSE, na.rm = FALSE,
+  overplot = "original", arrow = NULL, arrow.fill = NULL,
+  lineend = "butt", linejoin = "round", na.rm = FALSE,
   show.legend = NA, inherit.aes = TRUE)
 }
 \arguments{
@@ -58,6 +58,8 @@ a scalar or a vector with length equal to the total number of variables subtract
 To break three or more factor variables to better show the relations between adjacent factor variables.
 Can't be used when there is only one or two factor vairbles.}
 
+\item{overplot}{methods used to conduct overplotting when overplotting becomes an issue.}
+
 \item{arrow}{specification for arrow heads, as created by arrow()}
 
 \item{arrow.fill}{fill colour to use for the arrow head (if closed). NULL means use colour aesthetic}
@@ -65,8 +67,6 @@ Can't be used when there is only one or two factor vairbles.}
 \item{lineend}{Line end style (round, butt, square)}
 
 \item{linejoin}{Line join style (round, mitre, bevel)}
-
-\item{arrange}{should overplotting be resolved by placing small (groups) of lines on top?}
 
 \item{na.rm}{If `FALSE`, the default, missing values are removed with
 a warning. If `TRUE`, missing values are silently removed.}
