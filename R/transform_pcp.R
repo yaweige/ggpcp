@@ -5,9 +5,10 @@
 #' \code{method} is a character string that denotes how to scale the variables
 #' in the parallel coordinate plot. Options are named in the same way as the options in `ggparcoord` (GGally):
 #' \itemize{
+#'   \item{\code{raw}}{: raw data used, no scaling will be done.}
 #'   \item{\code{std}}{: univariately, subtract mean and divide by standard deviation. To get values into a [0,1] interval we use a linear transformation of f(y) = y/4+0.5. }
 #'   \item{\code{robust}}{: univariately, subtract median and divide by median absolute deviation. To get values into a [0,1] interval we use a linear transformation of f(y) = y/4+0.5. }
-#'   \item{\code{uniminmax}}{: univariately, scale so the minimum of the variable is zero, and the maximum is one}
+#'   \item{\code{uniminmax}}{: univariately, scale so the minimum of the variable is zero, and the maximum is one.}
 #'   \item{\code{globalminmax}}{: gobal scaling; the global maximum is mapped to 1,
 #'     global minimum across the variables is mapped to 0. }
 #' }
@@ -25,11 +26,18 @@ transform_pcp <- function(data, method = "uniminmax") {
   assert_that(has_name(data, "value"))
 
   assert_that(!is.null(method))
-  assert_that(method %in% c("uniminmax", "robust", "std", "globalminmax"))
+  assert_that(method %in% c("raw", "uniminmax", "robust", "std", "globalminmax"))
 
   data$value_text <- data$value
   # any of the transformations work only in case level is a numeric value.
   # in case it is not (character variables) this probably goes wrong. Should check on it.
+  if (method == "raw") {
+    data <- group_by(data, name)
+    data <- mutate(
+      data,
+      value = level
+    )
+  }
   if (method == "std") {
     data <- group_by(data, name)
     data <- mutate(
