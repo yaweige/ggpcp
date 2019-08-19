@@ -391,6 +391,7 @@ StatPcp <- ggproto(
         last_yendid <- y$last_yendid
         data_break_ystart <- vector()
         data_break_yend <- vector()
+        data_break_yend_bandid <- vector()
         # the following variables used to replace those values for factor block which were calculated before
         # actually, we might save some calculation by adding some conditions on the previous calculation
         data_replace_block_ystart <- vector()
@@ -431,9 +432,11 @@ StatPcp <- ggproto(
           data_replace_block_yend <- c(data_replace_block_yend, temp_yend[-(1:nobs)])
 
           data_break_yend <- c(data_break_yend, temp_yend[1:nobs])
+          data_break_yend_bandid <- c(data_break_yend_bandid, temp_yendid[1:nobs])
         }
         data_break_y <- list(data_break_ystart = data_break_ystart,
                              data_break_yend = data_break_yend,
+                             data_break_yend_bandid = data_break_yend_bandid,
                              data_replace_block_xstart = data_replace_block_xstart,
                              data_replace_block_xend = data_replace_block_xend,
                              data_replace_block_ystart = data_replace_block_ystart,
@@ -588,6 +591,9 @@ StatPcp <- ggproto(
       data_break_yend <- unlist(lapply(data_break_y, FUN = function(x) {
         x$data_break_yend
       }))
+      data_break_yend_bandid <- unlist(lapply(data_break_y, FUN = function(x) {
+        x$data_break_yend_bandid
+      }))
     }
 
     # !!!Notice: the following reorder part, only ajusts the order of drawing(geom_segment draws according to the order in the data), and doesn't mean to affect anything else.
@@ -650,6 +656,45 @@ StatPcp <- ggproto(
       data_final_ystart_fac2fac_bandid_split
       ))
 
+      # The part for breakpoint:
+
+      if(!is.null(breakpoint)) {
+        data_break_ystart_split <- split(data_break_ystart, f = rep(1:(length(data_break_ystart)/nobs), each = nobs))
+        data_break_yend_split <- split(data_break_yend, f = rep(1:(length(data_break_ystart)/nobs), each = nobs))
+        data_break_yend_bandid_split <- split(data_break_yend_bandid, f = rep(1:(length(data_break_ystart)/nobs), each = nobs))
+
+        data_break_ystart <- unlist(Map(f = function(x, y) {
+          x <- x[order(y)]
+        },
+        data_break_ystart_split,
+        data_break_yend_bandid_split
+        ))
+
+        data_break_yend <- unlist(Map(f = function(x, y) {
+          x <- x[order(y)]
+        },
+        data_break_yend_split,
+        data_break_yend_bandid_split
+        ))
+
+        obs_ids_break_split <- lapply(data_break_ystart_split, FUN = function(x) obs_ids)
+
+        obs_ids_break <- unlist(Map(f = function(x, y) {
+          # order() is used here, potetial problem of dealing with ties, it seems to use a method like rank(ties.method = "first"), which we used before
+          # maybe we can use a rank based method to be consistent: order(rank(,ties.method = "first"))
+          x <- x[order(y)]
+        },
+        obs_ids_break_split,
+        data_break_yend_bandid_split
+        ))
+
+        # Some preparation for later combination of all data, to insert correct ids
+        n_break <- length(data_break_ystart)
+      } else {
+        n_break <- 0
+        obs_ids_break <- NULL
+      }
+
       # NEXT: to replace those values in data_boxwidth, because of the segment part, we have to make this detour now
 
       # following calculation relies on the order we created data_final
@@ -681,8 +726,8 @@ StatPcp <- ggproto(
 
     # data_boxwidth$id <- rep(obs_ids, times = nrow(data_boxwidth)/nobs)
 
-    # we have put fac2fac section to the very last of the data set
-    data_boxwidth$id <- c(rep(obs_ids, times = (nrow(data_boxwidth) - n_fac2fac)/nobs), obs_ids_fac2fac)
+    # we have put fac2fac section to the very last of the data set, put break in the very beginning
+    data_boxwidth$id <- c(obs_ids_break, rep(obs_ids, times = (nrow(data_boxwidth) - n_fac2fac - n_break)/nobs), obs_ids_fac2fac)
 
     datanames <- setdiff(names(data), c("name", "value", "level", "class", "value_text"))
     # don't include the pcp specific variables - those are dealt with
