@@ -17,7 +17,7 @@
 #' in a parallel coordinate plot (see Details).
 #' @importFrom stats median mad
 #' @importFrom assertthat assert_that has_name
-#' @export
+#' @noRd
 transform_pcp <- function(data, method = "uniminmax") {
 
   level <-  value <- name <- NULL # hack to make R CMD CHECK happy
