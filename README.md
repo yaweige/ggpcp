@@ -1,7 +1,7 @@
 ---
 title: "Generalized parallel coordinate plots with ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "August 12, 2019"
+date: "August 21, 2019"
 output: 
   html_document:
     keep_md: true
@@ -11,12 +11,8 @@ output:
 
 R package for creating generalized parallel coordinate plots in the ggplot2 framework
 
+[![CRAN Status](http://www.r-pkg.org/badges/version/ggpcp)](https://cran.r-project.org/package=ggpcp) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/ggpcp)](http://www.r-pkg.org/pkg/ggpcp) [![Travis build status](https://travis-ci.org/yaweige/ggpcp.svg?branch=master)](https://travis-ci.org/yaweige/ggpcp)
 
-```r
-# [![CRAN Status](http://www.r-pkg.org/badges/version/ggpcp)](https://cran.r-project.org/package=ggpcp) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/ggpcp)](http://www.r-pkg.org/pkg/ggpcp) 
-
-# [![Travis build status](https://travis-ci.org/yaweige/ggpcp.svg?branch=master)](https://travis-ci.org/yaweige/ggpcp)
-```
 
 
 # Installation
@@ -67,7 +63,7 @@ or any combination thereof. Variables can be selected multiple times and will th
 ```r
 flea %>%
   ggplot(aes(colour = species)) + 
-  geom_pcp2(aes(vars=vars(species, 2:7, species)))
+  geom_pcp(aes(vars=vars(species, 2:7, species)))
 ```
 
 ![](README_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
@@ -90,9 +86,9 @@ Note that the variable `species` shows up twice in the plot - once as the rightm
 flea %>% 
   mutate(species = factor(species, levels = c("Heptapot.",  "Concinna", "Heikert."))) %>%
   ggplot(aes(vars = vars(1:7))) +
-  geom_pcp_box2(boxwidth = 0.1, fill="grey70") +
-  geom_pcp2(aes(colour=species), boxwidth = 0.1) +
-  geom_pcp_text2(boxwidth = 0.1)
+  geom_pcp_box(boxwidth = 0.1, fill="grey70") +
+  geom_pcp(aes(colour=species), boxwidth = 0.1) +
+  geom_pcp_text(boxwidth = 0.1)
 ```
 
 ![](README_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
@@ -113,11 +109,11 @@ titanic <- titanic %>%
 
 titanic %>% 
   ggplot(aes(vars=vars(1:4))) + 
-  geom_pcp_box2(boxwidth=0.1) +
-  geom_pcp2(aes(colour = Survived), alpha = 0.01, boxwidth=0.1) +
+  geom_pcp_box(boxwidth=0.1) + 
+  geom_pcp(aes(colour = Survived), alpha = 0.1, boxwidth=0.1) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) +
-  geom_pcp_text2(boxwidth=0.1) 
+  geom_pcp_text(boxwidth=0.1) 
 ```
 
 ![](README_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
@@ -130,7 +126,7 @@ By setting break points between blocks of categorical variables, we can focus on
 ```r
 titanic %>% 
   ggplot(aes(vars = vars(1:4))) + 
-  geom_pcp2(aes(colour = Survived), alpha = 0.01, breakpoint=2:3) +
+  geom_pcp(aes(colour = Survived), alpha = 0.1, breakpoint=2:3) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
@@ -143,8 +139,8 @@ To combine the option of tracking individuals with the focus on 2d relationships
 ```r
 titanic %>% 
   ggplot(aes(vars=vars(1:4))) + 
-  geom_pcp_box2(boxwidth=0.1, fill=NA) +
-  geom_pcp2(aes(colour = Survived), alpha = 0.01, 
+  geom_pcp_box(boxwidth=0.1, fill=NA) +
+  geom_pcp(aes(colour = Survived), alpha = 0.1, 
             boxwidth=0.1, breakpoint=2:3) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
@@ -160,7 +156,7 @@ The `mtcars` data is terribly old, but serves a good purpose here. All of the va
 ```r
 mtcars %>% 
   ggplot(aes(vars = vars(1:ncol(mtcars)))) +
-  geom_pcp2(aes(colour = mpg)) 
+  geom_pcp(aes(colour = mpg)) 
 ```
 
 ![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
@@ -176,9 +172,9 @@ mtcars %>%
          gear=factor(gear),
          carb = factor(carb)) %>%
   ggplot(aes(vars = vars(1:ncol(mtcars)))) +
-  geom_pcp_box2(boxwidth=0.1, fill=NA, colour="grey70") +
-  geom_pcp2(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
-  geom_pcp_text2(boxwidth=0.1) +
+  geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
+  geom_pcp(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
+  geom_pcp_text(boxwidth=0.1) +
   scale_colour_gradient2("mpg", mid="grey50", midpoint = 20) +
   theme_bw()
 ```
@@ -219,15 +215,13 @@ From the using a parallel coordinate plot we see that cloud coverage in low, med
 
 ```r
 wide %>%
-  gather_pcp(83:94) %>%
-  transform_pcp(method = "uniminmax") %>%
-  ggplot(aes(id=id, name=name, value=value, level=level, class=class)) +
+  ggplot(aes(vars=vars(83:94))) +
   geom_pcp(aes(colour=factor(cl7))) + facet_wrap(~cl7) +
   coord_flip() + scale_colour_brewer("Cluster", palette = "Dark2")
 ```
 
 ```
-## Warning: Removed 240 rows containing missing values (geom_segment).
+## Warning: Removed 20 rows containing missing values (geom_segment).
 ```
 
 ![](README_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
@@ -240,9 +234,7 @@ Needs more words ...
 
 ```r
 wide %>%
-  gather_pcp(74:82) %>%
-  transform_pcp(method = "uniminmax") %>%
-  ggplot(aes(id=id, name=name, value=value, level=level, class=class)) +
+  ggplot(aes(vars=vars(74:82))) +
   geom_pcp()
 ```
 
@@ -261,11 +253,9 @@ wide %>%
     cl9 = factor(cl9),
     cl10 = factor(cl10)
   ) %>%
-  gather_pcp(74:82) %>%
-  transform_pcp(method = "uniminmax") %>%
-  ggplot(aes(id=id, name=name, value=value, level=level, class=class)) +
+  ggplot(aes(vars=vars(74:82))) +
   geom_pcp_box(boxwidth=0.1) +
-  geom_pcp(aes(colour = factor(cl10)), alpha = 0.05, boxwidth=0.1)
+  geom_pcp(aes(colour = factor(cl10)), alpha = 0.25, boxwidth=0.1)
 ```
 
 ![](README_files/figure-html/unnamed-chunk-15-2.png)<!-- -->
@@ -302,6 +292,8 @@ The main idea of `ggpcp` is that we separate the data transformations from the v
 + Kosara R., Bendix F., Hauser H., Parallel Sets: Interactive Exploration and Visual Analysis of Categorical Data, IEEE Transactions on Visualization and Computer Graphics, 12(4), 558-568, 2006.
 + Schloerke B., Crowley J., Cook D., Briatte F., Marbach M., Thoen E., Elberg ., Larmarange J.: GGally: Extension to 'ggplot2', R package version 1.4.0.
 + Schonlau M.: Visualizing Categorical Data Arising in the Health Sciences Using Hammock Plots, Proc. of Section on Statistical Graphics ASA, 2003.
++ Schonlau M. The clustergram: a graph for visualizing hierarchical and non-hierarchical cluster analyses. The Stata Journal, 2002; 2 (4):391-402. 
++ Schonlau M. Visualizing Hierarchical and Non-Hierarchical Cluster Analyses with Clustergrams. Computational Statistics: 2004; 19(1):95-111. 
 + Venables W.N., Ripley B.D.: Modern Applied Statistics with S (4th ed), Springer, 2002.
 + Wegman, E., Hyperdimensional Data Analysis Using Parallel Coordinates, JASA, 85(411), 664-675, 1990.
 + Wickham H., ggplot2: Elegant graphics for data analysis (2nd ed), Springer, 2016

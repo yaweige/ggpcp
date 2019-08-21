@@ -33,7 +33,7 @@
 <meta property="og:title" content="Parallel coordinate plot for both numeric and categorical data — geom_pcp" />
 
 <meta property="og:description" content="The parallel coordinate plot displays multiple y-axes, and shows the observations across
-several dimensions as ploi-lines. This function work well with both numeric and categorical
+several dimensions as lines. This function work well with both numeric and categorical
 variables at the same time after proper scaling." />
 <meta name="twitter:card" content="summary" />
 
@@ -107,16 +107,17 @@ variables at the same time after proper scaling." />
     <div class="ref-description">
     
     <p>The parallel coordinate plot displays multiple y-axes, and shows the observations across
-several dimensions as ploi-lines. This function work well with both numeric and categorical
+several dimensions as lines. This function work well with both numeric and categorical
 variables at the same time after proper scaling.</p>
     
     </div>
 
     <pre class="usage"><span class='fu'>geom_pcp</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"pcp"</span>,
-  <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='no'>...</span>, <span class='kw'>freespace</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>rugwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>interwidth</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>breakpoint</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>arrow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>arrow.fill</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lineend</span> <span class='kw'>=</span> <span class='st'>"butt"</span>, <span class='kw'>linejoin</span> <span class='kw'>=</span> <span class='st'>"round"</span>,
-  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='no'>...</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"uniminmax"</span>, <span class='kw'>freespace</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
+  <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>rugwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>interwidth</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>breakpoint</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>overplot</span> <span class='kw'>=</span> <span class='st'>"original"</span>, <span class='kw'>arrow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>arrow.fill</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>lineend</span> <span class='kw'>=</span> <span class='st'>"butt"</span>, <span class='kw'>linejoin</span> <span class='kw'>=</span> <span class='st'>"round"</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -156,29 +157,39 @@ a call to a position adjustment function.</p></td>
       <td><p>Other arguments passed on to [layer()]. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
 `colour = "red"` or `size = 3`. They may also be parameters
-to the paired geom/stat.
-#'</p></td>
+to the paired geom/stat.</p></td>
+    </tr>
+    <tr>
+      <th>method</th>
+      <td><p>string specifying the method that should be used for scaling the values
+in a parallel coordinate plot (see Details).</p></td>
     </tr>
     <tr>
       <th>freespace</th>
-      <td><p>The total gap space among levels within each factor variable</p></td>
+      <td><p>The total gap space among levels within each factor variable.</p></td>
     </tr>
     <tr>
       <th>boxwidth</th>
-      <td><p>The width of the box for each factor variable</p></td>
+      <td><p>The width of the boxes for factor variables, either a scalar or a vector with length equal to the number of factor variables.</p></td>
     </tr>
     <tr>
       <th>rugwidth</th>
-      <td><p>The width of the rugs for numeric variable</p></td>
+      <td><p>The width of the rugs for numeric variables,either a scalar or a vector with length equal to the number of numeric variables.</p></td>
     </tr>
     <tr>
       <th>interwidth</th>
       <td><p>The width for the lines between every neighboring variables, either
-a scalar or a vector.</p></td>
+a scalar or a vector with length equal to the total number of variables subtracting one.</p></td>
     </tr>
     <tr>
       <th>breakpoint</th>
-      <td><p>To break three or more factors into peices</p></td>
+      <td><p>Positions indicating where to break, can be a vector.
+To break three or more factor variables to better show the relations between adjacent factor variables.
+Can't be used when there is only one or two factor vairbles.</p></td>
+    </tr>
+    <tr>
+      <th>overplot</th>
+      <td><p>methods used to conduct overplotting when overplotting becomes an issue.</p></td>
     </tr>
     <tr>
       <th>arrow</th>
@@ -218,38 +229,40 @@ the default plot specification, e.g. [borders()].</p></td>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>ggplot2</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>dplyr</span>)</div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    filter, lag</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:base’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    intersect, setdiff, setequal, union</span></div><div class='input'><span class='no'>mtcars</span> <span class='kw'>%&gt;%</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span>(<span class='kw'>cyl</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span>(<span class='no'>cyl</span>),
-      <span class='kw'>vs</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span>(<span class='no'>vs</span>),
-      <span class='kw'>am</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span>(<span class='no'>am</span>),
-      <span class='kw'>gear</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span>(<span class='no'>gear</span>),
-      <span class='kw'>carb</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span>(<span class='no'>carb</span>)) <span class='kw'>%&gt;%</span>
- <span class='fu'><a href='gather_pcp.html'>gather_pcp</a></span>(<span class='fl'>1</span>:<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>ncol</a></span>(<span class='no'>mtcars</span>)) <span class='kw'>%&gt;%</span>
- <span class='fu'><a href='transform_pcp.html'>transform_pcp</a></span>(<span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"uniminmax"</span>) <span class='kw'>%&gt;%</span>
- <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span>(<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>id</span> <span class='kw'>=</span> <span class='no'>id</span>, <span class='kw'>name</span> <span class='kw'>=</span> <span class='no'>name</span>, <span class='kw'>value</span> <span class='kw'>=</span> <span class='no'>value</span>, <span class='kw'>level</span> <span class='kw'>=</span> <span class='no'>level</span>, <span class='kw'>class</span> <span class='kw'>=</span> <span class='no'>class</span>)) +
- <span class='fu'><a href='geom_pcp_box.html'>geom_pcp_box</a></span>(<span class='kw'>boxwidth</span><span class='kw'>=</span><span class='fl'>0.1</span>, <span class='kw'>fill</span><span class='kw'>=</span><span class='fl'>NA</span>, <span class='kw'>colour</span><span class='kw'>=</span><span class='st'>"grey70"</span>) +
- <span class='fu'>geom_pcp</span>(<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>colour</span> <span class='kw'>=</span> <span class='no'>mpg</span>), <span class='kw'>boxwidth</span><span class='kw'>=</span><span class='fl'>0.1</span>, <span class='kw'>breakpoint</span><span class='kw'>=</span><span class='fl'>9</span>:<span class='fl'>10</span>, <span class='kw'>size</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>alpha</span> <span class='kw'>=</span><span class='fl'>0.9</span>) +
- <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_continuous</a></span>(<span class='kw'>breaks</span><span class='kw'>=</span><span class='fl'>1</span>:<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>ncol</a></span>(<span class='no'>mtcars</span>) +
-                      <span class='fl'>0.1</span>*<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cumsum'>cumsum</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>0</span>,<span class='fl'>1</span>, <span class='fl'>0</span>,<span class='fl'>0</span>,<span class='fl'>0</span>,<span class='fl'>0</span>,<span class='fl'>0</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>)) -
-                      <span class='fl'>0.05</span>*<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>0</span>,<span class='fl'>1</span>, <span class='fl'>0</span>,<span class='fl'>0</span>,<span class='fl'>0</span>,<span class='fl'>0</span>,<span class='fl'>0</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>), <span class='kw'>labels</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/names'>names</a></span>(<span class='no'>mtcars</span>))) +
- <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_gradient.html'>scale_colour_gradient2</a></span>(<span class='st'>"mpg"</span>, <span class='kw'>mid</span><span class='kw'>=</span><span class='st'>"grey50"</span>, <span class='kw'>midpoint</span> <span class='kw'>=</span> <span class='fl'>20</span>) +
- <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_bw</a></span>()</div><div class='img'><img src='geom_pcp-1.png' alt='' width='700' height='433' /></div></pre>
+    <p><code>method</code> is a character string that denotes how to scale the variables
+in the parallel coordinate plot. Options are named in the same way as the options in `ggparcoord` (GGally):</p><ul>
+<li><p><code>raw</code>: raw data used, no scaling will be done.</p></li>
+<li><p><code>std</code>: univariately, subtract mean and divide by standard deviation. To get values into a [0,1] interval we use a linear transformation of f(y) = y/4+0.5.</p></li>
+<li><p><code>robust</code>: univariately, subtract median and divide by median absolute deviation. To get values into a [0,1] interval we use a linear transformation of f(y) = y/4+0.5.</p></li>
+<li><p><code>uniminmax</code>: univariately, scale so the minimum of the variable is zero, and the maximum is one.</p></li>
+<li><p><code>globalminmax</code>: gobal scaling; the global maximum is mapped to 1,
+    global minimum across the variables is mapped to 0.</p></li>
+</ul>
+    <p><code>overplot</code> is a character string that denotes how to conduct overplotting
+in the parallel coordinate plot. The lines from <code>geom_pcp()</code>  are drawn according to the order they shown in your data set in default.
+Note that this argument provides a framework, the order in the original data still has a role in overplotting,
+especially for lines outside factor blocks(for <code>hierarchical</code> only), plots with <code>breakpoint</code> turned on(for methods except <code>hierarchical</code>):</p><ul>
+<li><p><code>original</code>: use the original order, first shown first drawn.</p></li>
+<li><p><code>hierarchical</code>: hierarchically drawn according to the combinations of levels of factor variables,
+  which will change according to different level structures of factor variables you provided.
+  This was done separately for each factor block. The right most factor variables have the largest weight across a sequence of factor variables,
+  the last level of a factor variable has the largest weight within a factor variable.
+  Groups of lines with larger weight will be drawn on top. Lines outside of factor blocks still use the original order, which is different from other methods.</p></li>
+<li><p><code>smallfirst</code>: smaller groups of lines are drawn first, placing large groups of lines on top.</p></li>
+<li><p><code>largefirst</code>: larger groups of lines are drawn first, placing small groups of lines on top.</p></li>
+</ul>
+    
+
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+      
+      <li><a href="#details">Details</a></li>
+          </ul>
 
   </div>
 </div>

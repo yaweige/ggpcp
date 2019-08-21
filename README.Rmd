@@ -13,11 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 R package for creating generalized parallel coordinate plots in the ggplot2 framework
 
-```{r commented temperarily, eval=FALSE}
-# [![CRAN Status](http://www.r-pkg.org/badges/version/ggpcp)](https://cran.r-project.org/package=ggpcp) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/ggpcp)](http://www.r-pkg.org/pkg/ggpcp) 
+[![CRAN Status](http://www.r-pkg.org/badges/version/ggpcp)](https://cran.r-project.org/package=ggpcp) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/ggpcp)](http://www.r-pkg.org/pkg/ggpcp) [![Travis build status](https://travis-ci.org/yaweige/ggpcp.svg?branch=master)](https://travis-ci.org/yaweige/ggpcp)
 
-# [![Travis build status](https://travis-ci.org/yaweige/ggpcp.svg?branch=master)](https://travis-ci.org/yaweige/ggpcp)
-```
 
 
 # Installation
@@ -64,7 +61,7 @@ or any combination thereof. Variables can be selected multiple times and will th
 ```{r}
 flea %>%
   ggplot(aes(colour = species)) + 
-  geom_pcp2(aes(vars=vars(species, 2:7, species)))
+  geom_pcp(aes(vars=vars(species, 2:7, species)))
 ```
 
 Note that the variable `species` shows up twice in the plot - once as the rightmost variables, once as the leftmost one. 
@@ -84,9 +81,9 @@ Note that the variable `species` shows up twice in the plot - once as the rightm
 flea %>% 
   mutate(species = factor(species, levels = c("Heptapot.",  "Concinna", "Heikert."))) %>%
   ggplot(aes(vars = vars(1:7))) +
-  geom_pcp_box2(boxwidth = 0.1, fill="grey70") +
-  geom_pcp2(aes(colour=species), boxwidth = 0.1) +
-  geom_pcp_text2(boxwidth = 0.1)
+  geom_pcp_box(boxwidth = 0.1, fill="grey70") +
+  geom_pcp(aes(colour=species), boxwidth = 0.1) +
+  geom_pcp_text(boxwidth = 0.1)
 ```
 
 
@@ -104,11 +101,11 @@ titanic <- titanic %>%
 
 titanic %>% 
   ggplot(aes(vars=vars(1:4))) + 
-  geom_pcp_box2(boxwidth=0.1) + 
-  geom_pcp2(aes(colour = Survived), alpha = 0.01, boxwidth=0.1) +
+  geom_pcp_box(boxwidth=0.1) + 
+  geom_pcp(aes(colour = Survived), alpha = 0.1, boxwidth=0.1) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) +
-  geom_pcp_text2(boxwidth=0.1) 
+  geom_pcp_text(boxwidth=0.1) 
 ```
 
 
@@ -118,7 +115,7 @@ By setting break points between blocks of categorical variables, we can focus on
 ```{r}
 titanic %>% 
   ggplot(aes(vars = vars(1:4))) + 
-  geom_pcp2(aes(colour = Survived), alpha = 0.01, breakpoint=2:3) +
+  geom_pcp(aes(colour = Survived), alpha = 0.1, breakpoint=2:3) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
@@ -128,8 +125,8 @@ To combine the option of tracking individuals with the focus on 2d relationships
 ```{r}
 titanic %>% 
   ggplot(aes(vars=vars(1:4))) + 
-  geom_pcp_box2(boxwidth=0.1, fill=NA) +
-  geom_pcp2(aes(colour = Survived), alpha = 0.01, 
+  geom_pcp_box(boxwidth=0.1, fill=NA) +
+  geom_pcp(aes(colour = Survived), alpha = 0.1, 
             boxwidth=0.1, breakpoint=2:3) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
@@ -142,7 +139,7 @@ The `mtcars` data is terribly old, but serves a good purpose here. All of the va
 ```{r}
 mtcars %>% 
   ggplot(aes(vars = vars(1:ncol(mtcars)))) +
-  geom_pcp2(aes(colour = mpg)) 
+  geom_pcp(aes(colour = mpg)) 
 ```
 
 Once the variables are coded properly as factor variables, we get a much more informative view with a generalized parallel coordinate plot:
@@ -155,9 +152,9 @@ mtcars %>%
          gear=factor(gear),
          carb = factor(carb)) %>%
   ggplot(aes(vars = vars(1:ncol(mtcars)))) +
-  geom_pcp_box2(boxwidth=0.1, fill=NA, colour="grey70") +
-  geom_pcp2(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
-  geom_pcp_text2(boxwidth=0.1) +
+  geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
+  geom_pcp(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
+  geom_pcp_text(boxwidth=0.1) +
   scale_colour_gradient2("mpg", mid="grey50", midpoint = 20) +
   theme_bw()
 ```
@@ -222,9 +219,7 @@ From the using a parallel coordinate plot we see that cloud coverage in low, med
 
 ```{r}
 wide %>%
-  gather_pcp(83:94) %>%
-  transform_pcp(method = "uniminmax") %>%
-  ggplot(aes(id=id, name=name, value=value, level=level, class=class)) +
+  ggplot(aes(vars=vars(83:94))) +
   geom_pcp(aes(colour=factor(cl7))) + facet_wrap(~cl7) +
   coord_flip() + scale_colour_brewer("Cluster", palette = "Dark2")
 ```
@@ -236,9 +231,7 @@ Needs more words ...
 
 ```{r}
 wide %>%
-  gather_pcp(74:82) %>%
-  transform_pcp(method = "uniminmax") %>%
-  ggplot(aes(id=id, name=name, value=value, level=level, class=class)) +
+  ggplot(aes(vars=vars(74:82))) +
   geom_pcp()
 
 
@@ -254,11 +247,9 @@ wide %>%
     cl9 = factor(cl9),
     cl10 = factor(cl10)
   ) %>%
-  gather_pcp(74:82) %>%
-  transform_pcp(method = "uniminmax") %>%
-  ggplot(aes(id=id, name=name, value=value, level=level, class=class)) +
+  ggplot(aes(vars=vars(74:82))) +
   geom_pcp_box(boxwidth=0.1) +
-  geom_pcp(aes(colour = factor(cl10)), alpha = 0.05, boxwidth=0.1)
+  geom_pcp(aes(colour = factor(cl10)), alpha = 0.25, boxwidth=0.1)
 ```
 
 
