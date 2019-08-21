@@ -734,6 +734,9 @@ StatPcp <- ggproto(
       # number of rows in fac2fac parts
       n_fac2fac <- 0
       obs_ids_fac2fac <- NULL
+      # for breakpoint
+      n_break <- 0
+      obs_ids_break <- NULL
     }
 
 
