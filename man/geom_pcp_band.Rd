@@ -73,3 +73,18 @@ the default plot specification, e.g. [borders()].}
 \description{
 To add bands from factor to factor
 }
+\examples{
+library(ggplot2)
+library(dplyr)
+data(mtcars)
+mtcars \%>\%
+mutate(cyl = factor(cyl),
+      vs = factor(vs),
+      am = factor(am),
+      gear = factor(gear)) \%>\%
+ ggplot(aes(vars = vars(cyl, vs:gear))) +
+ geom_pcp(aes(color = vs), boxwidth = 0.2, breakpoint = 2:3) +
+ geom_pcp_box(boxwidth = 0.2) +
+ geom_pcp_band(boxwidth = 0.2, breakpoint = 2:3) +
+ geom_pcp_text(boxwidth = 0.2)
+}

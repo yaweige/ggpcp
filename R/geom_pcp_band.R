@@ -50,6 +50,20 @@
 #' @param merge To merge the bands or not
 #' @import ggplot2
 #' @export geom_pcp_band
+#' @examples
+#' library(ggplot2)
+#' library(dplyr)
+#' data(mtcars)
+#' mtcars %>%
+#' mutate(cyl = factor(cyl),
+#'       vs = factor(vs),
+#'       am = factor(am),
+#'       gear = factor(gear)) %>%
+#'  ggplot(aes(vars = vars(cyl, vs:gear))) +
+#'  geom_pcp(aes(color = vs), boxwidth = 0.2, breakpoint = 2:3) +
+#'  geom_pcp_box(boxwidth = 0.2) +
+#'  geom_pcp_band(boxwidth = 0.2, breakpoint = 2:3) +
+#'  geom_pcp_text(boxwidth = 0.2)
 
 geom_pcp_band <- function(mapping = NULL, data = NULL,
                           stat = "pcpband", position = "identity",
