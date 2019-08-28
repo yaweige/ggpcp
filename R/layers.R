@@ -38,6 +38,7 @@ compute_aesthetics_pcp <- function(self, data, plot) {
 #  evaled <- compact(evaled) ## HH: not sure that we need that
 
   # Check for discouraged usage in mapping
+  if (packageVersion("ggplot2") == '3.2.1.9000')
   getFromNamespace("warn_for_aes_extract_usage", asNamespace("ggplot2"))(aesthetics, data[setdiff(names(data), "PANEL")])
 
   # Check aesthetic values
