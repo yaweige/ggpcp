@@ -1,7 +1,7 @@
 ---
 title: "Generalized parallel coordinate plots with ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "August 21, 2019"
+date: "September 03, 2019"
 output: 
   html_document:
     keep_md: true
@@ -181,7 +181,7 @@ mtcars %>%
 
 ![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
-What becomes obvious in this plot, is that fule consumption of each car measured in miles per gallons (mpg), encoded as the first variable in the plot and as color of the lines - is correlated strongly with all of the variables, not just the numeric variables. A large number of cylinders (cyl), a V-shaped engine (vs = 0), an automatic transmission (am = 0), a low number of forward gears and a high number of carburetors are related to a low value of mpg (red lines).
+What becomes obvious in this plot, is that fuel consumption of each car measured in miles per gallons (mpg), encoded as the first variable in the plot and as color of the lines - is correlated strongly with all of the variables, not just the numeric variables. A large number of cylinders (cyl), a V-shaped engine (vs = 0), an automatic transmission (am = 0), a low number of forward gears and a high number of carburetors are related to a low value of mpg (red lines).
 
 ## Bigger Example
 
@@ -194,7 +194,8 @@ data(nasa, package = "GGally")
 
 The `nasa` data, available from the `GGally` package, was used in the 2006 ASA Expo. It consists of monthly measurements of several climate variables, such as cloud coverage, temperature, pressure, and ozone values, captured on a 24x24 grid across Central America between 1995 and 2000.
 
-The results from clustering on monthly measurements can then be summarized visually. What we see is that the clusters have a very distinct geographic pattern (tile plot). 
+We grouped locations using all January and July measurements of all climate variables using a hierarchical clustering based on Ward's distance.
+The resulting clusters can then be summarized visually. What we see is that the clusters have a very distinct geographic pattern (tile plot). 
 
 
 
@@ -210,7 +211,7 @@ wide %>% separate(id, into=c("x", "y"), remove = FALSE) %>%
 
 ![](README_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
-From the using a parallel coordinate plot we see that cloud coverage in low, medium and high altitude distinguishes quite succinctly between some of the clusters. (Relative) temperatures in January (1) and July (7) are very indicative to separate between clusters on the Southern and Northern hemisphere. 
+From the parallel coordinate plot we see that cloud coverage in low, medium and high altitude distinguishes quite succinctly between some of the clusters. (Relative) temperatures in January (1) and July (7) are very indicative to separate between clusters on the Southern and Northern hemisphere. 
 
 
 ```r
@@ -235,10 +236,12 @@ Needs more words ...
 ```r
 wide %>%
   ggplot(aes(vars=vars(74:82))) +
-  geom_pcp()
+  geom_pcp() +
+  xlab("Number of clusters")
 ```
 
 ![](README_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+The genralized parallel coordinate plots, similar to what Schonlau (2002, and 2004) coined the clustergram:
 
 ```r
 wide %>%
@@ -255,13 +258,13 @@ wide %>%
   ) %>%
   ggplot(aes(vars=vars(74:82))) +
   geom_pcp_box(boxwidth=0.1) +
-  geom_pcp(aes(colour = factor(cl10)), alpha = 0.25, boxwidth=0.1)
+  geom_pcp(aes(colour = factor(cl10)), alpha = 0.25, boxwidth=0.1) +
+  xlab("Number of clusters")
 ```
 
-![](README_files/figure-html/unnamed-chunk-15-2.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 
-See also: https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp
 
 # Related work
 
@@ -269,12 +272,12 @@ Parallel coordinate plots have been implemented in analysis software since the m
 
 Using base plots the main function for drawing parallel coordinate plots is `parcoord` implemented in MASS (Venables and Ripley 2004). The package `gclus` (Hurley 2019) implements `cparcoord` to include panel color as a representation of the strength of a correlation between neighboring axes.
 
-Within the ggplot2 environment there are several packages implementing parallel coordinate plots. For numeric variables there's the function `ggparcoord` from the `GGally` package, for categorical variables the `ggparallel` package provides an implementation of pcp-like plots, such as the Hammock plot (Schonlau 2003) and parsets (Kosara et al, 2013).
+Within the ggplot2 environment there are several packages implementing parallel coordinate plots. For numeric variables there's the function `ggparcoord` from the `GGally` package, for categorical variables the `ggparallel` package provides an implementation of PCP-like plots, such as the Hammock plot (Schonlau 2003) and parsets (Kosara et al, 2013).
 
 The [bigPint](https://github.com/rstats-gsoc/gsoc2017/wiki/bigPint%3A-Big-multivariate-data-plotted-interactively) Google Summer of Code project  2017 implemented static and interactive versions of parallel coordinate plots within the framework of plotting large data interactively. These functions are meant for exploration and discovery and are not fully parameterized for their appearance.
 
 
-# Motivation for the Re-implementation
+## Motivation for the Re-implementation
 
 As can be seen from the examples above, there are a lot of approaches to parallel coordinate plots, so why do we need another implementation?
 
@@ -282,6 +285,7 @@ All of the implementations described above have in common that they describe hig
 
 The main idea of `ggpcp` is that we separate the data transformations from the visualization, i.e. rather than working with a single function to draw a plot, we are providing a set of functions that work together.
 
+This idea is not new - a function under the very same name was at some point part of ggplot2 (see https://www.rdocumentation.org/packages/ggplot2/versions/0.9.2.1/topics/ggpcp), but at the time the implementation stalled and was eventually removed from ggplot2.
 
 ## References
 
