@@ -208,11 +208,13 @@
 <h3 class="hasAnchor">
 <a href="#visualizing-the-cluster-process" class="anchor"></a>Visualizing the cluster process</h3>
 <p>Needs more words …</p>
+<p>A regular parallel coordinate plot allows us to visualize a part of the dendrogram corresponding to the hierarchical clustering.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">wide <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb15-2" title="2"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">vars=</span><span class="kw">vars</span>(<span class="dv">74</span><span class="op">:</span><span class="dv">82</span>))) <span class="op">+</span></a>
 <a class="sourceLine" id="cb15-3" title="3"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp.html">geom_pcp</a></span>() <span class="op">+</span></a>
 <a class="sourceLine" id="cb15-4" title="4"><span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of clusters"</span>)</a></code></pre></div>
 <p><img src="index_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
+<p>Using the generalized parallel coordinate plots we can visualize the clustering process in plots similar to what Schonlau (2002, 2004) coined the clustergram:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">wide <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb16-2" title="2"><span class="st">  </span><span class="kw">mutate</span>(</a>
 <a class="sourceLine" id="cb16-3" title="3">    <span class="dt">cl2 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl2),</a>
@@ -225,11 +227,12 @@
 <a class="sourceLine" id="cb16-10" title="10">    <span class="dt">cl9 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl9),</a>
 <a class="sourceLine" id="cb16-11" title="11">    <span class="dt">cl10 =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl10)</a>
 <a class="sourceLine" id="cb16-12" title="12">  ) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb16-13" title="13"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">vars=</span><span class="kw">vars</span>(<span class="dv">74</span><span class="op">:</span><span class="dv">82</span>))) <span class="op">+</span></a>
+<a class="sourceLine" id="cb16-13" title="13"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">vars=</span><span class="kw">vars</span>(<span class="dv">74</span><span class="op">:</span><span class="dv">82</span>), <span class="dt">colour =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl10))) <span class="op">+</span></a>
 <a class="sourceLine" id="cb16-14" title="14"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp_box.html">geom_pcp_box</a></span>(<span class="dt">boxwidth=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb16-15" title="15"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp.html">geom_pcp</a></span>(<span class="kw">aes</span>(<span class="dt">colour =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(cl10)), <span class="dt">alpha =</span> <span class="fl">0.25</span>, <span class="dt">boxwidth=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb16-15" title="15"><span class="st">  </span><span class="kw"><a href="reference/geom_pcp.html">geom_pcp</a></span>(<span class="dt">alpha =</span> <span class="fl">0.25</span>, <span class="dt">boxwidth=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb16-16" title="16"><span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of clusters"</span>)</a></code></pre></div>
 <p><img src="index_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
+<p>Along the x-axis the number of clusters are plotted with one pcp axis each, from two clusters (left) to 10 clusters (right most pcp axis). Each observation is drawn as a multi-segmented line and colored by its assignment in the ten-cluster solution. This gives an excerpt of the dendrogram that allows an assessment of the number of observations in each cluster as well as the relationship between successive clustering steps.</p>
 </div>
 </div>
 </div>

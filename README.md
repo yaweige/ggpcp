@@ -241,7 +241,8 @@ wide %>%
 ```
 
 ![](README_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
-The genralized parallel coordinate plots, similar to what Schonlau (2002, and 2004) coined the clustergram:
+
+Using the generalized parallel coordinate plots we can visualize the clustering process in plots similar to what Schonlau (2002, 2004) coined the clustergram:
 
 ```r
 wide %>%
@@ -256,13 +257,14 @@ wide %>%
     cl9 = factor(cl9),
     cl10 = factor(cl10)
   ) %>%
-  ggplot(aes(vars=vars(74:82))) +
+  ggplot(aes(vars=vars(74:82), colour = factor(cl10))) +
   geom_pcp_box(boxwidth=0.1) +
-  geom_pcp(aes(colour = factor(cl10)), alpha = 0.25, boxwidth=0.1) +
+  geom_pcp(alpha = 0.25, boxwidth=0.1) +
   xlab("Number of clusters")
 ```
 
 ![](README_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+Along the x-axis the number of clusters are plotted with one pcp axis each, from two clusters (left) to 10 clusters (right most pcp axis). Each observation is drawn as a multi-segmented line and colored by its assignment in the ten-cluster solution. 
 
 
 
