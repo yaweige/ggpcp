@@ -5,7 +5,7 @@ defaults <- function(x, y) c(x, y[setdiff(names(y), names(x))])
 #'
 #' straight copy from layer-.r in ggplot2, except for the first block
 #' to remove the vars mapping from the plot
-#' @importFrom utils getFromNamespace
+#' @importFrom utils getFromNamespace packageVersion
 #' @importFrom rlang as_label
 #' @noRd
 compute_aesthetics_pcp <- function(self, data, plot) {
