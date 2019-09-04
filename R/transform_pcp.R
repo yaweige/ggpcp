@@ -59,14 +59,16 @@ transform_pcp <- function(data, method = "uniminmax") {
     data <- group_by(data, name)
     data <- mutate(
       data,
-      value = (level-min(level, na.rm=TRUE))/(max(level, na.rm=TRUE)-min(level, na.rm=TRUE))
+      value = (level-min(level, na.rm=TRUE))/ifelse((max(level, na.rm=TRUE)-min(level, na.rm=TRUE)) == 0,
+                                                    1, (max(level, na.rm=TRUE)-min(level, na.rm=TRUE)))
     )
   }
   if (method == "globalminmax") {
     # no grouping
     data <- mutate(
       data,
-      value = (level-min(level, na.rm=TRUE))/(max(level, na.rm=TRUE)-min(level, na.rm=TRUE))
+      value = (level-min(level, na.rm=TRUE))/ifelse((max(level, na.rm=TRUE)-min(level, na.rm=TRUE)) == 0,
+                                                    1, (max(level, na.rm=TRUE)-min(level, na.rm=TRUE)))
     )
   }
 
