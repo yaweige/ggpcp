@@ -85,6 +85,7 @@ compute_aesthetics_pcp <- function(self, data, plot) {
 setup_layer_pcp <- function(self, data, plot) {
   #browser()
   # the vars have to be defined in either self$mapping or in plot$mapping
+  var_x <- NULL
   aes_vars <- plot$mapping$vars
   if (is.null(aes_vars))
     aes_vars <- self$mapping$vars
@@ -103,8 +104,10 @@ setup_layer_pcp <- function(self, data, plot) {
   # move the new aesthetics into self, that way they will be preserved
   # HH: what happens if we are dealing with different data sets?
   if (is.null(self$mapping)) self$mapping <- aes()
-  for (i in seq_along(var_x)) {
-    self$mapping[[var_x[i]]] <- as.symbol(eval(aes_vars[[i]]))
+  if (!is.null(var_x)) {
+    for (i in seq_along(var_x)) {
+      self$mapping[[var_x[i]]] <- as.symbol(eval(aes_vars[[i]]))
+    }
   }
   if (!is.null(self$mapping$vars))
     self$mapping <- self$mapping[-grep("vars", names(self$mapping))]
