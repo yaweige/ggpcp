@@ -141,7 +141,8 @@ geom_pcp <- function(
       ...
     )
   )
-
+#browser()
+  ll$comp_aes <- ll$compute_aesthetics
   ll$compute_aesthetics <- compute_aesthetics_pcp
   ll$setup_layer <- setup_layer_pcp
 
