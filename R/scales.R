@@ -13,6 +13,7 @@ xscale_pcp <- function(data, params, layout) {
   interwidth <- params$interwidth
   nobs <- length(unique(data$id))
   classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
+  fac <- classpcp %in% c("factor", "ordered factor")
 
   if (length(interwidth) == 1) {
     interwidth <- rep(interwidth, times = length(classpcp) - 1)
@@ -20,15 +21,15 @@ xscale_pcp <- function(data, params, layout) {
   interwidth <- cumsum(c(1, interwidth))
 
   if (length(boxwidth) == 1) {
-    boxwidth <- rep(boxwidth, times = sum(classpcp == "factor"))
+    boxwidth <- rep(boxwidth, times = sum(fac))
   }
   if (length(rugwidth) == 1) {
-    rugwidth <- rep(rugwidth, times = sum(!classpcp == "factor"))
+    rugwidth <- rep(rugwidth, times = sum(!fac))
   }
 
   boxrugwidth <- seq_along(classpcp)
-  boxrugwidth[classpcp == "factor"] <- boxwidth
-  boxrugwidth[!classpcp == "factor"] <- rugwidth
+  boxrugwidth[fac] <- boxwidth
+  boxrugwidth[!fac] <- rugwidth
 
   cumboxrugwidth <- cumsum(boxrugwidth)
 
