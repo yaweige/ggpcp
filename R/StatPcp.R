@@ -1094,7 +1094,7 @@ prepare_data <- function(data, classpcp, nobs) {
 
   # this may not work with tibble
   num <- classpcp %in% c("numeric", "integer")
-  fac <- classpcp == "factor"
+  fac <- classpcp %in% c("factor", "ordered factor")
 
   data_spread[, c(FALSE, num)] <-  lapply(data_spread[, c(FALSE, num), drop = FALSE],
                                           FUN = function(x) as.numeric(as.character(x)))
@@ -1103,7 +1103,7 @@ prepare_data <- function(data, classpcp, nobs) {
   # same name, value may break down this,
   # if the user choose to put the same variable into the data twive
   if (sum(fac) != 0) {
-    original_levels <- unique(data[which(data$class == "factor"),c("name", "value", "level")])
+    original_levels <- unique(data[which(data$class %in% c("factor", "ordered factor")),c("name", "value", "level")])
     original_levels$name <- droplevels(original_levels$name)
     original_levels <- original_levels %>%
       group_by(name) %>%
