@@ -782,14 +782,15 @@ StatPcp <- ggproto(
     # mirror: to make the plot readable from left to right, especially for factor block design
 
     if(mirror == TRUE){
-      x_axes_value <- levels(factor(c(output_data$x, output_data$xend)))
+      x_value <- levels(factor(output_data$x))
+      xend_value <- levels(factor(output_data$xend))
 
       mirror_x <- factor(output_data$x)
-      levels(mirror_x) <- rev(x_axes_value[-1])
+      levels(mirror_x) <- rev(xend_value)
       mirror_x <- as.numeric(as.character(mirror_x))
 
       mirror_xend <- factor(output_data$xend)
-      levels(mirror_xend) <- rev(x_axes_value[-length(x_axes_value)])
+      levels(mirror_xend) <- rev(x_value)
       mirror_xend <- as.numeric(as.character(mirror_xend))
 
       output_data$x <- mirror_x
