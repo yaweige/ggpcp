@@ -77,6 +77,7 @@
 #' To break three or more factor variables to better show the relations between adjacent factor variables.
 #' Can't be used when there is only one or two factor vairbles.
 #' @param overplot methods used to conduct overplotting when overplotting becomes an issue.
+#' @param mirror mirror the plot, useful especially when you want to reverse the structure in factor block
 #' @param arrow specification for arrow heads, as created by arrow()
 #' @param arrow.fill fill colour to use for the arrow head (if closed). NULL means use colour aesthetic
 #' @param lineend Line end style (round, butt, square)
@@ -109,6 +110,7 @@ geom_pcp <- function(
   interwidth = 1,
   breakpoint = NULL,
   overplot = "original",
+  mirror = FALSE,
   arrow = NULL,
   arrow.fill = NULL,
   lineend = "butt",
@@ -133,6 +135,7 @@ geom_pcp <- function(
       interwidth = interwidth,
       breakpoint = breakpoint,
       overplot = overplot,
+      mirror = mirror,
       arrow = arrow,
       arrow.fill = arrow.fill,
       lineend = lineend,

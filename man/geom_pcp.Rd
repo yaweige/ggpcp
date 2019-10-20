@@ -7,9 +7,9 @@
 geom_pcp(mapping = NULL, data = NULL, stat = "pcp",
   position = "identity", ..., method = "uniminmax", freespace = 0.1,
   boxwidth = 0, rugwidth = 0, interwidth = 1, breakpoint = NULL,
-  overplot = "original", arrow = NULL, arrow.fill = NULL,
-  lineend = "butt", linejoin = "round", na.rm = FALSE,
-  show.legend = NA, inherit.aes = TRUE)
+  overplot = "original", mirror = FALSE, arrow = NULL,
+  arrow.fill = NULL, lineend = "butt", linejoin = "round",
+  na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by [aes()] or
@@ -59,6 +59,8 @@ To break three or more factor variables to better show the relations between adj
 Can't be used when there is only one or two factor vairbles.}
 
 \item{overplot}{methods used to conduct overplotting when overplotting becomes an issue.}
+
+\item{mirror}{mirror the plot, useful especially when you want to reverse the structure in factor block}
 
 \item{arrow}{specification for arrow heads, as created by arrow()}
 

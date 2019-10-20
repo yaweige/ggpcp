@@ -73,6 +73,7 @@
 #'  a scalar or a vector.
 #' @param breakpoint To break three or more factors into peices
 #' @param overplot methods used to conduct overplotting when overplotting becomes an issue.
+#' @param mirror mirror the plot, useful especially when you want to reverse the structure in factor block
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange
 #' @importFrom tidyr spread
@@ -89,6 +90,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
                      interwidth = 1,
                      breakpoint = NULL,
                      overplot = "original",
+                     mirror = FALSE,
                      na.rm = FALSE,
                      show.legend = NA,
                      inherit.aes = TRUE) {
@@ -111,6 +113,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
       interwidth = interwidth,
       breakpoint = breakpoint,
       overplot = overplot,
+      mirror = mirror,
       ...
     )
   )
@@ -176,7 +179,7 @@ StatPcp <- ggproto(
   # or we can put the attribute in the function prarameters?
   compute_panel = function(data, scales, method = "uniminmax", freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
-                           breakpoint = NULL, overplot = "original") {
+                           breakpoint = NULL, overplot = "original", mirror = FALSE) {
     # Data preparation: to convert the input data to the form we can directly use
     # nobs, classpcp will also be used in other places, so they are kept
 
@@ -774,6 +777,24 @@ StatPcp <- ggproto(
 
     if (overplot %in% c("original", "hierarchical")) {
       output_data <- data_boxwidth
+    }
+
+    # mirror: to make the plot readable from left to right, especially for factor block design
+
+    if(mirror == TRUE){
+      x_axes_value <- levels(factor(c(output_data$x, output_data$xend)))
+
+      mirror_x <- factor(output_data$x)
+      levels(mirror_x) <- rev(x_axes_value[-1])
+      mirror_x <- as.numeric(as.character(mirror_x))
+
+      mirror_xend <- factor(output_data$xend)
+      levels(mirror_xend) <- rev(x_axes_value[-length(x_axes_value)])
+      mirror_xend <- as.numeric(as.character(mirror_xend))
+
+      output_data$x <- mirror_x
+      output_data$xend <- mirror_xend
+
     }
 
     output_data
