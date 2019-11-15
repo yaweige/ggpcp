@@ -166,16 +166,16 @@ What becomes obvious in this plot, is that fuel consumption of each car measured
 One application for generalized parallel coordinate plots is their use for visualizing clusters. 
 
 ```{r}
-data(nasa, package = "GGally")
+data(nasa)
 ```
 
-The `nasa` data, available from the `GGally` package, was used in the 2006 ASA Expo. It consists of monthly measurements of several climate variables, such as cloud coverage, temperature, pressure, and ozone values, captured on a 24x24 grid across Central America between 1995 and 2000.
+The `nasa` data, made available as part of the `ggpcp` package provides and extension to the data provided in the `GGally` package, was used in the 2006 ASA Expo. It consists of monthly measurements of several climate variables, such as cloud coverage, temperature, pressure, and ozone values, captured on a 24x24 grid across Central America between 1995 and 2000.
 
 We grouped locations using all January and July measurements of all climate variables using a hierarchical clustering based on Ward's distance.
 The resulting clusters can then be summarized visually. What we see is that the clusters have a very distinct geographic pattern (tile plot). 
 
 ```{r echo=FALSE}
-wide <- nasa %>% select(id, month, year, starts_with("cloud"), ozone, pressure, surftemp) %>%
+wide <- nasa %>% select(id, month, year, starts_with("cloud"), ozone, pressure, surftemp, elevation) %>%
   gather(key = variable, value = value, -id, -month, -year) %>%
   filter(month %in% c(1,7)) %>%
   unite(var_date, variable, year, month, sep="-") %>%

@@ -30,6 +30,8 @@
 #' @usage nasa
 #' @examples
 #' data(nasa)
+#' library(dplyr)
+#' library(ggplot2)
 #' nasa %>%
 #'   filter(id == "1-10") %>%
 #'   ggplot(aes(vars = vars(starts_with("cloud"),
