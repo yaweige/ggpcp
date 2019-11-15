@@ -115,9 +115,9 @@ variables at the same time after proper scaling.</p>
     <pre class="usage"><span class='fu'>geom_pcp</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"pcp"</span>,
   <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='no'>...</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"uniminmax"</span>, <span class='kw'>freespace</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
   <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>rugwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>interwidth</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>breakpoint</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>overplot</span> <span class='kw'>=</span> <span class='st'>"original"</span>, <span class='kw'>arrow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>arrow.fill</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>lineend</span> <span class='kw'>=</span> <span class='st'>"butt"</span>, <span class='kw'>linejoin</span> <span class='kw'>=</span> <span class='st'>"round"</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>overplot</span> <span class='kw'>=</span> <span class='st'>"original"</span>, <span class='kw'>mirror</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>arrow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>arrow.fill</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lineend</span> <span class='kw'>=</span> <span class='st'>"butt"</span>, <span class='kw'>linejoin</span> <span class='kw'>=</span> <span class='st'>"round"</span>,
+  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -192,6 +192,10 @@ Can't be used when there is only one or two factor vairbles.</p></td>
       <td><p>methods used to conduct overplotting when overplotting becomes an issue.</p></td>
     </tr>
     <tr>
+      <th>mirror</th>
+      <td><p>mirror the plot, useful especially when you want to reverse the structure in factor block</p></td>
+    </tr>
+    <tr>
       <th>arrow</th>
       <td><p>specification for arrow heads, as created by arrow()</p></td>
     </tr>
@@ -258,7 +262,9 @@ especially for lines outside factor blocks(for <code>hierarchical</code> only), 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>ggplot2</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>dplyr</span>)</div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
+#&gt; <span class='message'>Attaching package: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:ggpcp’:</span>
+#&gt; <span class='message'></span>
+#&gt; <span class='message'>    nasa</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
 #&gt; <span class='message'></span>
 #&gt; <span class='message'>    filter, lag</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:base’:</span>
 #&gt; <span class='message'></span>

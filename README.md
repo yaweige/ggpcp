@@ -1,7 +1,7 @@
 ---
 title: "Generalized parallel coordinate plots with ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "September 03, 2019"
+date: "November 15, 2019"
 output: 
   html_document:
     keep_md: true
@@ -189,10 +189,10 @@ One application for generalized parallel coordinate plots is their use for visua
 
 
 ```r
-data(nasa, package = "GGally")
+data(nasa, package="ggpcp")
 ```
 
-The `nasa` data, available from the `GGally` package, was used in the 2006 ASA Expo. It consists of monthly measurements of several climate variables, such as cloud coverage, temperature, pressure, and ozone values, captured on a 24x24 grid across Central America between 1995 and 2000.
+The `nasa` data, made available as part of the `ggpcp` package provides and extension to the data provided in the `GGally` package, was used in the 2006 ASA Expo. It consists of monthly measurements of several climate variables, such as cloud coverage, temperature, pressure, and ozone values, captured on a 24x24 grid across Central America between 1995 and 2000.
 
 We grouped locations using all January and July measurements of all climate variables using a hierarchical clustering based on Ward's distance.
 The resulting clusters can then be summarized visually. What we see is that the clusters have a very distinct geographic pattern (tile plot). 
@@ -201,10 +201,10 @@ The resulting clusters can then be summarized visually. What we see is that the 
 
 
 ```r
-wide %>% separate(id, into=c("x", "y"), remove = FALSE) %>%
+wide %>% separate(id, into=c("y", "x"), remove = FALSE) %>%
   mutate(x = as.numeric(x), y = as.numeric(y)) %>%
   ggplot(aes(x = x, y=y, fill=factor(cl7))) +
-  geom_tile() + scale_fill_brewer("Cluster", palette = "Dark2") +
+  geom_tile() + scale_fill_brewer("Cluster", palette = "Paired") +
   xlab("Latitude") + ylab("Longitude") +
   coord_equal()
 ```
@@ -216,13 +216,9 @@ From the parallel coordinate plot we see that cloud coverage in low, medium and 
 
 ```r
 wide %>%
-  ggplot(aes(vars=vars(83:94))) +
+  ggplot(aes(vars=vars(95:108))) +
   geom_pcp(aes(colour=factor(cl7))) + facet_wrap(~cl7) +
-  coord_flip() + scale_colour_brewer("Cluster", palette = "Dark2")
-```
-
-```
-## Warning: Removed 20 rows containing missing values (geom_segment).
+  coord_flip() + scale_colour_brewer("Cluster", palette = "Paired")
 ```
 
 ![](README_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
@@ -232,10 +228,12 @@ wide %>%
 
 Needs more words ... 
 
+A regular parallel coordinate plot allows us to visualize a part of the dendrogram corresponding to the hierarchical clustering. 
+
 
 ```r
 wide %>%
-  ggplot(aes(vars=vars(74:82))) +
+  ggplot(aes(vars=vars(86:94))) +
   geom_pcp() +
   xlab("Number of clusters")
 ```
@@ -257,14 +255,16 @@ wide %>%
     cl9 = factor(cl9),
     cl10 = factor(cl10)
   ) %>%
-  ggplot(aes(vars=vars(74:82), colour = factor(cl10))) +
+  ggplot(aes(vars=vars(86:94), colour = factor(cl10))) +
   geom_pcp_box(boxwidth=0.1) +
   geom_pcp(alpha = 0.25, boxwidth=0.1) +
-  xlab("Number of clusters")
+  xlab("Number of clusters") +
+  scale_colour_brewer("Cluster", palette="Paired")
 ```
 
 ![](README_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
-Along the x-axis the number of clusters are plotted with one pcp axis each, from two clusters (left) to 10 clusters (right most pcp axis). Each observation is drawn as a multi-segmented line and colored by its assignment in the ten-cluster solution. 
+
+Along the x-axis the number of clusters are plotted with one pcp axis each, from two clusters (left) to 10 clusters (right most pcp axis). Each observation is drawn as a multi-segmented line and colored by its assignment in the ten-cluster solution. This gives an excerpt of the dendrogram that allows an assessment of the number of observations in each cluster as well as the relationship between successive clustering steps.
 
 
 
