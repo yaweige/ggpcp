@@ -15,7 +15,15 @@ gather_pcp <- function(data, ...) {
   data$id <- 1:nrow(data)
   data[, eval(...)] <- lapply(subdata, FUN = as.character)
   gather_data <- gather(data, name, value, eval(...))
-  gather_data$level <- unlist(lapply(subdata, FUN = as.numeric))
+  gather_data$level <- unlist(lapply(subdata, FUN = function(x){
+    if(class(x) == "character") {
+      output <- rep(NA, length(x))
+    } else {
+      output <- as.numeric(x)
+    }
+    output
+  }))
+
   gather_data$class <- rep(unlist(lapply(subdata, FUN = function(x)
     paste(class(x), collapse=" "))), each = nrow(data))
   gather_data$class <- gsub("[oO]rdered ", "", gather_data$class) # just ignore the ordered factors
@@ -26,3 +34,4 @@ gather_pcp <- function(data, ...) {
   gather_data_wide <- left_join(gather_data, data[, add_names], by="id")
   gather_data_wide
 }
+
