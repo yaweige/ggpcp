@@ -182,9 +182,6 @@ StatPcp <- ggproto(
                            breakpoint = NULL, overplot = "original", mirror = FALSE) {
 
     # Input check and sensible warning
-    ## Check for reasonable input the breakpoint
-    ## Ckeck if there is Charactor variable need to be converted to factor variable(this can also happen in the gather_pcp)
-
 
     # Data preparation: to convert the input data to the form we can directly use
     # nobs, classpcp will also be used in other places, so they are kept
@@ -197,9 +194,13 @@ StatPcp <- ggproto(
     obs_ids <- unique(data$id)
     nobs <- length(unique(data$id))
     # a vector to tell the class of variables
-    classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
-    data_spread <- prepare_data(data, classpcp, nobs)
+    classpcp_0 <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
+    data_spread <- prepare_data(data, classpcp_0, nobs)
 
+    # for ease of use and solve potential bugs, we call any classes not "numeric", "integer" as "factor"
+    # The character variables should be solved in (data_spread <- prepare_data(data, classpcp_0, nobs)) above
+    # and transfer classpcp_0 to classpcp which we will use a lot later
+    classpcp <- ifelse(classpcp_0 %in% c("numeric", "integer"), yes = classpcp_0, no = "factor")
 
     # at this time, data_spread is like the original data set, with columns properly defined
     # assume numeric variables are properly scaled into 0-1
@@ -1115,6 +1116,7 @@ prepare_data <- function(data, classpcp, nobs) {
   # this may not work with tibble
   num <- classpcp %in% c("numeric", "integer")
   fac <- classpcp %in% c("factor", "ordered factor")
+  char <- classpcp %in% c("character")
 
   data_spread[, c(FALSE, num)] <-  lapply(data_spread[, c(FALSE, num), drop = FALSE],
                                           FUN = function(x) as.numeric(as.character(x)))
@@ -1137,6 +1139,11 @@ prepare_data <- function(data, classpcp, nobs) {
     },
     data_spread[, c(FALSE, fac), drop = FALSE],
     original_levels)
+  }
+
+  if(sum(char) != 0){
+    data_spread[, c(FALSE, char)] <-  lapply(data_spread[, c(FALSE, char), drop = FALSE],
+                                            FUN = function(x) as.factor(as.character(x)))
   }
 
   data_spread
