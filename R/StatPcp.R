@@ -180,6 +180,12 @@ StatPcp <- ggproto(
   compute_panel = function(data, scales, method = "uniminmax", freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
                            breakpoint = NULL, overplot = "original", mirror = FALSE) {
+
+    # Input check and sensible warning
+    ## Check for reasonable input the breakpoint
+    ## Ckeck if there is Charactor variable need to be converted to factor variable(this can also happen in the gather_pcp)
+
+
     # Data preparation: to convert the input data to the form we can directly use
     # nobs, classpcp will also be used in other places, so they are kept
 
@@ -205,6 +211,17 @@ StatPcp <- ggproto(
     # if the names of orignal varibles have "id", something might be wrong
     if (is.character(breakpoint)) {
       breakpoint <- which(names(data_spread) %in% breakpoint) - 1
+    }
+
+    # check if breakpoint input is sensible
+    if(!is.null(breakpoint)){
+      breakpoint_check <- lapply(breakpoint, FUN = function(x){
+        output <- !any(classpcp[c(x-1, x, x+1)] %in% c("numeric", "integer")) & (x>1) & (x<length(classpcp))
+        output
+      }) %>% unlist()
+
+      assertthat::assert_that(all(breakpoint_check), msg = "breakpoint should be interior positions of a sequence of factor variables, e.g. 2 for sequence 1:3")
+
     }
 
     classification <- classify(classpcp, breakpoint = breakpoint)
@@ -380,16 +397,18 @@ StatPcp <- ggproto(
     # There are some parts of those modifications above should be integrated to the original calculation for better performance
     # is there possibility that this is problem can be sovled using same band assignment at once as in usual case, instead of recursively calculate that?
 
-    if (!is.null(breakpoint)) {
-      #continuous_fac_all
-      #continuous_fac_all_list
-      #break_position
-      #start_fac2fac
-      #end_fac2fac
-      #arranged_fac_block
+    if ((!is.null(breakpoint)) & (!length(classification$fac2fac) == 0)) {
+      # These ara some variables may be helpful
+      # continuous_fac_all
+      # continuous_fac_all_list
+      # break_position
+      # start_fac2fac
+      # end_fac2fac
+      # arranged_fac_block
       # data_final_yend_fac2fac
       # data_final_ystart_fac2fac_bandid
       # data_final_yend_fac2fac_bandid
+
 
       # identify the groups of sub-factor blocks, labeled for which sub-factor block
       sub_fac_block <- which(c(0, end_fac2fac) == c(start_fac2fac, 0))
