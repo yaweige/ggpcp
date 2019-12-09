@@ -109,7 +109,7 @@ geom_pcp <- function(
   rugwidth = 0,
   interwidth = 1,
   breakpoint = NULL,
-  overplot = "original",
+  overplot = "hierarchical",
   mirror = FALSE,
   arrow = NULL,
   arrow.fill = NULL,

@@ -7,7 +7,7 @@
 geom_pcp(mapping = NULL, data = NULL, stat = "pcp",
   position = "identity", ..., method = "uniminmax", freespace = 0.1,
   boxwidth = 0, rugwidth = 0, interwidth = 1, breakpoint = NULL,
-  overplot = "original", mirror = FALSE, arrow = NULL,
+  overplot = "hierarchical", mirror = FALSE, arrow = NULL,
   arrow.fill = NULL, lineend = "butt", linejoin = "round",
   na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)
 }
