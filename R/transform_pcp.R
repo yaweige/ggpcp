@@ -33,8 +33,9 @@ transform_pcp <- function(data, method = "uniminmax") {
   # in case it is not (character variables) this probably goes wrong. Should check on it.
 
   # For character, level is NA, change to 1
-  data$level <- ifelse(is.na(data$level), yes = 1, no = data$level)
+  # data$level <- ifelse(is.na(data$level), yes = 1, no = data$level)
 
+  # This works, but doesn't seem to a very good way
   if (method == "raw") {
     data <- group_by(data, name)
     data <- mutate(
@@ -77,7 +78,7 @@ transform_pcp <- function(data, method = "uniminmax") {
   }
 
   # modify back for those not numeric and integer
-  data$value <- ifelse(data$class %in% c("numeric", "integer"), yes = data$value, no = data$value_text)
+  # data$value <- ifelse(data$class %in% c("numeric", "integer"), yes = data$value, no = data$value_text)
 
   data
 }
