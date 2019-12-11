@@ -79,6 +79,7 @@
 #' @importFrom tidyr spread
 #' @importFrom assertthat assert_that has_name
 #' @noRd
+#' @export
 
 stat_pcp <- function(mapping = NULL, data = NULL,
                      geom = "segment", position = "identity",
