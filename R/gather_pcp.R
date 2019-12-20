@@ -20,8 +20,8 @@ gather_pcp <- function(data, ...) {
     output
   }))
 
-  subdata <- data[,eval(...)]
-
+  subdata <- data[,eval(...), drop=FALSE]
+#browser()
   data$id <- 1:nrow(data)
   data[, eval(...)] <- lapply(subdata, FUN = as.character)
   gather_data <- gather(data, name, value, eval(...))

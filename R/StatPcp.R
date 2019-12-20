@@ -78,7 +78,6 @@
 #' @importFrom dplyr %>% group_by ungroup arrange
 #' @importFrom tidyr spread
 #' @importFrom assertthat assert_that has_name
-#' @noRd
 #' @export
 
 stat_pcp <- function(mapping = NULL, data = NULL,
@@ -96,7 +95,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
                      show.legend = NA,
                      inherit.aes = TRUE) {
 
-  #browser()
+
   layer(
     data = data,
     mapping = mapping,
@@ -119,7 +118,9 @@ stat_pcp <- function(mapping = NULL, data = NULL,
     )
   )
 }
-# for statPcp
+
+#' @rdname stat_pcp
+#' @export
 StatPcp <- ggproto(
   "StatPcp", Stat,
   #  required_aes = c("vars"), # vars is disappeared by the time we get to the stat
@@ -130,7 +131,6 @@ StatPcp <- ggproto(
     linewidth=.1, weight = 1, method = "uniminmax"),
 
   setup_data = function (data, params) {
-    #   browser()
     idx <- grep("x__", names(data))
     names(data) <- gsub("x__[0-9]+__", "", names(data))
     data <- data.frame(data, stringsAsFactors = TRUE)
@@ -150,7 +150,7 @@ StatPcp <- ggproto(
 
   },
 
-  compute_layer = function(self, data, params, layout) {
+  compute_layer = function(self, data, params, layout, ...) {
     # adjust function to avoid deleting all data
     ggplot2:::check_required_aesthetics(
       self$required_aes,
@@ -162,7 +162,7 @@ StatPcp <- ggproto(
     params <- params[intersect(names(params), self$parameters())]
 
     scales <- layout$get_scales(data$PANEL[1])
-    layout$panel_scales_x <- list(xscale_pcp(data, params, layout)) # only one scale overall - might need one for each panel
+    layout$panel_scales_x <- list(xscale_pcp(data, params, layout, ...)) # only one scale overall - might need one for each panel
 
     args <- c(list(data = quote(data), scales = quote(scales)), params)
     gg <- ggplot2:::dapply(data, "PANEL", function(data) {
@@ -172,6 +172,7 @@ StatPcp <- ggproto(
         ggplot2:::new_data_frame()
       })
     })
+
     gg
   },
   # want to calculate the parameters directly can be used for geom_segment and geom_ribbon
@@ -181,7 +182,7 @@ StatPcp <- ggproto(
   compute_panel = function(data, scales, method = "uniminmax", freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
                            breakpoint = NULL, overplot = "original", mirror = FALSE) {
-
+#browser()
     # Input check and sensible warning
 
     # Data preparation: to convert the input data to the form we can directly use
@@ -763,7 +764,7 @@ StatPcp <- ggproto(
       obs_ids_break <- NULL
     }
 
-
+#browser()
     # To combine main part, breakpoint, ordinary segments in boxes
     if (!is.null(breakpoint)) {
       data_boxwidth <- data.frame(x = c(data_break_xstart, data_segment_xstart, data_boxwidth$x),
@@ -818,7 +819,6 @@ StatPcp <- ggproto(
       output_data$xend <- mirror_xend
 
     }
-
     output_data
   }
 )

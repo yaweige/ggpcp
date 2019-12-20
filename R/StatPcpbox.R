@@ -81,7 +81,7 @@ StatPcpbox <- ggproto(
     #id = id, name = name, value = value, level = level, class = class,
     vars = NULL,
     width = 0.75, linetype = "solid", fontsize=5,
-    shape = 19, colour = "grey30",
+    shape = 19, #colour = "grey30", # no mapping to colour,colour can only be set
     size = .1, fill = NA, alpha = .8, stroke = 0.1,
     linewidth=.1, weight = 1),
 
@@ -188,6 +188,7 @@ StatPcpbox <- ggproto(
                            group = data_box_group,
                            PANEL = data$PANEL[1] # are all the same in compute_panel
     )
+    browser()
     data_box
   }
 )

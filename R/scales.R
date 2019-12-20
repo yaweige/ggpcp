@@ -1,7 +1,7 @@
 
 #' Helper function to create scales for the parallel coordinate plot
 #' @noRd
-xscale_pcp <- function(data, params, layout) {
+xscale_pcp <- function(data, params, layout, ...) {
   # p <- sum(data$id==1)
   # # adjust breaks of x axis
   # type <- data$class[data$id==1]
@@ -40,7 +40,7 @@ xscale_pcp <- function(data, params, layout) {
   breaks <- boxwidth_xend - boxrugwidth/2
 
   # scales$x <- scale_x_continuous(limits = c(1,p + params$boxwidth*sum(type=="factor")), breaks = breaks, labels = data$name[data$id==1])
-  scale <- scale_x_continuous(limits = c(min(boxwidth_xstart), max(boxwidth_xend)), breaks = breaks, labels = unique(data$name))
+  scale <- scale_x_continuous(limits = c(min(boxwidth_xstart), max(boxwidth_xend)), breaks = breaks, labels = unique(data$name), ...)
   scale$get_breaks <- function(limits) breaks
   scale
 }
