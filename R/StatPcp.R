@@ -175,14 +175,11 @@ StatPcp <- ggproto(
 
     gg
   },
-  # want to calculate the parameters directly can be used for geom_segment and geom_ribbon
-  # and how to arrange them properly in the same time
 
-  # or we can put the attribute in the function prarameters?
+  # want to calculate the parameters directly can be used for geom_segment and geom_ribbon
   compute_panel = function(data, scales, method = "uniminmax", freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
                            breakpoint = NULL, overplot = "original", mirror = FALSE) {
-#browser()
     # Input check and sensible warning
 
     # Data preparation: to convert the input data to the form we can directly use
@@ -192,24 +189,17 @@ StatPcp <- ggproto(
     # but these three values/outputs are required, should be *exact* the same things
 
     # number of observations
-    nobs <- max(data$id) # HH: it's not max, it's the number of different ids
     obs_ids <- unique(data$id)
     nobs <- length(unique(data$id))
     # a vector to tell the class of variables
     classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
     data_spread <- prepare_data(data, classpcp, nobs)
 
-    # for ease of use and solve potential bugs, we call any classes not "numeric", "integer" as "factor"
-    # The character variables should be solved in (data_spread <- prepare_data(data, classpcp_0, nobs)) above
-    # and transfer classpcp_0 to classpcp which we will use a lot later
-    # classpcp <- ifelse(classpcp_0 %in% c("numeric", "integer"), yes = classpcp_0, no = "factor")
-
     # at this time, data_spread is like the original data set, with columns properly defined
     # assume numeric variables are properly scaled into 0-1
 
     # several possible combinations: num to num, num to factor, factor to num, factor to factor
-    # need an algrothm to do this classification, write this function in a different place
-    # we use the function: classify here
+    # we use the function: 'classify' here to do this classification
 
     # if the names of orignal varibles have "id", something might be wrong
     if (is.character(breakpoint)) {
@@ -254,7 +244,6 @@ StatPcp <- ggproto(
       # Here I want to treat the factor(categorical) variable as bands according to its levels,
       # so I'm not going to treat it as several points. the end points uniformly distributed within each band
       # I also want to order those end points landing on the bands somehow
-      # I will add bands to indicate the different levels of a categorical variables later(like a big error bar?)
 
       # for ystart of lines(same as num2num, use unlist withour as.list first)
       data_final_ystart_num2fac <- unlist(data_spread[, classification$num2fac + 1])
@@ -265,14 +254,13 @@ StatPcp <- ggproto(
                              FUN = function(x) list(nlevels = nlevels(x),
                                                     table = table(x)))
       # uniformly assign space for each level and observations within each level
-      # inserted some space between every two levels here, called freespace for the space in total
+      # inserted some space between every two levels here, called 'freespace' for the space in total
       # obs_position is the postion assigned for factors
       obs_position <- assign_fac(nlevels_list, nobs, freespace = freespace)
 
       # for yend of lines, continued
       # write another function to arrange the positions of the end
       # points according to the ystart, and the order of data
-      # is it right to directly unlist? Yes it seems
       data_final_yend_num2fac <- unlist(arrange_fac_by_ystart(data_spread,
                                                               start_position = classification$num2fac + 1,
                                                               end_position = classification$num2fac + 2,
@@ -321,23 +309,17 @@ StatPcp <- ggproto(
 
     # we have to make sure those postions are consistent, which are on the same vertical axis, but shared by different pairs
     # even if it is consistent(same), which I think is very likely ensured by our consitent method of dealing with variables
-    # we can still make some improvement above, to save some calculation to avoid twice calculation of same objecets
+    # we can still make some improvement above, to save some calculation to avoid twice calculation of same objects
     # the only variables, we need to care are factor variables.
 
-    # for factor to factor, set up
-    # this repeated the efforts of ggparallel in a sense
+    # for factor block, set up
 
     # make use of the function to calculate level_range inside assign_fac(),
     # and nlevel_lists as before when dealing with factors
 
     # write a function for this part to assign and match the factors,
     # we may first calculate a table of the possible combinations between every two factors, and then assign position
-    # with a constant freespace = 0.1, we make sure the lenghts of area taken are the same among factors
-
-    # for factor to factor block, segment(not line!)
-    # here is a little different from previous ones, we draw arrange same group together, not by variables
-
-    ### This may work for only one factor block, need more preparation for more than one block
+    # with a constant freespace = 0.1, we make sure the lenghs of area taken are the same among factors
 
     if (!length(classification$fac2fac) == 0) {
       # some values needed
@@ -401,17 +383,6 @@ StatPcp <- ggproto(
     # is there possibility that this is problem can be sovled using same band assignment at once as in usual case, instead of recursively calculate that?
 
     if ((!is.null(breakpoint)) & (!length(classification$fac2fac) == 0)) {
-      # These ara some variables may be helpful
-      # continuous_fac_all
-      # continuous_fac_all_list
-      # break_position
-      # start_fac2fac
-      # end_fac2fac
-      # arranged_fac_block
-      # data_final_yend_fac2fac
-      # data_final_ystart_fac2fac_bandid
-      # data_final_yend_fac2fac_bandid
-
 
       # identify the groups of sub-factor blocks, labeled for which sub-factor block
       sub_fac_block <- which(c(0, end_fac2fac) == c(start_fac2fac, 0))
@@ -510,10 +481,10 @@ StatPcp <- ggproto(
     }
 
 
+    # Modification parts begin--------------------------------------------------
 
-    # to do list in the following:
-    # 1. small modification, move data_spread$bandid to the beginning part, after all done
-
+    # Because a factor variable can only be ordered according to one side, we do the modification
+    # Because we arranged both num-fac and factor block separately, we need to overwirte the num-fac when the fac is actually a fac block
 
     # some modification for num2fac_blcok (num2fac, fac is a factor block, more than one factor)
 
@@ -587,10 +558,6 @@ StatPcp <- ggproto(
                          data_final_yend_num2fac,
                          data_final_yend_fac2num,
                          data_final_yend_fac2fac)
-    # data_final <- data.frame(data_final_xstart = data_final_xstart,
-    #                          data_final_xend = data_final_xend,
-    #                          data_final_ystart = data_final_ystart,
-    #                          data_final_yend = data_final_yend)
 
     data_final <- data.frame(x = data_final_xstart,
                              xend = data_final_xend,
@@ -764,7 +731,6 @@ StatPcp <- ggproto(
       obs_ids_break <- NULL
     }
 
-#browser()
     # To combine main part, breakpoint, ordinary segments in boxes
     if (!is.null(breakpoint)) {
       data_boxwidth <- data.frame(x = c(data_break_xstart, data_segment_xstart, data_boxwidth$x),
