@@ -188,7 +188,6 @@ StatPcpbox <- ggproto(
                            group = data_box_group,
                            PANEL = data$PANEL[1] # are all the same in compute_panel
     )
-    browser()
     data_box
   }
 )
