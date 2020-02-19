@@ -16,7 +16,7 @@ compute_aesthetics_pcp <- function(self, data, plot) {
 
 #' function to setup the vars mapping in pcps
 #' @noRd
-#' @importFrom tidyselect vars_select
+#' @importFrom tidyselect vars_select eval_select
 #' @importFrom dplyr tbl_vars
 #' @importFrom rlang eval_tidy
 #' @importFrom utils getFromNamespace
@@ -34,8 +34,9 @@ setup_layer_pcp <- function(self, data, plot) {
       aes_vars <- rlang::eval_tidy(plot$mapping$vars)
  #   browser()
 
+    idx <- unlist(lapply(aes_vars, eval_select, data = data))
 
-    idx <- unlist(lapply(aes_vars, getFromNamespace("eval_select","tidyselect"), data = data))
+#    idx <- unlist(lapply(aes_vars, getFromNamespace("eval_select","tidyselect"), data = data))
   #  idx <- getFromNamespace("vars_select_eval","tidyselect")(names(data), aes_vars)
     aes_vars <- names(idx)
 

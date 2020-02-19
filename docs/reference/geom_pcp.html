@@ -8,11 +8,13 @@
 
 <title>Parallel coordinate plot for both numeric and categorical data — geom_pcp • ggpcp</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -30,12 +32,13 @@
 
 
 
-<meta property="og:title" content="Parallel coordinate plot for both numeric and categorical data — geom_pcp" />
 
+<meta property="og:title" content="Parallel coordinate plot for both numeric and categorical data — geom_pcp" />
 <meta property="og:description" content="The parallel coordinate plot displays multiple y-axes, and shows the observations across
 several dimensions as lines. This function work well with both numeric and categorical
 variables at the same time after proper scaling." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -84,7 +87,6 @@ variables at the same time after proper scaling." />
   <a href="../reference/index.html">Reference</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -105,20 +107,18 @@ variables at the same time after proper scaling." />
     </div>
 
     <div class="ref-description">
-    
     <p>The parallel coordinate plot displays multiple y-axes, and shows the observations across
 several dimensions as lines. This function work well with both numeric and categorical
 variables at the same time after proper scaling.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>geom_pcp</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"pcp"</span>,
   <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='no'>...</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"uniminmax"</span>, <span class='kw'>freespace</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
   <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>rugwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>interwidth</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>breakpoint</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>overplot</span> <span class='kw'>=</span> <span class='st'>"original"</span>, <span class='kw'>mirror</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>arrow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>overplot</span> <span class='kw'>=</span> <span class='st'>"hierarchical"</span>, <span class='kw'>mirror</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>arrow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>arrow.fill</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lineend</span> <span class='kw'>=</span> <span class='st'>"butt"</span>, <span class='kw'>linejoin</span> <span class='kw'>=</span> <span class='st'>"round"</span>,
   <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -232,7 +232,7 @@ that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. [borders()].</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><code>method</code> is a character string that denotes how to scale the variables
@@ -257,7 +257,6 @@ especially for lines outside factor blocks(for <code>hierarchical</code> only), 
 <li><p><code>smallfirst</code>: smaller groups of lines are drawn first, placing large groups of lines on top.</p></li>
 <li><p><code>largefirst</code>: larger groups of lines are drawn first, placing small groups of lines on top.</p></li>
 </ul>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>ggplot2</span>)
@@ -284,9 +283,7 @@ especially for lines outside factor blocks(for <code>hierarchical</code> only), 
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#details">Details</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
