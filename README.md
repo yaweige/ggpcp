@@ -1,7 +1,7 @@
 ---
 title: "Generalized parallel coordinate plots with ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "November 15, 2019"
+date: "February 18, 2020"
 output: 
   html_document:
     keep_md: true
