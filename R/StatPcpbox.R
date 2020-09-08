@@ -82,7 +82,7 @@ stat_pcp_box <- function(mapping = NULL, data = NULL,
 StatPcpbox <- ggproto(
   "StatPcpbox", Stat,
   default_aes = ggplot2::aes(
-    #id = id, name = name, value = value, level = level, class = class,
+    #id__ = id__, name = name, value = value, level = level, class = class,
     vars = NULL,
     width = 0.75, linetype = "solid", fontsize=5,
     shape = 19, #colour = "grey30", # no mapping to colour,colour can only be set
@@ -136,14 +136,14 @@ StatPcpbox <- ggproto(
     #browser()
     # Data preparation: to convert the input data to the form we can directly use
     # number of observations
-    nobs <- length(unique(data$id))
+    nobs <- length(unique(data$id__))
     # a vector to tell the class of variables
-    classpcp <- data$class[data$id==min(data$id)]
-    namepcp <- data$name[data$id==min(data$id)]
+    classpcp <- data$class[data$id__==min(data$id__)]
+    namepcp <- data$name[data$id__==min(data$id__)]
     data$name <- factor(data$name, levels = namepcp)
     data_spread <- prepare_data(data, classpcp, nobs)
-    text_spread <- spread(data[, c("id", "name", "value_text")], key=name, value = value_text)
-    level_spread <- spread(data[, c("id", "name", "level")], key=name, value = level)
+    text_spread <- spread(data[, c("id__", "name", "value_text")], key=name, value = value_text)
+    level_spread <- spread(data[, c("id__", "name", "level")], key=name, value = level)
 
     # boxwidth
     # interval length, boxwidth, rugwidth

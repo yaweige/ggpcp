@@ -21,8 +21,8 @@ gather_pcp <- function(data, ...) {
   }))
 
   subdata <- data[,eval(...), drop=FALSE]
-#browser()
-  data$id <- 1:nrow(data)
+  browser()
+  data$id__ <- 1:nrow(data)
   data[, eval(...)] <- lapply(subdata, FUN = as.character)
   gather_data <- gather(data, name, value, eval(...))
   gather_data$level <- unlist(lapply(subdata, FUN = as.numeric))
@@ -31,9 +31,9 @@ gather_pcp <- function(data, ...) {
   gather_data$class <- gsub("[oO]rdered ", "", gather_data$class) # just ignore the ordered factors
 
 
-  add_names <- c("id", setdiff(names(data), names(gather_data)))
+  add_names <- c("id__", setdiff(names(data), names(gather_data)))
 
-  gather_data_wide <- left_join(gather_data, data[, add_names], by="id")
+  gather_data_wide <- left_join(gather_data, data[, add_names], by="id__")
   gather_data_wide
 }
 

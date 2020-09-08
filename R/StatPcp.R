@@ -134,6 +134,7 @@ StatPcp <- ggproto(
   setup_data = function (data, params) {
     idx <- grep("x__", names(data))
     names(data) <- gsub("x__[0-9]+__", "", names(data))
+    #x__labels__ <- names(data)
     data <- data.frame(data, stringsAsFactors = TRUE)
     data <- gather_pcp(data, idx)
     data <- transform_pcp(data, method = params$method)
@@ -190,8 +191,8 @@ StatPcp <- ggproto(
     # but these three values/outputs are required, should be *exact* the same things
 
     # number of observations
-    obs_ids <- unique(data$id)
-    nobs <- length(unique(data$id))
+    obs_ids <- unique(data$id__)
+    nobs <- length(unique(data$id__))
     # a vector to tell the class of variables
     classpcp <- data$class[1 - nobs + (1:(nrow(data)/nobs))*nobs]
     data_spread <- prepare_data(data, classpcp, nobs)
@@ -202,7 +203,7 @@ StatPcp <- ggproto(
     # several possible combinations: num to num, num to factor, factor to num, factor to factor
     # we use the function: 'classify' here to do this classification
 
-    # if the names of orignal varibles have "id", something might be wrong
+    # if the names of orignal varibles have "id", something might be wrong. update, now "id__"
     if (is.character(breakpoint)) {
       breakpoint <- which(names(data_spread) %in% breakpoint) - 1
     }
@@ -748,11 +749,11 @@ StatPcp <- ggproto(
     # data_boxwidth$id <- rep(obs_ids, times = nrow(data_boxwidth)/nobs)
 
     # we have put fac2fac section to the very last of the data set, put break in the very beginning
-    data_boxwidth$id <- c(obs_ids_break, rep(obs_ids, times = (nrow(data_boxwidth) - n_fac2fac - n_break)/nobs), obs_ids_fac2fac)
+    data_boxwidth$id__ <- c(obs_ids_break, rep(obs_ids, times = (nrow(data_boxwidth) - n_fac2fac - n_break)/nobs), obs_ids_fac2fac)
 
     datanames <- setdiff(names(data), c("name", "value", "level", "class", "value_text"))
     # don't include the pcp specific variables - those are dealt with
-    data_boxwidth <- left_join(data_boxwidth, unique(data[,datanames]), by = "id")
+    data_boxwidth <- left_join(data_boxwidth, unique(data[,datanames]), by = "id__")
 
 
     # some of the reorder/arrange
@@ -1079,7 +1080,7 @@ prepare_data <- function(data, classpcp, nobs) {
   # make adjustment to accept proper data set
   # make sure the output data_spread has the same correct expected column order
   data$name <- factor(data$name, levels = unique(data$name))
-  data_spread <- spread(data[, c("id", "name", "value")], key = name, value = value)
+  data_spread <- spread(data[, c("id__", "name", "value")], key = name, value = value)
   ncol <- nrow(data)/nobs
   nvar <- length(levels(data$name))
   # ncol should be the same as nvar
