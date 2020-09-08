@@ -37,10 +37,10 @@
 #'    often aesthetics, used to set an aesthetic to a fixed value, like
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
-#' @param freespace The total gap space among levels within each factor variable
-#' @param boxwidth The width of the box for each factor variable
-#' @param rugwidth The width of the rugs for numeric variable
-#' @param interwidth The width for the lines between every neighboring variables, either
+#' @param freespace A number in 0 to 1 (excluded). The total gap space among levels within each factor variable
+#' @param boxwidth A number or a numeric vector (length equal to the number of factor variables) for the widths of the boxes for each factor variable
+#' @param rugwidth A number or a numeric vector (length equal to the number of numeric variables) for the widths of the rugs for numeric variable
+#' @param interwidth A number or a numeric vector (length equal to the number of variables minus 1) for the width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
 #' @param reverse reverse the plot, useful especially when you want to reverse the structure in factor blocks,
 #' i.e. to become more ordered from right to left

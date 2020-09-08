@@ -15,7 +15,7 @@ geom_pcp(
   boxwidth = 0,
   rugwidth = 0,
   interwidth = 1,
-  breakpoint = NULL,
+  resort = NULL,
   overplot = "hierarchical",
   reverse = FALSE,
   arrow = NULL,
@@ -61,18 +61,18 @@ to the paired geom/stat.}
 \item{method}{string specifying the method that should be used for scaling the values
 in a parallel coordinate plot (see Details).}
 
-\item{freespace}{The total gap space among levels within each factor variable.}
+\item{freespace}{A number in 0 to 1 (excluded). The total gap space among levels within each factor variable}
 
-\item{boxwidth}{The width of the boxes for factor variables, either a scalar or a vector with length equal to the number of factor variables.}
+\item{boxwidth}{A number or a numeric vector (length equal to the number of factor variables) for the widths of the boxes for each factor variable}
 
-\item{rugwidth}{The width of the rugs for numeric variables,either a scalar or a vector with length equal to the number of numeric variables.}
+\item{rugwidth}{A number or a numeric vector (length equal to the number of numeric variables) for the widths of the rugs for numeric variable}
 
-\item{interwidth}{The width for the lines between every neighboring variables, either
-a scalar or a vector with length equal to the total number of variables subtracting one.}
+\item{interwidth}{A number or a numeric vector (length equal to the number of variables minus 1) for the width for the lines between every neighboring variables, either
+a scalar or a vector.}
 
-\item{breakpoint}{Positions indicating where to break, can be a vector.
-To break three or more factor variables to better show the relations between adjacent factor variables.
-Can't be used when there is only one or two factor vairbles.}
+\item{resort}{A integer or a integer vector to indicate the positions of vertical axes inside (can't be the boundary of) a sequence of factors.
+To break three or more factors into sub factor blocks,
+and conduct resort at the axes. Makes the plot clearer for adjacent factor variables.}
 
 \item{overplot}{methods used to conduct overplotting when overplotting becomes an issue.}
 
@@ -121,7 +121,7 @@ in the parallel coordinate plot. Options are named in the same way as the option
 \code{overplot} is a character string that denotes how to conduct overplotting
 in the parallel coordinate plot. The lines from \code{geom_pcp()}  are drawn according to the order they shown in your data set in default.
 Note that this argument provides a framework, the order in the original data still has a role in overplotting,
-especially for lines outside factor blocks(for \code{hierarchical} only), plots with \code{breakpoint} turned on(for methods except \code{hierarchical}):
+especially for lines outside factor blocks(for \code{hierarchical} only), plots with \code{resort} turned on(for methods except \code{hierarchical}):
 \itemize{
   \item{\code{original}}{: use the original order, first shown first drawn.}
   \item{\code{hierarchical}}{: hierarchically drawn according to the combinations of levels of factor variables,
@@ -143,8 +143,8 @@ mutate(cyl = factor(cyl),
       am = factor(am),
       gear = factor(gear)) \%>\%
  ggplot(aes(vars = vars(cyl, vs:gear))) +
- geom_pcp(aes(color = vs), boxwidth = 0.2, breakpoint = 2:3) +
+ geom_pcp(aes(color = vs), boxwidth = 0.2, resort = 2:3) +
  geom_pcp_box(boxwidth = 0.2) +
- geom_pcp_band(boxwidth = 0.2, breakpoint = 2:3) +
+ geom_pcp_band(boxwidth = 0.2, resort = 2:3) +
  geom_pcp_text(boxwidth = 0.2)
 }

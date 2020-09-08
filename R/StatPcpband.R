@@ -37,12 +37,14 @@
 #'    often aesthetics, used to set an aesthetic to a fixed value, like
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
-#' @param freespace The total gap space among levels within each factor variable
-#' @param boxwidth The width of the box for each factor variable
-#' @param rugwidth The width of the rugs for numeric variable
-#' @param interwidth The width for the lines between every neighboring variables, either
+#' @param freespace A number in 0 to 1 (excluded). The total gap space among levels within each factor variable
+#' @param boxwidth A number or a numeric vector (length equal to the number of factor variables) for the widths of the boxes for each factor variable
+#' @param rugwidth A number or a numeric vector (length equal to the number of numeric variables) for the widths of the rugs for numeric variable
+#' @param interwidth A number or a numeric vector (length equal to the number of variables minus 1) for the width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
-#' @param breakpoint To break three or more factors into peices
+#' @param resort A integer or a integer vector to indicate the positions of vertical axes inside (can't be the boundary of) a sequence of factors.
+#' To break three or more factors into sub factor blocks,
+#' and conduct resort at the axes. Makes the plot clearer for adjacent factor variables.
 #' @param reverse reverse the plot, useful especially when you want to reverse the structure in factor blocks,
 #' i.e. to become more ordered from right to left
 #' @param merge To merge the bands or not
@@ -60,7 +62,7 @@ stat_pcp_band <- function(mapping = NULL, data = NULL,
                           boxwidth = 0,
                           rugwidth = 0,
                           interwidth = 1,
-                          breakpoint = NULL,
+                          resort = NULL,
                           reverse = FALSE,
                           merge = FALSE,
                           na.rm = FALSE,
@@ -80,7 +82,7 @@ stat_pcp_band <- function(mapping = NULL, data = NULL,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
       interwidth = interwidth,
-      breakpoint = breakpoint,
+      resort = resort,
       reverse = reverse,
       merge = merge,
       ...
@@ -142,7 +144,7 @@ StatPcpband <- ggproto(
 
   compute_panel = function(data, scales, freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
-                           breakpoint = NULL,  reverse = FALSE, merge = FALSE) {
+                           resort = NULL,  reverse = FALSE, merge = FALSE) {
 
 
     # Data preparation: to convert the input data to the form we can directly use
@@ -157,11 +159,11 @@ StatPcpband <- ggproto(
 
     # at this time, data_spread is like the original data set, with columns properly defined
     # assume numeric variables are properly scaled into 0-1
-    if (is.character(breakpoint)) {
-      breakpoint <- which(names(data_spread) %in% breakpoint) - 1
+    if (is.character(resort)) {
+      resort <- which(names(data_spread) %in% resort) - 1
     }
 
-    classification <- classify(classpcp, breakpoint = breakpoint)
+    classification <- classify(classpcp, resort = resort)
 
     # for factor to factor, set up
 
@@ -218,7 +220,7 @@ StatPcpband <- ggproto(
 
       # This part is new for bands
 
-      # a better way of calculating bands may be applying the calculation during the calculation of lines for breakpoint,
+      # a better way of calculating bands may be applying the calculation during the calculation of lines for resort,
       # but that will still need some ideas from here. In generally, we could think breaking at any possible position,
       # and decide the bandid to pass to next sub-factor block according to if we really want to break
 

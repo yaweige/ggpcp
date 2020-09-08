@@ -18,7 +18,7 @@
 #' \code{overplot} is a character string that denotes how to conduct overplotting
 #' in the parallel coordinate plot. The lines from \code{geom_pcp()}  are drawn according to the order they shown in your data set in default.
 #' Note that this argument provides a framework, the order in the original data still has a role in overplotting,
-#' especially for lines outside factor blocks(for \code{hierarchical} only), plots with \code{breakpoint} turned on(for methods except \code{hierarchical}):
+#' especially for lines outside factor blocks(for \code{hierarchical} only), plots with \code{resort} turned on(for methods except \code{hierarchical}):
 #' \itemize{
 #'   \item{\code{original}}{: use the original order, first shown first drawn.}
 #'   \item{\code{hierarchical}}{: hierarchically drawn according to the combinations of levels of factor variables,
@@ -66,12 +66,14 @@
 #'    to the paired geom/stat.
 #' @param method string specifying the method that should be used for scaling the values
 #' in a parallel coordinate plot (see Details).
-#' @param freespace The total gap space among levels within each factor variable
-#' @param boxwidth The width of the box for each factor variable
-#' @param rugwidth The width of the rugs for numeric variable
-#' @param interwidth The width for the lines between every neighboring variables, either
+#' @param freespace A number in 0 to 1 (excluded). The total gap space among levels within each factor variable
+#' @param boxwidth A number or a numeric vector (length equal to the number of factor variables) for the widths of the boxes for each factor variable
+#' @param rugwidth A number or a numeric vector (length equal to the number of numeric variables) for the widths of the rugs for numeric variable
+#' @param interwidth A number or a numeric vector (length equal to the number of variables minus 1) for the width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
-#' @param breakpoint To break three or more factors into peices
+#' @param resort A integer or a integer vector to indicate the positions of vertical axes inside (can't be the boundary of) a sequence of factors.
+#' To break three or more factors into sub factor blocks,
+#' and conduct resort at the axes. Makes the plot clearer for adjacent factor variables.
 #' @param overplot methods used to conduct overplotting when overplotting becomes an issue.
 #' @param reverse reverse the plot, useful especially when you want to reverse the structure in factor blocks,
 #' i.e. to become more ordered from right to left
@@ -89,7 +91,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
                      boxwidth = 0,
                      rugwidth = 0,
                      interwidth = 1,
-                     breakpoint = NULL,
+                     resort = NULL,
                      overplot = "hierarchical",
                      reverse = FALSE,
                      na.rm = FALSE,
@@ -112,7 +114,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
       interwidth = interwidth,
-      breakpoint = breakpoint,
+      resort = resort,
       overplot = overplot,
       reverse = reverse,
       ...
@@ -181,7 +183,7 @@ StatPcp <- ggproto(
   # want to calculate the parameters directly can be used for geom_segment and geom_ribbon
   compute_panel = function(data, scales, method = "uniminmax", freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
-                           breakpoint = NULL, overplot = "original", reverse = FALSE) {
+                           resort = NULL, overplot = "original", reverse = FALSE) {
     # Input check and sensible warning
 
     # Data preparation: to convert the input data to the form we can directly use
@@ -204,22 +206,22 @@ StatPcp <- ggproto(
     # we use the function: 'classify' here to do this classification
 
     # if the names of orignal varibles have "id", something might be wrong. update, now "id__"
-    if (is.character(breakpoint)) {
-      breakpoint <- which(names(data_spread) %in% breakpoint) - 1
+    if (is.character(resort)) {
+      resort <- which(names(data_spread) %in% resort) - 1
     }
 
-    # check if breakpoint input is sensible
-    if(!is.null(breakpoint)){
-      breakpoint_check <- lapply(breakpoint, FUN = function(x){
+    # check if resort input is sensible
+    if(!is.null(resort)){
+      resort_check <- lapply(resort, FUN = function(x){
         output <- !any(classpcp[c(x-1, x, x+1)] %in% c("numeric", "integer")) & (x>1) & (x<length(classpcp))
         output
       }) %>% unlist()
 
-      assertthat::assert_that(all(breakpoint_check), msg = "breakpoint should be interior positions of a sequence of factor variables, e.g. 2 for sequence 1:3")
+      assertthat::assert_that(all(resort_check), msg = "resort should be interior positions of a sequence of factor variables, e.g. 2 for sequence 1:3")
 
     }
 
-    classification <- classify(classpcp, breakpoint = breakpoint)
+    classification <- classify(classpcp, resort = resort)
 
     # for num to num, set up
     if (!length(classification$num2num) == 0) {
@@ -384,7 +386,7 @@ StatPcp <- ggproto(
     # There are some parts of those modifications above should be integrated to the original calculation for better performance
     # is there possibility that this is problem can be sovled using same band assignment at once as in usual case, instead of recursively calculate that?
 
-    if ((!is.null(breakpoint)) & (!length(classification$fac2fac) == 0)) {
+    if ((!is.null(resort)) & (!length(classification$fac2fac) == 0)) {
 
       # identify the groups of sub-factor blocks, labeled for which sub-factor block
       sub_fac_block <- which(c(0, end_fac2fac) == c(start_fac2fac, 0))
@@ -577,7 +579,7 @@ StatPcp <- ggproto(
 
     # add parallel lines(segments, rugs) after adjusted for boxwidth
     # add segments for boxes
-    segment_which <- which(!(data_final$x %in% breakpoint))
+    segment_which <- which(!(data_final$x %in% resort))
     segment_xstart <- data_final$x[segment_which]
 
     data_segment_xstart <- width_adjusted$boxwidth_xstart[segment_xstart]
@@ -592,17 +594,17 @@ StatPcp <- ggproto(
                              data_final[which(data_final$xend == length(classpcp)), "yend"])
     data_segment_yend <- data_segment_ystart
 
-    if (!is.null(breakpoint)) {
+    if (!is.null(resort)) {
       # lines for the break points
       # a naive try, This is one choice(no sorted lines)
-      breakpoint_which <- which(data_final$x %in% breakpoint)
-      breakpoint_xstart <- data_final$x[breakpoint_which]
-      data_break_xstart <-  width_adjusted$boxwidth_xstart[breakpoint_xstart]
-      data_break_xend <- width_adjusted$boxwidth_xend[breakpoint_xstart]
+      resort_which <- which(data_final$x %in% resort)
+      resort_xstart <- data_final$x[resort_which]
+      data_break_xstart <-  width_adjusted$boxwidth_xstart[resort_xstart]
+      data_break_xend <- width_adjusted$boxwidth_xend[resort_xstart]
       # we need to distinguish between the replicated variables, also used in above modifications
       # is this safe?: using different selections, can they match each other(in this break case, they are all inside factor blocks, they should match)
-      # data_break_ystart <- data_final$yend[which(data_final$xend %in% breakpoint)]
-      # data_break_yend <- data_final$y[breakpoint_which]
+      # data_break_ystart <- data_final$yend[which(data_final$xend %in% resort)]
+      # data_break_yend <- data_final$y[resort_which]
 
       # we need to make sure the the x, y, xend, yend match each other, now it is ensured by that the calculations in fac2fac related chuncks
       data_break_ystart <- unlist(lapply(data_break_y, FUN = function(x) {
@@ -620,11 +622,11 @@ StatPcp <- ggproto(
 
     # To reorder the observations for factor blocks(seperate for each block) to address undesired overlap
     # We need to work here, because the some parts(most parts to do modifications between different sections) rely on the orginal order
-    # We will reorder the main part first, and then the part inside breakpoint, which used different line arrangement method.
+    # We will reorder the main part first, and then the part inside resort, which used different line arrangement method.
     # We are benefited from:
     # 1. the work of keeping bandid(cluster id) for factor blocks
     # 2. the fact that bandid is hiearchically assigned (some magic is used inside bandid() helper function)
-    # The breakpoints make the case more complex, we will see how it will finally work out.(how bandid is carried over breakpoint?)
+    # The resorts make the case more complex, we will see how it will finally work out.(how bandid is carried over resort?)
     # we need to reorder the obs_id for those parts too later.
     # parallel segments inside boxes are created very late! (after we have data_final, and is based on that)
 
@@ -676,9 +678,9 @@ StatPcp <- ggproto(
       data_final_ystart_fac2fac_bandid_split
       ))
 
-      # The part for breakpoint:
+      # The part for resort:
 
-      if(!is.null(breakpoint)) {
+      if(!is.null(resort)) {
         data_break_ystart_split <- split(data_break_ystart, f = rep(1:(length(data_break_ystart)/nobs), each = nobs))
         data_break_yend_split <- split(data_break_yend, f = rep(1:(length(data_break_ystart)/nobs), each = nobs))
         data_break_yend_bandid_split <- split(data_break_yend_bandid, f = rep(1:(length(data_break_ystart)/nobs), each = nobs))
@@ -728,13 +730,13 @@ StatPcp <- ggproto(
       # number of rows in fac2fac parts
       n_fac2fac <- 0
       obs_ids_fac2fac <- NULL
-      # for breakpoint
+      # for resort
       n_break <- 0
       obs_ids_break <- NULL
     }
 
-    # To combine main part, breakpoint, ordinary segments in boxes
-    if (!is.null(breakpoint)) {
+    # To combine main part, resort, ordinary segments in boxes
+    if (!is.null(resort)) {
       data_boxwidth <- data.frame(x = c(data_break_xstart, data_segment_xstart, data_boxwidth$x),
                                   y = c(data_break_ystart, data_segment_ystart, data_boxwidth$y),
                                   xend = c(data_break_xend, data_segment_xend, data_boxwidth$xend),
@@ -799,8 +801,8 @@ StatPcp <- ggproto(
 # for num to factor, we use lines
 # for factor to num, we use lines
 # for factor to factor, we use ribbons
-# 0622new: accomodate breakpoint
-classify <- function(classpcp, breakpoint) {
+# 0622new: accomodate resort
+classify <- function(classpcp, resort) {
   classpcp <- as.numeric(classpcp %in% c("numeric", "integer"))
   classpcp_diff <- diff(classpcp)
   num2fac <- (1:(length(classpcp)-1))[classpcp_diff == -1]
@@ -809,8 +811,8 @@ classify <- function(classpcp, breakpoint) {
   num2num <- (1:(length(classpcp)-1))[classpcp_diff == 0 & classpcp[-length(classpcp)] == TRUE]
   fac2fac <- (1:(length(classpcp)-1))[classpcp_diff == 0 & classpcp[-length(classpcp)] == FALSE]
 
-  # breakpoint come in, need to check breakpoint are suitable
-  fac2fac <- sort(c(fac2fac, breakpoint))
+  # resort come in, need to check resort are suitable
+  fac2fac <- sort(c(fac2fac, resort))
 
   classification <-  list(num2num = num2num,
                           num2fac = num2fac,

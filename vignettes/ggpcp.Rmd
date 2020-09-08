@@ -225,7 +225,7 @@ mtcars %>%
   geom_pcp_box(boxwidth = 0.2)
 ```
 
-We provide a argument to partly sovle this problem. By making use of `breakpoint` in `geom_pcp()`, we can actually break a factor block to two or more smaller parts, which will better show the relations between the adjacent variables while keeping tracking of individual observations. And notice that the adjustments happen in boxes and the main parts are kept tidy. This is a powerful tool, which deserves more investigations and deeper understandings.
+We provide a argument to partly sovle this problem. By making use of `resort` in `geom_pcp()`, we can actually break a factor block to two or more smaller parts, which will better show the relations between the adjacent variables while keeping tracking of individual observations. And notice that the adjustments happen in boxes and the main parts are kept tidy. This is a powerful tool, which deserves more investigations and deeper understandings.
 
 ```{r}
 mtcars %>% 
@@ -234,7 +234,7 @@ mtcars %>%
          am = factor(am),
          gear = factor(gear)) %>% 
   ggplot(aes(vars = vars(cyl, vs:gear))) + 
-  geom_pcp(aes(color = vs), boxwidth = 0.2, breakpoint = 2:3) +
+  geom_pcp(aes(color = vs), boxwidth = 0.2, resort = 2:3) +
   geom_pcp_box(boxwidth = 0.2)
 ```
 
@@ -263,21 +263,21 @@ titanic <- titanic %>%
 set.seed(20190818)
 titanic[c(sample(1:1000, 1000), 1001:2000), ] %>%
   ggplot(aes(vars = vars(1:4))) + 
-  geom_pcp(aes(colour = Class), breakpoint=2:3, boxwidth = 0.5, overplot = "original") + 
+  geom_pcp(aes(colour = Class), resort=2:3, boxwidth = 0.5, overplot = "original") + 
   geom_pcp_box(boxwidth = 0.5)
 ```
 
 ```{r}
 titanic %>%
   ggplot(aes(vars = vars(1:4))) + 
-  geom_pcp(aes(colour = Class), alpha = 0.1, breakpoint=2:3, boxwidth = 0.5, overplot = "largefirst") + 
+  geom_pcp(aes(colour = Class), alpha = 0.1, resort=2:3, boxwidth = 0.5, overplot = "largefirst") + 
   geom_pcp_box(boxwidth = 0.5)
 ```
 
 ```{r}
 titanic %>%
   ggplot(aes(vars = vars(1:4))) + 
-  geom_pcp(aes(colour = Class), alpha = 0.1, breakpoint=2:3, boxwidth = 0.5, overplot = "hierarchical") + 
+  geom_pcp(aes(colour = Class), alpha = 0.1, resort=2:3, boxwidth = 0.5, overplot = "hierarchical") + 
   geom_pcp_box(boxwidth = 0.5)
 ```
 

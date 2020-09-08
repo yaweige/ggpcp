@@ -38,11 +38,11 @@
 #'    often aesthetics, used to set an aesthetic to a fixed value, like
 #'    `colour = "red"` or `size = 3`. They may also be parameters
 #'    to the paired geom/stat.
-#' @param freespace The total gap space among levels within each factor variable.
-#' @param boxwidth The width of the boxes for factor variables, either a scalar or a vector with length equal to the number of factor variables.
-#' @param rugwidth The width of the rugs for numeric variables,either a scalar or a vector with length equal to the number of numeric variables.
-#' @param interwidth The width for the lines between every neighboring variables, either
-#'  a scalar or a vector with length equal to the total number of variables subtracting one.
+#' @param freespace A number in 0 to 1 (excluded). The total gap space among levels within each factor variable
+#' @param boxwidth A number or a numeric vector (length equal to the number of factor variables) for the widths of the boxes for each factor variable
+#' @param rugwidth A number or a numeric vector (length equal to the number of numeric variables) for the widths of the rugs for numeric variable
+#' @param interwidth A number or a numeric vector (length equal to the number of variables minus 1) for the width for the lines between every neighboring variables, either
+#'  a scalar or a vector.
 #' @param reverse reverse the plot, useful especially when you want to reverse the structure in factor blocks,
 #' i.e. to become more ordered from right to left
 #' @param parse If `TRUE`, the labels will be parsed into expressions and
@@ -63,9 +63,9 @@
 #'       am = factor(am),
 #'       gear = factor(gear)) %>%
 #'  ggplot(aes(vars = vars(cyl, vs:gear))) +
-#'  geom_pcp(aes(color = vs), boxwidth = 0.2, breakpoint = 2:3) +
+#'  geom_pcp(aes(color = vs), boxwidth = 0.2, resort = 2:3) +
 #'  geom_pcp_box(boxwidth = 0.2) +
-#'  geom_pcp_band(boxwidth = 0.2, breakpoint = 2:3) +
+#'  geom_pcp_band(boxwidth = 0.2, resort = 2:3) +
 #'  geom_pcp_text(boxwidth = 0.2)
 
 geom_pcp_text <- function(mapping = NULL, data = NULL,
