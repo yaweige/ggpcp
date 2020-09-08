@@ -11,7 +11,7 @@
 gather_pcp <- function(data, ...) {
   name <- value <- NULL # make R CMD CHECK happy
   # coerce character variable
-  data <- as.data.frame(lapply(data, FUN = function(x){
+  data <- data.frame(lapply(data, FUN = function(x){
     if(is.character(x)) {
       output <- factor(x)
     } else {

@@ -47,10 +47,14 @@ xscale_pcp <- function(data, params, layout, ...) {
   breaks <- width_adjusted$breaks
   # scales$x <- scale_x_continuous(limits = c(1,p + params$boxwidth*sum(type=="factor")), breaks = breaks, labels = data$name[data$id__==1])
   if (params$reverse == TRUE) {
-    scale <- scale_x_continuous(limits = c(min(boxwidth_xend), max(boxwidth_xstart)), breaks = breaks, labels = unique(data$name), ...)
+    scale <- scale_x_continuous(limits = c(min(boxwidth_xend), max(boxwidth_xstart)),
+                                breaks = breaks, labels = data$x__labels__[seq_along(classpcp)], ...)
   } else {
-    scale <- scale_x_continuous(limits = c(min(boxwidth_xstart), max(boxwidth_xend)), breaks = breaks, labels = unique(data$name), ...)
+    scale <- scale_x_continuous(limits = c(min(boxwidth_xstart), max(boxwidth_xend)),
+                                breaks = breaks, labels = data$x__labels__[seq_along(classpcp)], ...)
   }
+  # scale <- scale_x_continuous(limits = c(min(boxwidth_xstart), max(boxwidth_xend)),
+  #                             breaks = breaks, labels = unique(data$name), ...)
   scale$get_breaks <- function(limits) breaks
   scale
 }

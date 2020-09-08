@@ -105,9 +105,13 @@ StatPcpband <- ggproto(
     #   browser()
     idx <- grep("x__", names(data))
     names(data) <- gsub("x__[0-9]+__", "", names(data))
+    # x__labels__ works together with data.frame(..., check.names = TRUE) (default) to allow spaces in names, also won't add .1 .2 after same variables
+    # x__labels__ is just for x labels
+    x__labels__ <- names(data)
     data <- data.frame(data, stringsAsFactors = TRUE)
     data <- gather_pcp(data, idx)
     data <- transform_pcp(data, method = "uniminmax")
+    data$x__labels__ <- c(x__labels__, rep("nothing", times = nrow(data) - length(x__labels__)))
 
     data
   },
