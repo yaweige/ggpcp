@@ -4,10 +4,22 @@
 \alias{geom_pcp_box}
 \title{Boxes for the levels in each factor variable in parallel coordinate plot}
 \usage{
-geom_pcp_box(mapping = NULL, data = NULL, stat = "pcpbox",
-  position = "identity", rule = "evenodd", ..., freespace = 0.1,
-  boxwidth = 0, rugwidth = 0, interwidth = 1, na.rm = FALSE,
-  show.legend = NA, inherit.aes = TRUE)
+geom_pcp_box(
+  mapping = NULL,
+  data = NULL,
+  stat = "pcpbox",
+  position = "identity",
+  rule = "evenodd",
+  ...,
+  freespace = 0.1,
+  boxwidth = 0,
+  rugwidth = 0,
+  interwidth = 1,
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE,
+  reverse = FALSE
+)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by [aes()] or
@@ -67,6 +79,9 @@ display.}
 rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. [borders()].}
+
+\item{reverse}{reverse the plot, useful especially when you want to reverse the structure in factor blocks,
+i.e. to become more ordered from right to left}
 }
 \description{
 To add boxes showing the levels in each factor variable

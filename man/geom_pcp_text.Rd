@@ -5,18 +5,47 @@
 \alias{geom_pcp_text}
 \title{Texts and labels for the categories of factor variables in parallel coordinate plot}
 \usage{
-geom_pcp_label(mapping = NULL, data = NULL, stat = "pcpbox",
-  position = "identity", ..., freespace = 0.1, boxwidth = 0,
-  rugwidth = 0, interwidth = 1, parse = FALSE, nudge_x = 0,
-  nudge_y = 0, label.padding = unit(0.25, "lines"),
-  label.r = unit(0.15, "lines"), label.size = 0.25, na.rm = FALSE,
-  show.legend = NA, inherit.aes = TRUE)
+geom_pcp_label(
+  mapping = NULL,
+  data = NULL,
+  stat = "pcpbox",
+  position = "identity",
+  ...,
+  freespace = 0.1,
+  boxwidth = 0,
+  rugwidth = 0,
+  interwidth = 1,
+  reverse = FALSE,
+  parse = FALSE,
+  nudge_x = 0,
+  nudge_y = 0,
+  label.padding = unit(0.25, "lines"),
+  label.r = unit(0.15, "lines"),
+  label.size = 0.25,
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE
+)
 
-geom_pcp_text(mapping = NULL, data = NULL, stat = "pcpbox",
-  position = "identity", ..., freespace = 0.1, boxwidth = 0,
-  rugwidth = 0, interwidth = 1, parse = FALSE, nudge_x = 0,
-  nudge_y = 0, check_overlap = FALSE, na.rm = FALSE,
-  show.legend = NA, inherit.aes = TRUE)
+geom_pcp_text(
+  mapping = NULL,
+  data = NULL,
+  stat = "pcpbox",
+  position = "identity",
+  ...,
+  freespace = 0.1,
+  boxwidth = 0,
+  rugwidth = 0,
+  interwidth = 1,
+  reverse = FALSE,
+  parse = FALSE,
+  nudge_x = 0,
+  nudge_y = 0,
+  check_overlap = FALSE,
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE
+)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by [aes()] or
@@ -57,6 +86,9 @@ to the paired geom/stat.}
 
 \item{interwidth}{The width for the lines between every neighboring variables, either
 a scalar or a vector with length equal to the total number of variables subtracting one.}
+
+\item{reverse}{reverse the plot, useful especially when you want to reverse the structure in factor blocks,
+i.e. to become more ordered from right to left}
 
 \item{parse}{If `TRUE`, the labels will be parsed into expressions and
 displayed as described in `?plotmath`.}

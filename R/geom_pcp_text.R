@@ -43,6 +43,8 @@
 #' @param rugwidth The width of the rugs for numeric variables,either a scalar or a vector with length equal to the number of numeric variables.
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector with length equal to the total number of variables subtracting one.
+#' @param reverse reverse the plot, useful especially when you want to reverse the structure in factor blocks,
+#' i.e. to become more ordered from right to left
 #' @param parse If `TRUE`, the labels will be parsed into expressions and
 #'   displayed as described in `?plotmath`.
 #' @param nudge_x,nudge_y Horizontal and vertical adjustment to nudge labels by.
@@ -73,6 +75,7 @@ geom_pcp_text <- function(mapping = NULL, data = NULL,
                           boxwidth = 0,
                           rugwidth = 0,
                           interwidth = 1,
+                          reverse = FALSE,
                           parse = FALSE,
                           nudge_x = 0,
                           nudge_y = 0,
@@ -103,6 +106,7 @@ geom_pcp_text <- function(mapping = NULL, data = NULL,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
       interwidth = interwidth,
+      reverse = reverse,
       na.rm = na.rm,
       parse = parse,
       check_overlap = check_overlap,

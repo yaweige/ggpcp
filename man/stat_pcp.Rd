@@ -5,13 +5,28 @@
 \alias{stat_pcp}
 \alias{StatPcp}
 \title{Parallel coordinate plot for both numeric and categorical data}
-\format{An object of class \code{StatPcp} (inherits from \code{Stat}, \code{ggproto}, \code{gg}) of length 6.}
+\format{
+An object of class \code{StatPcp} (inherits from \code{Stat}, \code{ggproto}, \code{gg}) of length 6.
+}
 \usage{
-stat_pcp(mapping = NULL, data = NULL, geom = "segment",
-  position = "identity", ..., freespace = 0.1, method = "uniminmax",
-  boxwidth = 0, rugwidth = 0, interwidth = 1, breakpoint = NULL,
-  overplot = "hierarchical", mirror = FALSE, na.rm = FALSE,
-  show.legend = NA, inherit.aes = TRUE)
+stat_pcp(
+  mapping = NULL,
+  data = NULL,
+  geom = "segment",
+  position = "identity",
+  ...,
+  freespace = 0.1,
+  method = "uniminmax",
+  boxwidth = 0,
+  rugwidth = 0,
+  interwidth = 1,
+  breakpoint = NULL,
+  overplot = "hierarchical",
+  reverse = FALSE,
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE
+)
 
 StatPcp
 }
@@ -61,7 +76,8 @@ a scalar or a vector.}
 
 \item{overplot}{methods used to conduct overplotting when overplotting becomes an issue.}
 
-\item{mirror}{mirror the plot, useful especially when you want to reverse the structure in factor block}
+\item{reverse}{reverse the plot, useful especially when you want to reverse the structure in factor blocks,
+i.e. to become more ordered from right to left}
 
 \item{na.rm}{If `FALSE`, the default, missing values are removed with
 a warning. If `TRUE`, missing values are silently removed.}

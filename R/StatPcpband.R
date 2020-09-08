@@ -43,6 +43,8 @@
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
 #' @param breakpoint To break three or more factors into peices
+#' @param reverse reverse the plot, useful especially when you want to reverse the structure in factor blocks,
+#' i.e. to become more ordered from right to left
 #' @param merge To merge the bands or not
 #'
 #' @import ggplot2
@@ -59,6 +61,7 @@ stat_pcp_band <- function(mapping = NULL, data = NULL,
                           rugwidth = 0,
                           interwidth = 1,
                           breakpoint = NULL,
+                          reverse = FALSE,
                           merge = FALSE,
                           na.rm = FALSE,
                           show.legend = NA,
@@ -78,6 +81,7 @@ stat_pcp_band <- function(mapping = NULL, data = NULL,
       rugwidth = rugwidth,
       interwidth = interwidth,
       breakpoint = breakpoint,
+      reverse = reverse,
       merge = merge,
       ...
     )
@@ -138,7 +142,7 @@ StatPcpband <- ggproto(
 
   compute_panel = function(data, scales, freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
-                           breakpoint = NULL, merge = FALSE) {
+                           breakpoint = NULL,  reverse = FALSE, merge = FALSE) {
 
 
     # Data preparation: to convert the input data to the form we can directly use
@@ -283,7 +287,7 @@ StatPcpband <- ggproto(
 
 
     # interval length, boxwidth, rugwidth ajustment preparation
-    width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth)
+    width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth, reverse)
 
     # to modify and convert to long form
     data_band_final_wide[ ,5] <- width_adjusted$boxwidth_xend[data_band_final_wide[ ,5]]

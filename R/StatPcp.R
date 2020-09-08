@@ -73,7 +73,8 @@
 #'  a scalar or a vector.
 #' @param breakpoint To break three or more factors into peices
 #' @param overplot methods used to conduct overplotting when overplotting becomes an issue.
-#' @param mirror mirror the plot, useful especially when you want to reverse the structure in factor block
+#' @param reverse reverse the plot, useful especially when you want to reverse the structure in factor blocks,
+#' i.e. to become more ordered from right to left
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange
 #' @importFrom tidyr spread
@@ -90,7 +91,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
                      interwidth = 1,
                      breakpoint = NULL,
                      overplot = "hierarchical",
-                     mirror = FALSE,
+                     reverse = FALSE,
                      na.rm = FALSE,
                      show.legend = NA,
                      inherit.aes = TRUE) {
@@ -113,7 +114,7 @@ stat_pcp <- function(mapping = NULL, data = NULL,
       interwidth = interwidth,
       breakpoint = breakpoint,
       overplot = overplot,
-      mirror = mirror,
+      reverse = reverse,
       ...
     )
   )
@@ -179,7 +180,7 @@ StatPcp <- ggproto(
   # want to calculate the parameters directly can be used for geom_segment and geom_ribbon
   compute_panel = function(data, scales, method = "uniminmax", freespace = 0.1, boxwidth = 0,
                            rugwidth = 0 , interwidth = 1,
-                           breakpoint = NULL, overplot = "original", mirror = FALSE) {
+                           breakpoint = NULL, overplot = "original", reverse = FALSE) {
     # Input check and sensible warning
 
     # Data preparation: to convert the input data to the form we can directly use
@@ -566,7 +567,7 @@ StatPcp <- ggproto(
     # This has different length from the original data coming to compute_panel
 
     # interval length, boxwidth, rugwidth ajustment preparation
-    width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth)
+    width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth, reverse = reverse)
 
     # adjust the data according to the adjusted position
     data_boxwidth <- data_final
@@ -767,24 +768,27 @@ StatPcp <- ggproto(
       output_data <- data_boxwidth
     }
 
-    # mirror: to make the plot readable from left to right, especially for factor block design
-
-    if(mirror == TRUE){
-      x_value <- levels(factor(output_data$x))
-      xend_value <- levels(factor(output_data$xend))
-
-      mirror_x <- factor(output_data$x)
-      levels(mirror_x) <- rev(xend_value)
-      mirror_x <- as.numeric(as.character(mirror_x))
-
-      mirror_xend <- factor(output_data$xend)
-      levels(mirror_xend) <- rev(x_value)
-      mirror_xend <- as.numeric(as.character(mirror_xend))
-
-      output_data$x <- mirror_x
-      output_data$xend <- mirror_xend
-
-    }
+    # reverse: to make the plot readable from left to right, especially for factor block design
+    # also adjusted the grids in scales.R and in the "prepare_width_ajustment" (should be adjustment though) part of this file
+    # also to improve the original output
+    output_data <- output_data %>% filter(x != xend)
+    # no more needed
+    # if(reverse == TRUE){
+    #   x_value <- levels(factor(output_data$x))
+    #   xend_value <- levels(factor(output_data$xend))
+    #
+    #   mirror_x <- factor(output_data$x)
+    #   levels(mirror_x) <- rev(xend_value)
+    #   mirror_x <- as.numeric(as.character(mirror_x))
+    #
+    #   mirror_xend <- factor(output_data$xend)
+    #   levels(mirror_xend) <- rev(x_value)
+    #   mirror_xend <- as.numeric(as.character(mirror_xend))
+    #
+    #   output_data$x <- mirror_x
+    #   output_data$xend <- mirror_xend
+    #
+    # }
     output_data
   }
 )
@@ -1120,31 +1124,60 @@ prepare_data <- function(data, classpcp, nobs) {
 # The function for the preparation of adjusment for boxwidth, rugwidth, interwidth
 # used to calculate the adjusted values, which are used later in other places to actually do the adjustment
 
-prepare_width_ajustment <- function(classpcp, boxwidth, rugwidth, interwidth) {
+prepare_width_ajustment <- function(classpcp, boxwidth, rugwidth, interwidth, reverse = FALSE) {
   # interval length, boxwidth, rugwidth
   # adjusted for different lengths
-  if (length(interwidth) == 1) {
-    interwidth <- rep(interwidth, times = length(classpcp) - 1)
-  }
-  interwidth <- cumsum(c(1, interwidth))
+  if (reverse != TRUE) {
+    if (length(interwidth) == 1) {
+      interwidth <- rep(interwidth, times = length(classpcp) - 1)
+    }
+    interwidth <- cumsum(c(1, interwidth))
 
-  if (length(boxwidth) == 1) {
-    boxwidth <- rep(boxwidth, times = sum(classpcp == "factor"))
-  }
-  if (length(rugwidth) == 1) {
-    rugwidth <- rep(rugwidth, times = sum(!classpcp == "factor"))
-  }
-  # calculate cumulated changes
-  boxrugwidth <- seq_along(classpcp)
-  boxrugwidth[classpcp == "factor"] <- boxwidth
-  boxrugwidth[!classpcp == "factor"] <- rugwidth
-  cumboxrugwidth <- cumsum(boxrugwidth)
-  # calculate the ajusted position
-  boxwidth_xend <-  interwidth + cumboxrugwidth
-  boxwidth_xstart <- boxwidth_xend - boxrugwidth
+    if (length(boxwidth) == 1) {
+      boxwidth <- rep(boxwidth, times = sum(classpcp == "factor"))
+    }
+    if (length(rugwidth) == 1) {
+      rugwidth <- rep(rugwidth, times = sum(!classpcp == "factor"))
+    }
+    # calculate accumulated changes
+    boxrugwidth <- seq_along(classpcp)
+    boxrugwidth[classpcp == "factor"] <- boxwidth
+    boxrugwidth[!classpcp == "factor"] <- rugwidth
+    cumboxrugwidth <- cumsum(boxrugwidth)
+    # calculate the adjusted position
+    boxwidth_xend <-  interwidth + cumboxrugwidth
+    boxwidth_xstart <- boxwidth_xend - boxrugwidth
 
-  width_adjusted <- list(boxwidth_xstart = boxwidth_xstart,
-                         boxwidth_xend = boxwidth_xend)
+    width_adjusted <- list(boxwidth_xstart = boxwidth_xstart,
+                           boxwidth_xend = boxwidth_xend,
+                           breaks = boxwidth_xend - boxrugwidth/2)
+    width_adjusted
+  } else {
+    if (length(interwidth) == 1) {
+      interwidth <- rep(interwidth, times = length(classpcp) - 1)
+    }
+    interwidth <- cumsum(c(-1, -interwidth))
+
+    if (length(boxwidth) == 1) {
+      boxwidth <- rep(boxwidth, times = sum(classpcp == "factor"))
+    }
+    if (length(rugwidth) == 1) {
+      rugwidth <- rep(rugwidth, times = sum(!classpcp == "factor"))
+    }
+    # calculate accumulated changes
+    boxrugwidth <- seq_along(classpcp)
+    boxrugwidth[classpcp == "factor"] <- -boxwidth
+    boxrugwidth[!classpcp == "factor"] <- -rugwidth
+    cumboxrugwidth <- cumsum(boxrugwidth)
+    # calculate the adjusted position
+    boxwidth_xend <-  interwidth + cumboxrugwidth
+    boxwidth_xstart <- boxwidth_xend - boxrugwidth
+
+    width_adjusted <- list(boxwidth_xstart = boxwidth_xstart,
+                           boxwidth_xend = boxwidth_xend,
+                           breaks = boxwidth_xend - boxrugwidth/2)
+    width_adjusted
+  }
   width_adjusted
 }
 

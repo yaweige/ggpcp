@@ -4,10 +4,23 @@
 \alias{geom_pcp_band}
 \title{Bands for the parallel coordinate plot}
 \usage{
-geom_pcp_band(mapping = NULL, data = NULL, stat = "pcpband",
-  position = "identity", ..., freespace = 0.1, boxwidth = 0,
-  rugwidth = 0, interwidth = 1, breakpoint = NULL, merge = FALSE,
-  na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)
+geom_pcp_band(
+  mapping = NULL,
+  data = NULL,
+  stat = "pcpband",
+  position = "identity",
+  ...,
+  freespace = 0.1,
+  boxwidth = 0,
+  rugwidth = 0,
+  interwidth = 1,
+  breakpoint = NULL,
+  reverse = FALSE,
+  merge = FALSE,
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE
+)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by [aes()] or
@@ -52,7 +65,10 @@ a scalar or a vector with length equal to the total number of variables subtract
 
 \item{breakpoint}{Positions indicating where to break, can be a vector.
 To break three or more factor variables to better show the relations between adjacent factor variables.
-Can't be used when there is only one or two factor vairbles.}
+Can't be used when there is only one or two factor variables.}
+
+\item{reverse}{reverse the plot, useful especially when you want to reverse the structure in factor blocks,
+i.e. to become more ordered from right to left}
 
 \item{merge}{To merge the bands or not}
 

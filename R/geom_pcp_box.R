@@ -43,6 +43,8 @@
 #' @param rugwidth The width of the rugs for numeric variables,either a scalar or a vector with length equal to the number of numeric variables.
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector with length equal to the total number of variables subtracting one.
+#' @param reverse reverse the plot, useful especially when you want to reverse the structure in factor blocks,
+#' i.e. to become more ordered from right to left
 #' @param rule Either `"evenodd"` or `"winding"`. If polygons with holes are
 #'    being drawn (using the `subgroup` aesthetic) this argument defines how the
 #'    hole coordinates are interpreted. See the examples in [grid::pathGrob()] for
@@ -75,7 +77,8 @@ geom_pcp_box <- function(
   interwidth = 1,
   na.rm = FALSE,
   show.legend = NA,
-  inherit.aes = TRUE) {
+  inherit.aes = TRUE,
+  reverse = FALSE) {
 
   ll <- layer(
     data = data,
@@ -90,6 +93,7 @@ geom_pcp_box <- function(
       boxwidth = boxwidth,
       rugwidth = rugwidth,
       interwidth = interwidth,
+      reverse = reverse,
       na.rm = na.rm,
       rule = rule,
       ...

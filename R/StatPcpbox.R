@@ -42,6 +42,8 @@
 #' @param rugwidth The width of the rugs for numeric variable
 #' @param interwidth The width for the lines between every neighboring variables, either
 #'  a scalar or a vector.
+#' @param reverse reverse the plot, useful especially when you want to reverse the structure in factor blocks,
+#' i.e. to become more ordered from right to left
 #' @import ggplot2
 #' @importFrom dplyr %>% group_by ungroup arrange
 #' @importFrom tidyr spread
@@ -53,6 +55,7 @@ stat_pcp_box <- function(mapping = NULL, data = NULL,
                          boxwidth = 0,
                          rugwidth = 0,
                          interwidth = 1,
+                         reverse = FALSE,
                          na.rm = FALSE,
                          show.legend = NA,
                          inherit.aes = TRUE) {
@@ -70,6 +73,7 @@ stat_pcp_box <- function(mapping = NULL, data = NULL,
       boxwidth = boxwidth,
       rugwidth = rugwidth,
       interwidth = interwidth,
+      reverse = reverse,
       ...
     )
   )
@@ -125,6 +129,7 @@ StatPcpbox <- ggproto(
                            boxwidth = 0.1,
                            rugwidth = 0.05,
                            interwidth = 1,
+                           reverse = FALSE,
                            method = "uniminmax"
   ) {
     # the following code are some of the internal part of StatPcp
@@ -143,7 +148,7 @@ StatPcpbox <- ggproto(
     # boxwidth
     # interval length, boxwidth, rugwidth
     # interval length, boxwidth, rugwidth ajustment preparation
-    width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth)
+    width_adjusted <- prepare_width_ajustment(classpcp, boxwidth, rugwidth, interwidth, reverse = reverse)
 
     # box
     # make sure all of the levels in text_spread are in the right order

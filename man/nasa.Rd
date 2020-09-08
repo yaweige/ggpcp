@@ -4,7 +4,9 @@
 \name{nasa}
 \alias{nasa}
 \title{NASA - Data Expo 2006}
-\format{A data frame with 41472 (= 24 x 24 x 72) rows and 15 variables:}
+\format{
+A data frame with 41472 (= 24 x 24 x 72) rows and 15 variables:
+}
 \source{
 \url{http://stat-computing.org/dataexpo/2006/}
 }
