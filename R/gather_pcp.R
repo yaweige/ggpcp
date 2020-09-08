@@ -19,6 +19,11 @@ gather_pcp <- function(data, ...) {
     }
     output
   }))
+  # arrange the data to make the output plot unique and looks better in most cases
+  for(i in eval(...)) {
+    data <- data %>% arrange(.data[[names(data)[i]]])
+  }
+
 
   subdata <- data[,eval(...), drop=FALSE]
   data$id__ <- 1:nrow(data)
