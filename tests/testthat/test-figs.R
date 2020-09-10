@@ -15,6 +15,7 @@ testthat::test_that("Basic structure for geom_pcp output", {
            vs = factor(vs),
            am = factor(am),
            gear = factor(gear)) %>%
+    arrange(cyl, vs, am, gear) %>%
     ggplot(aes(vars = vars(cyl, vs:gear))) +
     geom_pcp(aes(color = vs), boxwidth = 0.2, resort = 2:3) +
     geom_pcp_box(boxwidth = 0.2) +
