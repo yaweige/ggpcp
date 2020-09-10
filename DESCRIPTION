@@ -29,5 +29,7 @@ RoxygenNote: 7.1.0
 Suggests: 
     knitr,
     rmarkdown,
-    purrr
+    purrr,
+    testthat,
+    vdiffr
 VignetteBuilder: knitr

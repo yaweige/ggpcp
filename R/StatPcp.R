@@ -78,7 +78,7 @@
 #' @param reverse reverse the plot, useful especially when you want to reverse the structure in factor blocks,
 #' i.e. to become more ordered from right to left
 #' @import ggplot2
-#' @importFrom dplyr %>% group_by ungroup arrange
+#' @importFrom dplyr %>% group_by ungroup arrange filter
 #' @importFrom tidyr spread
 #' @importFrom assertthat assert_that has_name
 #' @export
@@ -778,7 +778,7 @@ StatPcp <- ggproto(
     # reverse: to make the plot readable from left to right, especially for factor block design
     # also adjusted the grids in scales.R and in the "prepare_width_ajustment" (should be adjustment though) part of this file
     # also to improve the original output
-    output_data <- output_data %>% filter(x != xend)
+    output_data <- output_data %>% dplyr::filter(x != xend)
     # no more needed
     # if(reverse == TRUE){
     #   x_value <- levels(factor(output_data$x))
