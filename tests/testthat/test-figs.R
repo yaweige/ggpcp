@@ -1,5 +1,7 @@
 context("Final GPCP Figures")
 
+# Manually change the following line for check
+Sys.setenv(VDIFFR_RUN_TESTS = FALSE)
 
 testthat::test_that("Basic plots", {
   df1 <- data.frame(var1 = 1:10,
