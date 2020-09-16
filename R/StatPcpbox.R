@@ -137,7 +137,7 @@ StatPcpbox <- ggproto(
                            method = "uniminmax"
   ) {
     # the following code are some of the internal part of StatPcp
-    #browser()
+  #  browser()
     # Data preparation: to convert the input data to the form we can directly use
     # number of observations
     nobs <- length(unique(data$id__))
@@ -149,6 +149,9 @@ StatPcpbox <- ggproto(
     text_spread <- spread(data[, c("id__", "name", "value_text")], key=name, value = value_text)
     level_spread <- spread(data[, c("id__", "name", "level")], key=name, value = level)
 
+    text_spread <- as.data.frame(text_spread)
+    level_spread <- as.data.frame(level_spread)
+
     # boxwidth
     # interval length, boxwidth, rugwidth
     # interval length, boxwidth, rugwidth ajustment preparation
@@ -158,7 +161,7 @@ StatPcpbox <- ggproto(
     # make sure all of the levels in text_spread are in the right order
     lapply(2:ncol(text_spread), FUN = function(i) {
       if (classpcp[i-1] == "factor") {
-        levels <- unique(text_spread[,i])[order(unique(level_spread[,i]))]
+        levels <- unlist(unique(text_spread[,i]))[order(unique(level_spread[,i]))]
         text_spread[,i] <<- factor(text_spread[,i], levels=levels)
       }
     })
