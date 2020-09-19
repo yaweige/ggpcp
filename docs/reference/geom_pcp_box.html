@@ -108,10 +108,22 @@
     <p>To add boxes showing the levels in each factor variable</p>
     </div>
 
-    <pre class="usage"><span class='fu'>geom_pcp_box</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"pcpbox"</span>,
-  <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='kw'>rule</span> <span class='kw'>=</span> <span class='st'>"evenodd"</span>, <span class='no'>...</span>, <span class='kw'>freespace</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
-  <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>rugwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>interwidth</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>geom_pcp_box</span>(
+  <span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"pcpbox"</span>,
+  <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
+  <span class='kw'>rule</span> <span class='kw'>=</span> <span class='st'>"evenodd"</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>freespace</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
+  <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>rugwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>interwidth</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>reverse</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -162,20 +174,20 @@ to the paired geom/stat.</p></td>
     </tr>
     <tr>
       <th>freespace</th>
-      <td><p>The total gap space among levels within each factor variable.</p></td>
+      <td><p>A number in 0 to 1 (excluded). The total gap space among levels within each factor variable</p></td>
     </tr>
     <tr>
       <th>boxwidth</th>
-      <td><p>The width of the boxes for factor variables, either a scalar or a vector with length equal to the number of factor variables.</p></td>
+      <td><p>A number or a numeric vector (length equal to the number of factor variables) for the widths of the boxes for each factor variable</p></td>
     </tr>
     <tr>
       <th>rugwidth</th>
-      <td><p>The width of the rugs for numeric variables,either a scalar or a vector with length equal to the number of numeric variables.</p></td>
+      <td><p>A number or a numeric vector (length equal to the number of numeric variables) for the widths of the rugs for numeric variable</p></td>
     </tr>
     <tr>
       <th>interwidth</th>
-      <td><p>The width for the lines between every neighboring variables, either
-a scalar or a vector with length equal to the total number of variables subtracting one.</p></td>
+      <td><p>A number or a numeric vector (length equal to the number of variables minus 1) for the width for the lines between every neighboring variables, either
+a scalar or a vector.</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
@@ -197,6 +209,11 @@ rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. [borders()].</p></td>
     </tr>
+    <tr>
+      <th>reverse</th>
+      <td><p>reverse the plot, useful especially when you want to reverse the structure in factor blocks,
+i.e. to become more ordered from right to left</p></td>
+    </tr>
     </table>
 
 
@@ -210,9 +227,9 @@ the default plot specification, e.g. [borders()].</p></td>
       <span class='kw'>am</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span>(<span class='no'>am</span>),
       <span class='kw'>gear</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span>(<span class='no'>gear</span>)) <span class='kw'>%&gt;%</span>
  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span>(<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>vars</span> <span class='kw'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/vars.html'>vars</a></span>(<span class='no'>cyl</span>, <span class='no'>vs</span>:<span class='no'>gear</span>))) +
- <span class='fu'><a href='geom_pcp.html'>geom_pcp</a></span>(<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>color</span> <span class='kw'>=</span> <span class='no'>vs</span>), <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>breakpoint</span> <span class='kw'>=</span> <span class='fl'>2</span>:<span class='fl'>3</span>) +
+ <span class='fu'><a href='geom_pcp.html'>geom_pcp</a></span>(<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>color</span> <span class='kw'>=</span> <span class='no'>vs</span>), <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>resort</span> <span class='kw'>=</span> <span class='fl'>2</span>:<span class='fl'>3</span>) +
  <span class='fu'>geom_pcp_box</span>(<span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0.2</span>) +
- <span class='fu'><a href='geom_pcp_band.html'>geom_pcp_band</a></span>(<span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>breakpoint</span> <span class='kw'>=</span> <span class='fl'>2</span>:<span class='fl'>3</span>) +
+ <span class='fu'><a href='geom_pcp_band.html'>geom_pcp_band</a></span>(<span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>resort</span> <span class='kw'>=</span> <span class='fl'>2</span>:<span class='fl'>3</span>) +
  <span class='fu'><a href='geom_pcp_text.html'>geom_pcp_text</a></span>(<span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0.2</span>)</div><div class='img'><img src='geom_pcp_box-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

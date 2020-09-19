@@ -114,7 +114,7 @@ in the parallel coordinate plot. Options are named in the same way as the option
   \item{\code{std}}{: univariately, subtract mean and divide by standard deviation. To get values into a [0,1] interval we use a linear transformation of f(y) = y/4+0.5. }
   \item{\code{robust}}{: univariately, subtract median and divide by median absolute deviation. To get values into a [0,1] interval we use a linear transformation of f(y) = y/4+0.5. }
   \item{\code{uniminmax}}{: univariately, scale so the minimum of the variable is zero, and the maximum is one.}
-  \item{\code{globalminmax}}{: gobal scaling; the global maximum is mapped to 1,
+  \item{\code{globalminmax}}{: global scaling; the global maximum is mapped to 1,
     global minimum across the variables is mapped to 0. }
 }
 

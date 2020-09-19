@@ -112,12 +112,28 @@ several dimensions as lines. This function work well with both numeric and categ
 variables at the same time after proper scaling.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>geom_pcp</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"pcp"</span>,
-  <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='no'>...</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"uniminmax"</span>, <span class='kw'>freespace</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
-  <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>rugwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>interwidth</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>breakpoint</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>overplot</span> <span class='kw'>=</span> <span class='st'>"hierarchical"</span>, <span class='kw'>mirror</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>arrow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>arrow.fill</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lineend</span> <span class='kw'>=</span> <span class='st'>"butt"</span>, <span class='kw'>linejoin</span> <span class='kw'>=</span> <span class='st'>"round"</span>,
-  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>geom_pcp</span>(
+  <span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"pcp"</span>,
+  <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"uniminmax"</span>,
+  <span class='kw'>freespace</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
+  <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>rugwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>interwidth</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>resort</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>overplot</span> <span class='kw'>=</span> <span class='st'>"hierarchical"</span>,
+  <span class='kw'>reverse</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>arrow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>arrow.fill</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>lineend</span> <span class='kw'>=</span> <span class='st'>"butt"</span>,
+  <span class='kw'>linejoin</span> <span class='kw'>=</span> <span class='st'>"round"</span>,
+  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -166,34 +182,35 @@ in a parallel coordinate plot (see Details).</p></td>
     </tr>
     <tr>
       <th>freespace</th>
-      <td><p>The total gap space among levels within each factor variable.</p></td>
+      <td><p>A number in 0 to 1 (excluded). The total gap space among levels within each factor variable</p></td>
     </tr>
     <tr>
       <th>boxwidth</th>
-      <td><p>The width of the boxes for factor variables, either a scalar or a vector with length equal to the number of factor variables.</p></td>
+      <td><p>A number or a numeric vector (length equal to the number of factor variables) for the widths of the boxes for each factor variable</p></td>
     </tr>
     <tr>
       <th>rugwidth</th>
-      <td><p>The width of the rugs for numeric variables,either a scalar or a vector with length equal to the number of numeric variables.</p></td>
+      <td><p>A number or a numeric vector (length equal to the number of numeric variables) for the widths of the rugs for numeric variable</p></td>
     </tr>
     <tr>
       <th>interwidth</th>
-      <td><p>The width for the lines between every neighboring variables, either
-a scalar or a vector with length equal to the total number of variables subtracting one.</p></td>
+      <td><p>A number or a numeric vector (length equal to the number of variables minus 1) for the width for the lines between every neighboring variables, either
+a scalar or a vector.</p></td>
     </tr>
     <tr>
-      <th>breakpoint</th>
-      <td><p>Positions indicating where to break, can be a vector.
-To break three or more factor variables to better show the relations between adjacent factor variables.
-Can't be used when there is only one or two factor vairbles.</p></td>
+      <th>resort</th>
+      <td><p>A integer or a integer vector to indicate the positions of vertical axes inside (can't be the boundary of) a sequence of factors.
+To break three or more factors into sub factor blocks,
+and conduct resort at the axes. Makes the plot clearer for adjacent factor variables.</p></td>
     </tr>
     <tr>
       <th>overplot</th>
       <td><p>methods used to conduct overplotting when overplotting becomes an issue.</p></td>
     </tr>
     <tr>
-      <th>mirror</th>
-      <td><p>mirror the plot, useful especially when you want to reverse the structure in factor block</p></td>
+      <th>reverse</th>
+      <td><p>reverse the plot, useful especially when you want to reverse the structure in factor blocks,
+i.e. to become more ordered from right to left</p></td>
     </tr>
     <tr>
       <th>arrow</th>
@@ -247,7 +264,7 @@ in the parallel coordinate plot. Options are named in the same way as the option
     <p><code>overplot</code> is a character string that denotes how to conduct overplotting
 in the parallel coordinate plot. The lines from <code>geom_pcp()</code>  are drawn according to the order they shown in your data set in default.
 Note that this argument provides a framework, the order in the original data still has a role in overplotting,
-especially for lines outside factor blocks(for <code>hierarchical</code> only), plots with <code>breakpoint</code> turned on(for methods except <code>hierarchical</code>):</p><ul>
+especially for lines outside factor blocks(for <code>hierarchical</code> only), plots with <code>resort</code> turned on(for methods except <code>hierarchical</code>):</p><ul>
 <li><p><code>original</code>: use the original order, first shown first drawn.</p></li>
 <li><p><code>hierarchical</code>: hierarchically drawn according to the combinations of levels of factor variables,
   which will change according to different level structures of factor variables you provided.
@@ -261,9 +278,9 @@ especially for lines outside factor blocks(for <code>hierarchical</code> only), 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>ggplot2</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>dplyr</span>)</div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:ggpcp’:</span>
+#&gt; <span class='message'>Attaching package: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:testthat’:</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'>    nasa</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
+#&gt; <span class='message'>    matches</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
 #&gt; <span class='message'></span>
 #&gt; <span class='message'>    filter, lag</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:base’:</span>
 #&gt; <span class='message'></span>
@@ -274,9 +291,9 @@ especially for lines outside factor blocks(for <code>hierarchical</code> only), 
       <span class='kw'>am</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span>(<span class='no'>am</span>),
       <span class='kw'>gear</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span>(<span class='no'>gear</span>)) <span class='kw'>%&gt;%</span>
  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span>(<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>vars</span> <span class='kw'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/vars.html'>vars</a></span>(<span class='no'>cyl</span>, <span class='no'>vs</span>:<span class='no'>gear</span>))) +
- <span class='fu'>geom_pcp</span>(<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>color</span> <span class='kw'>=</span> <span class='no'>vs</span>), <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>breakpoint</span> <span class='kw'>=</span> <span class='fl'>2</span>:<span class='fl'>3</span>) +
+ <span class='fu'>geom_pcp</span>(<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>color</span> <span class='kw'>=</span> <span class='no'>vs</span>), <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>resort</span> <span class='kw'>=</span> <span class='fl'>2</span>:<span class='fl'>3</span>) +
  <span class='fu'><a href='geom_pcp_box.html'>geom_pcp_box</a></span>(<span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0.2</span>) +
- <span class='fu'><a href='geom_pcp_band.html'>geom_pcp_band</a></span>(<span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>breakpoint</span> <span class='kw'>=</span> <span class='fl'>2</span>:<span class='fl'>3</span>) +
+ <span class='fu'><a href='geom_pcp_band.html'>geom_pcp_band</a></span>(<span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>resort</span> <span class='kw'>=</span> <span class='fl'>2</span>:<span class='fl'>3</span>) +
  <span class='fu'><a href='geom_pcp_text.html'>geom_pcp_text</a></span>(<span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0.2</span>)</div><div class='img'><img src='geom_pcp-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
