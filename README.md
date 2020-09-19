@@ -1,7 +1,7 @@
 ---
 title: "Generalized parallel coordinate plots with ggpcp"
 author: "Yawei Ge, Heike Hofmann"
-date: "February 18, 2020"
+date: "September 19, 2020"
 output: 
   html_document:
     keep_md: true
@@ -126,7 +126,7 @@ By setting break points between blocks of categorical variables, we can focus on
 ```r
 titanic %>% 
   ggplot(aes(vars = vars(1:4))) + 
-  geom_pcp(aes(colour = Survived), alpha = 0.1, breakpoint=2:3) +
+  geom_pcp(aes(colour = Survived), alpha = 0.1, resort=2:3) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
@@ -141,7 +141,7 @@ titanic %>%
   ggplot(aes(vars=vars(1:4))) + 
   geom_pcp_box(boxwidth=0.1, fill=NA) +
   geom_pcp(aes(colour = Survived), alpha = 0.1, 
-            boxwidth=0.1, breakpoint=2:3) +
+            boxwidth=0.1, resort=2:3) +
   scale_colour_manual(values=c("darkorange", "steelblue")) +
   guides(colour=guide_legend(override.aes = list(alpha=1))) 
 ```
@@ -173,7 +173,7 @@ mtcars %>%
          carb = factor(carb)) %>%
   ggplot(aes(vars = vars(1:ncol(mtcars)))) +
   geom_pcp_box(boxwidth=0.1, fill=NA, colour="grey70") +
-  geom_pcp(aes(colour = mpg), boxwidth=0.1, breakpoint=9:10, size=1, alpha =0.9) +
+  geom_pcp(aes(colour = mpg), boxwidth=0.1, resort=9:10, size=1, alpha =0.9) +
   geom_pcp_text(boxwidth=0.1) +
   scale_colour_gradient2("mpg", mid="grey50", midpoint = 20) +
   theme_bw()
@@ -198,6 +198,9 @@ We grouped locations using all January and July measurements of all climate vari
 The resulting clusters can then be summarized visually. What we see is that the clusters have a very distinct geographic pattern (tile plot). 
 
 
+```
+## `summarise()` regrouping output by 'id', 'variable' (override with `.groups` argument)
+```
 
 
 ```r
