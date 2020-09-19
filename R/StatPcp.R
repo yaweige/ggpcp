@@ -134,6 +134,7 @@ StatPcp <- ggproto(
     linewidth=.1, weight = 1, method = "uniminmax"),
 
   setup_data = function (data, params) {
+#    browser()
     idx <- grep("x__", names(data))
     names(data) <- gsub("x__[0-9]+__", "", names(data))
     # x__labels__ works together with data.frame(..., check.names = TRUE) (default) to allow spaces in names, also won't add .1 .2 after same variables
@@ -152,6 +153,7 @@ StatPcp <- ggproto(
   # want to figure out the number of different classer of the variables
   ### setup_params accept params from stat_pcp or geom_pcp?
   setup_params = function(data, params) {
+#    browser()
     params$freespace <- ifelse(is.null(params$freespace), 0.1, params$freespace)
     # And other parameters
     params
@@ -159,6 +161,7 @@ StatPcp <- ggproto(
   },
 
   compute_layer = function(self, data, params, layout, ...) {
+#    browser()
     # adjust function to avoid deleting all data
     ggplot2:::check_required_aesthetics(
       self$required_aes,
@@ -189,7 +192,7 @@ StatPcp <- ggproto(
                            rugwidth = 0 , interwidth = 1,
                            resort = NULL, overplot = "original", reverse = FALSE) {
     # Input check and sensible warning
-
+#browser()
     # Data preparation: to convert the input data to the form we can directly use
     # nobs, classpcp will also be used in other places, so they are kept
 
@@ -759,7 +762,7 @@ StatPcp <- ggproto(
 
     datanames <- setdiff(names(data), c("name", "value", "level", "class", "value_text"))
     # don't include the pcp specific variables - those are dealt with
-    data_boxwidth <- left_join(data_boxwidth, unique(data[,datanames]), by = "id__")
+    data_boxwidth <- left_join(data_boxwidth, unique(data[,datanames]), by = "id__", suffix=c("",".2"))
 
 
     # some of the reorder/arrange
