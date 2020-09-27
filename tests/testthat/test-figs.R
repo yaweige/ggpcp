@@ -40,7 +40,23 @@ testthat::test_that("Basic plots", {
 })
 
 
+testthat::test_that("iris bug fixed (multiple factor-number-factor mismatch)", {
+  df1 <- data.frame(var1 = 1:10,
+                    var2 = 10:1,
+                    fac1 = factor(rep(c("a", "b"), times = 5)),
+                    fac2 = factor(rep(c("c", "d"), each = 5)),
+                    fac3 = factor(rep(c("e", "f", "g", "h", "i"), each = 2)))
 
+  irisbug <- iris %>%
+    ggplot(aes(colour = Species, vars=vars(Species, 1, Species, 2, Species, 3:4, Species))) +
+    geom_pcp_box(boxwidth = .1) +
+    geom_pcp(boxwidth = .1) +
+    theme_bw() +
+    scale_colour_manual(values=c("darkgreen", "darkorange", "purple4")) +
+    theme(legend.position="bottom")
+
+  vdiffr::expect_doppelganger("iris bug fixed", irisbug)
+})
 
 
 

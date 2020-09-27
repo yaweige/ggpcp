@@ -533,17 +533,23 @@ StatPcp <- ggproto(
     data_final_ystart_fac2num[fac2num_change] <- data_final_yend_fac2fac[fac2num_fac_input]
 
 
-    # some other modifaction for fac2num (for num-fac-num case)
+    # some other modification for fac2num (for num-fac-num case)
     # we don't need to adjust fac2num for num-fac-num case, since it is adjusted by num2fac, to keep consistent
     # so we need to modify it back
     # detect those variables
     fac2num_numfacnum <- classification$fac2num[classification$fac2num %in% (classification$num2fac + 1)]
-    fac2num_numfacnum_relative <- which(classification$fac2num == fac2num_numfacnum)
-    num2fac_numfacnum_relative <- which(classification$num2fac == (fac2num_numfacnum - 1))
+    fac2num_numfacnum_relative <- which(classification$fac2num %in% fac2num_numfacnum)
+    num2fac_numfacnum_relative <- which(classification$num2fac %in% (fac2num_numfacnum - 1))
     if ((length(fac2num_numfacnum_relative) != 0)&(length(num2fac_numfacnum_relative) != 0)){
-      # for ystart of lines, keep it same as the num2fac result; this is the only thing that should be correct
-      data_final_ystart_fac2num[((fac2num_numfacnum_relative - 1)*nobs + 1):(fac2num_numfacnum_relative*nobs)] <-
-        data_final_yend_num2fac[((num2fac_numfacnum_relative - 1)*nobs + 1):(num2fac_numfacnum_relative*nobs)]
+      # for ystart of lines, keep it same as the num2fac result; this is the only thing that should be corrected
+      # data_final_ystart_fac2num[((fac2num_numfacnum_relative - 1)*nobs + 1):(fac2num_numfacnum_relative*nobs)] <-
+      #   data_final_yend_num2fac[((num2fac_numfacnum_relative - 1)*nobs + 1):(num2fac_numfacnum_relative*nobs)]
+
+      if (length(fac2num_numfacnum_relative) != length(num2fac_numfacnum_relative)) stop("unexpected error in fac-num-fac case, please report/fix")
+      for (i in seq_along(fac2num_numfacnum_relative)) {
+        data_final_ystart_fac2num[((fac2num_numfacnum_relative[i] - 1)*nobs + 1):(fac2num_numfacnum_relative[i]*nobs)] <-
+          data_final_yend_num2fac[((num2fac_numfacnum_relative[i] - 1)*nobs + 1):(num2fac_numfacnum_relative[i]*nobs)]
+      }
     }
 
 
