@@ -33,3 +33,5 @@ Suggests:
     testthat,
     vdiffr
 VignetteBuilder: knitr
+URL: https://github.com/yaweige/ggpcp
+BugReports: https://github.com/yaweige/ggpcp/issues
