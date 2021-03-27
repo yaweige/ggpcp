@@ -24,7 +24,7 @@ R package for creating generalized parallel coordinate plots in the ggplot2 fram
 
 ```{r, eval = FALSE}
 # install.packages("devtools")
-devtools::install_github("yaweige/ggpcp", build_vignettes = TRUE)
+remotes::install_github("yaweige/ggpcp", build_vignettes = TRUE)
 ```
 
 # Getting Started
