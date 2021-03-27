@@ -1,25 +1,26 @@
 ---
-title: "Generalized parallel coordinate plots with ggpcp"
-author: "Yawei Ge, Heike Hofmann"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
-output: 
-  html_document:
-    keep_md: true
+output: github_document
 ---
 
-```{r setup1, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+[![CRAN Status](http://www.r-pkg.org/badges/version/ggpcp)](https://cran.r-project.org/package=ggpcp) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/ggpcp)](http://www.r-pkg.org/pkg/ggpcp) [![Travis build status](https://travis-ci.org/yaweige/ggpcp.svg?branch=master)](https://travis-ci.org/yaweige/ggpcp)
+
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "man/figures/")
 ```
+
+# ggpcp
+
+Generalized parallel coordinate plots with ggpcp
 
 R package for creating generalized parallel coordinate plots in the ggplot2 framework
 
-[![CRAN Status](http://www.r-pkg.org/badges/version/ggpcp)](https://cran.r-project.org/package=ggpcp) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/ggpcp)](http://www.r-pkg.org/pkg/ggpcp) [![Travis build status](https://travis-ci.org/yaweige/ggpcp.svg?branch=master)](https://travis-ci.org/yaweige/ggpcp)
 
 
 
 # Installation
 
-`ggpcp` is currently only available in the development version from Github:
+`ggpcp` is  available from Github:
 
 ```{r, eval = FALSE}
 # install.packages("devtools")

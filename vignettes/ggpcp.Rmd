@@ -2,7 +2,7 @@
 title: "Introduction to ggpcp"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ggpcp}
+  %\VignetteIndexEntry{Introduction to ggpcp}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

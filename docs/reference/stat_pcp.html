@@ -10,21 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -37,7 +43,8 @@
 <meta property="og:description" content="The parallel coordinate plot displays multiple y-axes, and shows the observations across
 several dimensions as ploi-lines. This function work well with both numeric and categorical
 variables at the same time after proper scaling." />
-<meta name="twitter:card" content="summary" />
+
+
 
 
 
@@ -52,9 +59,17 @@ variables at the same time after proper scaling." />
 <![endif]-->
 
 
+
+
+  
+
+  
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -75,12 +90,6 @@ variables at the same time after proper scaling." />
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../articles/ggpcp.html">Get started</a>
 </li>
 <li>
@@ -96,6 +105,7 @@ variables at the same time after proper scaling." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -112,26 +122,26 @@ several dimensions as ploi-lines. This function work well with both numeric and 
 variables at the same time after proper scaling.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>stat_pcp</span>(
-  <span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>geom</span> <span class='kw'>=</span> <span class='st'>"segment"</span>,
-  <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>freespace</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
-  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"uniminmax"</span>,
-  <span class='kw'>boxwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>rugwidth</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>interwidth</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>resort</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>overplot</span> <span class='kw'>=</span> <span class='st'>"hierarchical"</span>,
-  <span class='kw'>reverse</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)
+    <pre class="usage"><span class='fu'>stat_pcp</span><span class='op'>(</span>
+  mapping <span class='op'>=</span> <span class='cn'>NULL</span>,
+  data <span class='op'>=</span> <span class='cn'>NULL</span>,
+  geom <span class='op'>=</span> <span class='st'>"segment"</span>,
+  position <span class='op'>=</span> <span class='st'>"identity"</span>,
+  <span class='va'>...</span>,
+  freespace <span class='op'>=</span> <span class='fl'>0.1</span>,
+  method <span class='op'>=</span> <span class='st'>"uniminmax"</span>,
+  boxwidth <span class='op'>=</span> <span class='fl'>0</span>,
+  rugwidth <span class='op'>=</span> <span class='fl'>0</span>,
+  interwidth <span class='op'>=</span> <span class='fl'>1</span>,
+  resort <span class='op'>=</span> <span class='cn'>NULL</span>,
+  overplot <span class='op'>=</span> <span class='st'>"hierarchical"</span>,
+  reverse <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  na.rm <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  show.legend <span class='op'>=</span> <span class='cn'>NA</span>,
+  inherit.aes <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span>
 
-<span class='no'>StatPcp</span></pre>
+<span class='va'>StatPcp</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -245,7 +255,8 @@ in the parallel coordinate plot. Options are named in the same way as the option
 <li><p><code>globalminmax</code>: gobal scaling; the global maximum is mapped to 1,
     global minimum across the variables is mapped to 0.</p></li>
 </ul>
-    <p><code>overplot</code> is a character string that denotes how to conduct overplotting
+
+<p><code>overplot</code> is a character string that denotes how to conduct overplotting
 in the parallel coordinate plot. The lines from <code><a href='geom_pcp.html'>geom_pcp()</a></code>  are drawn according to the order they shown in your data set in default.
 Note that this argument provides a framework, the order in the original data still has a role in overplotting,
 especially for lines outside factor blocks(for <code>hierarchical</code> only), plots with <code>resort</code> turned on(for methods except <code>hierarchical</code>):</p><ul>
@@ -259,31 +270,34 @@ especially for lines outside factor blocks(for <code>hierarchical</code> only), 
 <li><p><code>largefirst</code>: larger groups of lines are drawn first, placing small groups of lines on top.</p></li>
 </ul>
 
-  </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#format">Format</a></li>
-      <li><a href="#details">Details</a></li>
-    </ul>
 
   </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
+  </div>
 </div>
+
 
       <footer>
       <div class="copyright">
-  <p>Developed by Yawei Ge, Heike Hofmann.</p>
+  <p><p>Developed by Yawei Ge, Heike Hofmann.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
 </div>
+
       </footer>
    </div>
 
   
 
+
+  
+
   </body>
 </html>
+
 
