@@ -12,17 +12,15 @@ Description: Modern Parallel Coordinate Plots have been introduced in the 1980s 
     the ggplot2 layer system.
 License: GPL-3
 Imports: 
-    ggplot2 (>= 3.2.0),
-    dplyr (>= 0.8.3),
-    tidyselect (>= 1.0.0), 
-    tidyr (>= 0.8.3),
+    ggplot2 (>= 3.3.5),
+    dplyr (>= 1.0.0),
+    tidyselect (>= 1.1.1), 
+    tidyr (>= 1.1.3),
     assertthat,
     rlang (>= 0.4.0),
     stringr (>= 1.4.0)
 Depends: 
-    R (>= 3.4)
-Remotes: 
-    tidyverse/ggplot2
+    R (>= 4.0)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
