@@ -1,7 +1,7 @@
-pandoc: 2.11.4
+pandoc: '2.13'
 pkgdown: 1.6.1.9001
 pkgdown_sha: 672b8fc2d10d98ed9bab242c2af56662e5983e9b
 articles:
   ggpcp: ggpcp.html
-last_built: 2021-03-27T15:42Z
+last_built: 2021-07-09T18:34Z
 
