@@ -8,7 +8,7 @@ status](https://travis-ci.org/yaweige/ggpcp.svg?branch=master)](https://travis-c
 
 # ggpcp
 
-Generalized parallel coordinate plots with ggpcp
+## Generalized parallel coordinate plots with ggpcp
 
 R package for creating generalized parallel coordinate plots in the
 ggplot2 framework
@@ -19,7 +19,7 @@ ggplot2 framework
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("yaweige/ggpcp", build_vignettes = TRUE)
+remotes::install_github("yaweige/ggpcp", build_vignettes = TRUE)
 ```
 
 # Getting Started

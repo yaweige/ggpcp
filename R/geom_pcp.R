@@ -119,7 +119,7 @@ geom_pcp <- function(
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE) {
-
+#browser()
   ll <- layer(
     data = data,
     mapping = mapping,

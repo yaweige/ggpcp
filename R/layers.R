@@ -7,6 +7,8 @@
 compute_aesthetics_pcp <- function(self, data, plot) {
   if (!is.null(plot$mapping$vars))
     plot$mapping <- plot$mapping[-grep("vars", names(plot$mapping))]
+  if (!is.null(self$computed_mapping$vars))
+    self$computed_mapping <- self$computed_mapping[-grep("vars", names(self$computed_mapping))]
 
 #  browser()
   self$comp_aes(data, plot)
@@ -18,33 +20,33 @@ compute_aesthetics_pcp <- function(self, data, plot) {
 #' @noRd
 #' @importFrom tidyselect vars_select eval_select
 #' @importFrom dplyr tbl_vars
-#' @importFrom rlang eval_tidy
+#' @importFrom rlang eval_tidy abort
 #' @importFrom utils getFromNamespace
 setup_layer_pcp <- function(self, data, plot) {
   # the vars have to be defined in either self$mapping or in plot$mapping
-  var_x <- NULL
-  aes_vars <- plot$mapping$vars
-  if (is.null(aes_vars))
-    aes_vars <- self$mapping$vars
+#  browser()
+
+  defaults <- getFromNamespace("defaults","ggplot2")
+  self$computed_mapping <- defaults(self$mapping, plot$mapping)
+  #class(self$computed_mapping) <- "uneval"
+
+  aes_vars <- unlist(self$computed_mapping$vars)
 
   if (!is.null(aes_vars)) {
-    if (!is.null(self$mapping$vars))
-      aes_vars <- rlang::eval_tidy(self$mapping$vars)
-    if (!is.null(plot$mapping$vars))
-      aes_vars <- rlang::eval_tidy(plot$mapping$vars)
- #   browser()
-
-    idx <- unlist(lapply(aes_vars, eval_select, data = data))
+      aes_vars <- rlang::eval_tidy(aes_vars)
+  } else {
+      # this is an error - we need to have at least one variable
+    rlang::abort("geom_pcp() needs at least one variable specified in vars = vars(.) format")
+  }
+  idx <- unlist(lapply(aes_vars, eval_select, data = data))
 
 #    idx <- unlist(lapply(aes_vars, getFromNamespace("eval_select","tidyselect"), data = data))
   #  idx <- getFromNamespace("vars_select_eval","tidyselect")(names(data), aes_vars)
-    aes_vars <- names(idx)
+  aes_vars <- names(idx)
 
-    var_x <- paste0("x__", 1:length(aes_vars), "__", as.character(aes_vars))
-  }
+  var_x <- paste0("x__", 1:length(aes_vars), "__", as.character(aes_vars))
 
   # move the new aesthetics into self, that way they will be preserved
-  # HH: what happens if we are dealing with different data sets?
   if (is.null(self$mapping)) self$mapping <- aes()
   if (!is.null(var_x)) {
     for (i in seq_along(var_x)) {
@@ -53,6 +55,10 @@ setup_layer_pcp <- function(self, data, plot) {
   }
   if (!is.null(self$mapping$vars))
     self$mapping <- self$mapping[-grep("vars", names(self$mapping))]
+
+  # propagate to self$computed_mapping
+  self$computed_mapping <- ggplot2:::defaults(self$mapping, plot$mapping)
+  class(self$computed_mapping) <- "uneval"
 
   data
 }

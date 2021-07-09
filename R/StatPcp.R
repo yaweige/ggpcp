@@ -134,7 +134,7 @@ StatPcp <- ggproto(
     linewidth=.1, weight = 1, method = "uniminmax"),
 
   setup_data = function (data, params) {
-#    browser()
+    #browser()
     idx <- grep("x__", names(data))
     names(data) <- gsub("x__[0-9]+__", "", names(data))
     # x__labels__ works together with data.frame(..., check.names = TRUE) (default) to allow spaces in names, also won't add .1 .2 after same variables
